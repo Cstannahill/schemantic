@@ -1,0 +1,81 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "Cat": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "cat"
+            ]
+          },
+          "meowVolume": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type",
+          "meowVolume"
+        ]
+      },
+      "Dog": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "dog"
+            ]
+          },
+          "barkVolume": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "type",
+          "barkVolume"
+        ]
+      },
+      "Animal": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Cat"
+          },
+          {
+            "$ref": "#/components/schemas/Dog"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/animals": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Animal"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

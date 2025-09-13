@@ -1,0 +1,102 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Test API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "CreditCard": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "credit_card"
+            ]
+          },
+          "cardNumber": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "cardNumber"
+        ]
+      },
+      "BankTransfer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "bank_transfer"
+            ]
+          },
+          "accountNumber": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "accountNumber"
+        ]
+      },
+      "PaymentMethod": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CreditCard"
+          },
+          {
+            "$ref": "#/components/schemas/BankTransfer"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type"
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethod"
+          }
+        },
+        "required": [
+          "id",
+          "paymentMethod"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/orders": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

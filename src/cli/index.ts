@@ -10,6 +10,7 @@ import { TypeSyncConfig, DEFAULT_CONFIG } from "../types/core";
 import { TypeSync } from "../core/typesync";
 import { PluginLoader } from "../plugins";
 import { getBuiltinPlugins } from "../plugins/builtin";
+import { TypeSyncWatcher } from "../core/watcher";
 import * as readline from "readline";
 
 // Removed unused CliCommand interface
@@ -51,6 +52,7 @@ export class TypeSyncCli {
 
     // Add commands
     this.addGenerateCommand();
+    this.addWatchCommand();
     this.addValidateCommand();
     this.addPluginCommand();
     this.addInitCommand();
@@ -95,6 +97,47 @@ export class TypeSyncCli {
       .option("--watch", "Watch for changes and regenerate")
       .action(async (source: string, options: CliOptions) => {
         await this.handleGenerateCommand(source, options);
+      });
+  }
+
+  /**
+   * Add watch command
+   */
+  private addWatchCommand(): void {
+    this.program
+      .command("watch [source]")
+      .description(
+        "Watch for schema changes and automatically regenerate types"
+      )
+      .option("-u, --url <url>", "OpenAPI schema URL")
+      .option("-f, --file <file>", "OpenAPI schema file path")
+      .option("-o, --output <dir>", "Output directory", "./src/generated")
+      .option("--types", "Generate types only")
+      .option("--client", "Generate API client only")
+      .option("--hooks", "Generate React hooks")
+      .option("--strict", "Use strict TypeScript types", true)
+      .option(
+        "--naming <convention>",
+        "Naming convention (camelCase|snake_case|PascalCase)",
+        "camelCase"
+      )
+      .option("--prefix <prefix>", "Type name prefix", "API")
+      .option("--suffix <suffix>", "Type name suffix", "")
+      .option("--exclude-paths <paths>", "Exclude paths (comma-separated)")
+      .option("--include-paths <paths>", "Include paths (comma-separated)")
+      .option(
+        "--exclude-schemas <schemas>",
+        "Exclude schemas (comma-separated)"
+      )
+      .option(
+        "--include-schemas <schemas>",
+        "Include schemas (comma-separated)"
+      )
+      .option("--plugins <plugins>", "Enable plugins (comma-separated)")
+      .option("-c, --config <file>", "Configuration file path")
+      .option("--debounce <ms>", "Debounce delay in milliseconds", "500")
+      .action(async (source: string, options: CliOptions) => {
+        await this.handleWatchCommand(source, options);
       });
   }
 
@@ -168,20 +211,225 @@ export class TypeSyncCli {
         return;
       }
 
-      // Load configuration
+      // Show progress for non-quiet mode
+      if (!options.quiet) {
+        console.log("🚀 Starting type generation...");
+      }
+
+      // Load configuration with progress indicator
+      if (!options.quiet) {
+        process.stdout.write("📋 Loading configuration... ");
+      }
       const config = await this.loadConfiguration(source, options);
+      if (!options.quiet) {
+        console.log("✓");
+      }
+
+      // Validate configuration
+      if (!options.quiet) {
+        process.stdout.write("🔍 Validating configuration... ");
+      }
+      await this.validateConfiguration(config);
+      if (!options.quiet) {
+        console.log("✓");
+      }
 
       // Create TypeSync instance
+      if (!options.quiet) {
+        process.stdout.write("⚙️  Initializing TypeSync... ");
+      }
       const typeSync = new TypeSync(config);
+      if (!options.quiet) {
+        console.log("✓");
+      }
 
       // Load plugins
+      if (!options.quiet) {
+        process.stdout.write("🔌 Loading plugins... ");
+      }
       await this.loadPlugins(config, typeSync);
+      if (!options.quiet) {
+        console.log("✓");
+      }
 
-      // Generate types and client
+      // Generate types and client with progress
+      if (!options.quiet) {
+        console.log("⚡ Generating TypeScript code...");
+      }
+
+      const startTime = Date.now();
       const result = await typeSync.generate();
+      const endTime = Date.now();
+
+      // Add timing to result
+      if (result.statistics) {
+        result.statistics.generationTime = endTime - startTime;
+      }
 
       // Output results
       this.outputResults(result, options);
+
+      // Success exit
+      if (!result.success) {
+        process.exit(1);
+      }
+    } catch (error) {
+      this.handleError(error, options);
+    }
+  }
+
+  /**
+   * Handle watch command
+   */
+  private async handleWatchCommand(
+    source?: string,
+    options: CliOptions = {}
+  ): Promise<void> {
+    try {
+      if (!options.quiet) {
+        console.log("🚀 Starting TypeSync watcher...");
+        console.log("━".repeat(50));
+      }
+
+      // Load configuration with progress indicator
+      if (!options.quiet) {
+        process.stdout.write("📋 Loading configuration... ");
+      }
+      const config = await this.loadConfiguration(source, options);
+      if (!options.quiet) {
+        console.log("✓");
+      }
+
+      // Validate configuration
+      if (!options.quiet) {
+        process.stdout.write("🔍 Validating configuration... ");
+      }
+      await this.validateConfiguration(config);
+      if (!options.quiet) {
+        console.log("✓");
+      }
+
+      // Create TypeSync instance
+      if (!options.quiet) {
+        process.stdout.write("⚙️  Initializing TypeSync... ");
+      }
+      const typeSync = new TypeSync(config);
+      if (!options.quiet) {
+        console.log("✓");
+      }
+
+      // Load plugins
+      if (!options.quiet) {
+        process.stdout.write("🔌 Loading plugins... ");
+      }
+      await this.loadPlugins(config, typeSync);
+      if (!options.quiet) {
+        console.log("✓");
+      }
+
+      // Determine what to watch
+      const watchPaths: string[] = [];
+      if (config.schemaFile) {
+        const path = require("path");
+        watchPaths.push(path.dirname(config.schemaFile));
+      } else {
+        // Default to current directory
+        watchPaths.push(process.cwd());
+      }
+
+      if (!options.quiet) {
+        console.log(`🔍 Watching for changes in: ${watchPaths.join(", ")}`);
+        console.log(`📁 Patterns: *.json, *.yaml, *.yml`);
+      }
+
+      // Create watcher with enhanced callbacks
+      const watcher = new TypeSyncWatcher(config, {
+        watchPaths,
+        patterns: ["*.json", "*.yaml", "*.yml"],
+        debounceMs: parseInt(String(options.debounce || "500")),
+        onFileChange: (filePath, eventType) => {
+          if (!options.quiet) {
+            const path = require("path");
+            const relativePath = path.relative(process.cwd(), filePath);
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(
+              `📄 ${timestamp} - ${eventType.toUpperCase()}: ${relativePath}`
+            );
+          }
+        },
+        onGeneration: (success: boolean, error?: Error) => {
+          if (!options.quiet) {
+            const timestamp = new Date().toLocaleTimeString();
+            if (success) {
+              console.log(
+                `✅ ${timestamp} - Generation completed successfully!`
+              );
+            } else {
+              console.error(
+                `❌ ${timestamp} - Generation failed:`,
+                error?.message
+              );
+              console.error("💡 Check the files and try saving again");
+            }
+          }
+        },
+      });
+
+      // Start watching
+      if (!options.quiet) {
+        process.stdout.write("🎬 Starting file watcher... ");
+      }
+      await watcher.start();
+      if (!options.quiet) {
+        console.log("✓");
+      }
+
+      // Run initial generation
+      if (!options.quiet) {
+        console.log("\n🔄 Running initial generation...");
+      }
+
+      const startTime = Date.now();
+      const result = await typeSync.generate();
+      const endTime = Date.now();
+
+      // Add timing to result
+      if (result.statistics) {
+        result.statistics.generationTime = endTime - startTime;
+      }
+
+      this.outputResults(result, options);
+
+      if (!result.success) {
+        console.error(
+          "⚠️  Initial generation failed, but watch mode is still active"
+        );
+      }
+
+      // Setup graceful shutdown
+      if (!options.quiet) {
+        console.log("👀 Watching for changes... Press Ctrl+C to stop");
+        console.log("━".repeat(50));
+      }
+
+      process.on("SIGINT", async () => {
+        if (!options.quiet) {
+          console.log("\n🛑 Stopping watcher...");
+        }
+        await watcher.stop();
+        if (!options.quiet) {
+          console.log("✅ Watcher stopped successfully. Goodbye!");
+        }
+        process.exit(0);
+      });
+
+      process.on("SIGTERM", async () => {
+        await watcher.stop();
+        process.exit(0);
+      });
+
+      // Keep process alive
+      await new Promise(() => {}); // This will run indefinitely
     } catch (error) {
       this.handleError(error, options);
     }
@@ -261,6 +509,50 @@ export class TypeSyncCli {
       console.log(`Description: ${plugin.description}`);
     } catch (error) {
       this.handleError(error, {});
+    }
+  }
+
+  /**
+   * Validate configuration
+   */
+  private async validateConfiguration(config: TypeSyncConfig): Promise<void> {
+    // Check if source exists
+    if (config.schemaFile) {
+      const fs = await import("fs/promises");
+      try {
+        await fs.access(config.schemaFile);
+      } catch (error) {
+        throw new Error(`Schema file not found: ${config.schemaFile}`);
+      }
+    }
+
+    if (config.schemaUrl) {
+      // Basic URL validation
+      try {
+        new URL(config.schemaUrl);
+      } catch (error) {
+        throw new Error(`Invalid schema URL: ${config.schemaUrl}`);
+      }
+    }
+
+    // Check if output directory exists or can be created
+    if (config.outputDir) {
+      const fs = await import("fs/promises");
+      const path = await import("path");
+
+      try {
+        const dir = path.dirname(config.outputDir);
+        await fs.access(dir);
+      } catch (error) {
+        // Try to create the directory
+        try {
+          await fs.mkdir(config.outputDir, { recursive: true });
+        } catch (createError) {
+          throw new Error(
+            `Cannot create output directory: ${config.outputDir}`
+          );
+        }
+      }
     }
   }
 
@@ -427,20 +719,84 @@ export class TypeSyncCli {
       return;
     }
 
+    console.log(); // Empty line for spacing
+
     if (result.success) {
       console.log("✅ Generation completed successfully!");
-      console.log(`📁 Generated ${result.generatedFiles.length} files`);
+      console.log("━".repeat(50));
+
+      // File generation summary
+      if (result.generatedFiles && result.generatedFiles.length > 0) {
+        console.log(`📁 Generated ${result.generatedFiles.length} files:`);
+        result.generatedFiles.forEach((file: any) => {
+          const size = file.size ? ` (${this.formatFileSize(file.size)})` : "";
+          console.log(`   📄 ${file.path}${size}`);
+        });
+      } else {
+        console.log("� Generated files in output directory");
+      }
+
+      // Statistics
+      if (result.statistics) {
+        console.log("\n�📊 Generation Statistics:");
+        console.log(`   🔤 Types: ${result.statistics.totalTypes || 0}`);
+        console.log(
+          `   🔌 Endpoints: ${result.statistics.totalEndpoints || 0}`
+        );
+        console.log(`   ⏱️  Time: ${result.statistics.generationTime || 0}ms`);
+
+        if (result.statistics.totalSize) {
+          console.log(
+            `   📦 Total size: ${this.formatFileSize(
+              result.statistics.totalSize
+            )}`
+          );
+        }
+      }
+
+      // Next steps
+      console.log("\n🎉 Next steps:");
+      console.log("   • Import the generated types in your TypeScript files");
+      console.log("   • Use the API client to make type-safe requests");
+      if (result.hasHooks) {
+        console.log("   • Use the React hooks for easy data fetching");
+      }
       console.log(
-        `📊 Statistics: ${result.statistics.totalTypes} types, ${result.statistics.totalEndpoints} endpoints`
+        "   • Run with --watch to automatically regenerate on changes"
       );
-      console.log(`⏱️  Generation time: ${result.statistics.generationTime}ms`);
     } else {
       console.log("❌ Generation failed!");
-      console.log(`🚨 Errors: ${result.errors.length}`);
-      for (const error of result.errors) {
-        console.log(`  - ${error.message}`);
+      console.log("━".repeat(50));
+
+      if (result.errors && result.errors.length > 0) {
+        console.log(`🚨 Found ${result.errors.length} error(s):`);
+        result.errors.forEach((error: any, index: number) => {
+          console.log(`   ${index + 1}. ${error.message || error}`);
+          if (error.details) {
+            console.log(`      Details: ${error.details}`);
+          }
+          if (error.path) {
+            console.log(`      Path: ${error.path}`);
+          }
+        });
       }
+
+      // Warnings
+      if (result.warnings && result.warnings.length > 0) {
+        console.log(`\n⚠️  Found ${result.warnings.length} warning(s):`);
+        result.warnings.forEach((warning: any, index: number) => {
+          console.log(`   ${index + 1}. ${warning.message || warning}`);
+        });
+      }
+
+      console.log("\n💡 Tips for fixing issues:");
+      console.log("   • Check your OpenAPI schema for syntax errors");
+      console.log("   • Ensure all referenced schemas are defined");
+      console.log("   • Verify file paths and permissions");
+      console.log("   • Run with --verbose for detailed error information");
     }
+
+    console.log(); // Empty line for spacing
   }
 
   /**
@@ -451,22 +807,74 @@ export class TypeSyncCli {
       return;
     }
 
+    console.log(); // Empty line for spacing
+
     if (result.isValid) {
       console.log("✅ Schema validation passed!");
+      console.log("━".repeat(50));
+      console.log("🎉 Your OpenAPI schema is valid and ready for generation!");
+
+      if (result.info) {
+        console.log("\n📋 Schema Information:");
+        if (result.info.title) {
+          console.log(`   � Title: ${result.info.title}`);
+        }
+        if (result.info.version) {
+          console.log(`   🏷️  Version: ${result.info.version}`);
+        }
+        if (result.info.description) {
+          console.log(`   📝 Description: ${result.info.description}`);
+        }
+        if (result.paths) {
+          console.log(`   🔌 Endpoints: ${Object.keys(result.paths).length}`);
+        }
+        if (result.components?.schemas) {
+          console.log(
+            `   🔤 Schemas: ${Object.keys(result.components.schemas).length}`
+          );
+        }
+      }
     } else {
       console.log("❌ Schema validation failed!");
-      console.log(`🚨 Errors: ${result.errors.length}`);
-      for (const error of result.errors) {
-        console.log(`  - ${error.message} (${error.path})`);
+      console.log("━".repeat(50));
+
+      if (result.errors && result.errors.length > 0) {
+        console.log(`🚨 Found ${result.errors.length} error(s):`);
+        result.errors.forEach((error: any, index: number) => {
+          console.log(`   ${index + 1}. ${error.message || error}`);
+          if (error.path) {
+            console.log(`      📍 Path: ${error.path}`);
+          }
+          if (error.code) {
+            console.log(`      🔍 Code: ${error.code}`);
+          }
+        });
       }
     }
 
-    if (result.warnings.length > 0) {
-      console.log(`⚠️  Warnings: ${result.warnings.length}`);
-      for (const warning of result.warnings) {
-        console.log(`  - ${warning.message} (${warning.path})`);
-      }
+    if (result.warnings && result.warnings.length > 0) {
+      console.log(`\n⚠️  Found ${result.warnings.length} warning(s):`);
+      result.warnings.forEach((warning: any, index: number) => {
+        console.log(`   ${index + 1}. ${warning.message || warning}`);
+        if (warning.path) {
+          console.log(`      📍 Path: ${warning.path}`);
+        }
+      });
+
+      console.log(
+        "\n💡 Warnings don't prevent generation but may affect quality."
+      );
     }
+
+    if (!result.isValid) {
+      console.log("\n🛠️  Fix these issues and try again:");
+      console.log("   • Validate your schema using online OpenAPI validators");
+      console.log("   • Check for missing required fields");
+      console.log("   • Ensure proper JSON/YAML syntax");
+      console.log("   • Verify all $ref references are valid");
+    }
+
+    console.log(); // Empty line for spacing
   }
 
   /**
@@ -477,7 +885,73 @@ export class TypeSyncCli {
       process.exit(1);
     }
 
-    console.error("❌ Error:", error);
+    // Enhanced error handling with better formatting and actionable advice
+    console.error("\n❌ Generation Failed");
+    console.error("━".repeat(50));
+
+    if (error instanceof Error) {
+      // Parse common error types and provide helpful messages
+      if (error.message.includes("ENOENT")) {
+        console.error("🚨 File not found");
+        console.error(`   ${error.message}`);
+        console.error("\n💡 Suggestions:");
+        console.error("   • Check if the file path is correct");
+        console.error("   • Make sure the file exists");
+        console.error("   • Try using an absolute path");
+      } else if (error.message.includes("EACCES")) {
+        console.error("🚨 Permission denied");
+        console.error(`   ${error.message}`);
+        console.error("\n💡 Suggestions:");
+        console.error("   • Check file permissions");
+        console.error("   • Run with appropriate privileges");
+        console.error("   • Ensure the output directory is writable");
+      } else if (error.message.includes("Cannot find module")) {
+        console.error("🚨 Module not found");
+        console.error(`   ${error.message}`);
+        console.error("\n💡 Suggestions:");
+        console.error("   • Check if the file path is correct");
+        console.error(
+          "   • Make sure the path doesn't contain spaces (use quotes)"
+        );
+        console.error("   • Verify the file exists and has proper extensions");
+      } else if (error.message.includes("Invalid OpenAPI")) {
+        console.error("🚨 Invalid OpenAPI schema");
+        console.error(`   ${error.message}`);
+        console.error("\n💡 Suggestions:");
+        console.error("   • Validate your OpenAPI schema using online tools");
+        console.error("   • Check for syntax errors in JSON/YAML");
+        console.error(
+          "   • Ensure the schema follows OpenAPI 3.0+ specification"
+        );
+      } else if (
+        error.message.includes("Network") ||
+        error.message.includes("fetch")
+      ) {
+        console.error("🚨 Network error");
+        console.error(`   ${error.message}`);
+        console.error("\n💡 Suggestions:");
+        console.error("   • Check your internet connection");
+        console.error("   • Verify the URL is correct and accessible");
+        console.error("   • Try again in a few moments");
+      } else {
+        console.error("🚨 Unexpected error");
+        console.error(`   ${error.message}`);
+
+        if (options.verbose) {
+          console.error("\n📋 Stack trace:");
+          console.error(error.stack);
+        } else {
+          console.error("\n💡 For more details, run with --verbose flag");
+        }
+      }
+    } else {
+      console.error("🚨 Unknown error occurred");
+      console.error(`   ${String(error)}`);
+    }
+
+    console.error(
+      "\n🆘 Need help? Visit: https://github.com/your-org/type-sync/issues"
+    );
     process.exit(1);
   }
 
@@ -673,6 +1147,19 @@ export class TypeSyncCli {
 
     const configPath = path.join(directory, "typesync.config.json");
     await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf-8");
+  }
+
+  /**
+   * Format file size in human readable format
+   */
+  private formatFileSize(bytes: number): string {
+    if (bytes === 0) return "0 B";
+
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const size = (bytes / Math.pow(1024, i)).toFixed(1);
+
+    return `${size} ${sizes[i]}`;
   }
 
   /**

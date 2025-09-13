@@ -1,0 +1,19 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Test", "version": "1.0.0" },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "Product": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": ["number", "null"] },
+          "salePrice": { "type": ["number", "null"] }
+        },
+        "required": ["name", "price"]
+      }
+    }
+  }
+}

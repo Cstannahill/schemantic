@@ -1,0 +1,28 @@
+# FastAPI and core dependencies
+fastapi[standard]==0.116.1
+uvicorn[standard]==0.35.0
+
+# Database
+sqlalchemy==2.0.43
+alembic==1.13.1
+
+# Authentication and security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.20
+
+# Data validation and serialization
+pydantic[email]==2.11.8
+pydantic-settings==2.10.1
+
+
+# Development and testing
+pytest==8.2.2
+pytest-asyncio==0.24.0
+httpx==0.28.1
+
+# Environment and configuration
+python-dotenv==1.1.1
+
+# File handling
+python-magic==0.4.27

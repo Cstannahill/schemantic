@@ -51,7 +51,8 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
 
     return (
       (typeof schema.type === "string" && schema.type === "object") ||
-      !!(schema.properties && Object.keys(schema.properties).length > 0)
+      !!(schema.properties && Object.keys(schema.properties).length > 0) ||
+      !!(schema.allOf && schema.allOf.length > 0)
     );
   }
 
@@ -91,11 +92,27 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
       content += comment + "\n";
     }
 
-    content += `export interface ${typeName} {\n`;
+    // Handle inheritance with allOf
+    const extendsClause = this.generateExtendsClause(
+      schema,
+      context,
+      dependencies
+    );
+    content += `export interface ${typeName}${extendsClause} {\n`;
 
     if (schema.properties) {
       const properties = this.generateProperties(schema, context, dependencies);
       content += properties;
+    }
+
+    // Handle properties from allOf non-reference schemas
+    if (schema.allOf) {
+      const allOfProperties = this.generateAllOfProperties(
+        schema,
+        context,
+        dependencies
+      );
+      content += allOfProperties;
     }
 
     content += "}\n";
@@ -134,6 +151,49 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
   }
 
   /**
+   * Generate properties from allOf non-reference schemas
+   */
+  private generateAllOfProperties(
+    schema: ResolvedSchema,
+    context: GenerationContext,
+    dependencies: string[]
+  ): string {
+    if (!isOpenAPISchemaObject(schema) || !schema.allOf) {
+      return "";
+    }
+
+    const properties: string[] = [];
+
+    for (const allOfSchema of schema.allOf) {
+      // Skip reference schemas (those are handled by extends clause)
+      if ("$ref" in allOfSchema && allOfSchema.$ref) {
+        continue;
+      }
+
+      // Handle inline object schemas
+      if (isOpenAPISchemaObject(allOfSchema) && allOfSchema.properties) {
+        for (const [propertyName, propertySchema] of Object.entries(
+          allOfSchema.properties
+        )) {
+          const property = this.generateProperty(
+            propertyName,
+            propertySchema as ResolvedSchema,
+            allOfSchema.required,
+            context,
+            dependencies
+          );
+          properties.push(property);
+        }
+      }
+    }
+
+    return (
+      properties.map((prop) => `  ${prop}`).join("\n") +
+      (properties.length > 0 ? "\n" : "")
+    );
+  }
+
+  /**
    * Generate a single property
    */
   private generateProperty(
@@ -144,6 +204,7 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
     dependencies?: string[]
   ): string {
     const isOptional = this.isOptional(required, propertyName);
+    const isNullable = this.isNullable(propertySchema);
     const comment = isOpenAPISchemaObject(propertySchema)
       ? this.generateComment(propertySchema.description, propertySchema.example)
       : "";
@@ -154,17 +215,79 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
       property += comment + "\n";
     }
 
-    const type = this.generatePropertyType(
+    const baseType = this.generatePropertyType(
       propertySchema,
       context,
       dependencies
     );
-    const optionalType = this.wrapOptional(type, isOptional);
+
+    // Handle nullable vs optional correctly
+    let finalType = baseType;
+    if (isNullable && !finalType.includes("| null")) {
+      finalType += " | null";
+    }
+    if (isOptional && !finalType.includes("| undefined")) {
+      finalType += " | undefined";
+    }
 
     const formattedName = this.convertName(propertyName);
-    property += `${formattedName}${isOptional ? "?" : ""}: ${optionalType};`;
+    property += `${formattedName}${isOptional ? "?" : ""}: ${finalType};`;
 
     return property;
+  }
+
+  /**
+   * Check if a property schema is nullable (but not already handled by type array)
+   */
+  private isNullable(schema: ResolvedSchema): boolean {
+    if (!isOpenAPISchemaObject(schema)) {
+      return false;
+    }
+
+    // Check for nullable property
+    if (schema.nullable === true) {
+      return true;
+    }
+
+    // DON'T add | null if the type array already includes null
+    // (this is handled by mapSchemaTypeToTypeScript)
+    if (Array.isArray(schema.type) && schema.type.includes("null")) {
+      return false; // Already handled by type mapping
+    }
+
+    return false;
+  }
+
+  /**
+   * Generate extends clause for inheritance
+   */
+  private generateExtendsClause(
+    schema: ResolvedSchema,
+    _context: GenerationContext,
+    dependencies: string[]
+  ): string {
+    if (!isOpenAPISchemaObject(schema) || !schema.allOf) {
+      return "";
+    }
+
+    const baseTypes: string[] = [];
+
+    for (const baseSchema of schema.allOf) {
+      if ("$ref" in baseSchema && baseSchema.$ref) {
+        const baseType = this.extractTypeNameFromRef(baseSchema.$ref as string);
+        const refType = this.formatTypeName(baseType);
+        if (!dependencies.includes(refType)) {
+          dependencies.push(refType);
+        }
+        baseTypes.push(refType);
+      }
+    }
+
+    if (baseTypes.length > 0) {
+      return ` extends ${baseTypes.join(", ")}`;
+    }
+
+    return "";
   }
 
   /**
@@ -214,19 +337,19 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
       return intersectionTypes.join(" & ");
     }
 
-    // Handle basic types
-    if (schema.type) {
-      return this.mapSchemaTypeToTypeScript(schema.type, schema.format);
+    // Handle const (highest priority for exact values)
+    if (schema.const !== undefined) {
+      return JSON.stringify(schema.const);
     }
 
-    // Handle enums
+    // Handle enums (prioritize over basic types)
     if (schema.enum) {
       return this.generateEnumType(schema.enum);
     }
 
-    // Handle const
-    if (schema.const !== undefined) {
-      return JSON.stringify(schema.const);
+    // Handle basic types
+    if (schema.type) {
+      return this.mapSchemaTypeToTypeScript(schema.type, schema.format);
     }
 
     // Default fallback

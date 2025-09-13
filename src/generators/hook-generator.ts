@@ -298,16 +298,60 @@ export class HookGenerator {
       argsTypeParts.length > 0 ? `{ ${argsTypeParts.join("; ")} }` : "void";
     const retType = ep.returnType;
 
-    // Build client call argument list in order: path params, query params, [body if any], options
+    // Build client call argument list to match API client method signature:
+    // Sort parameters: required first, then optional (to match API client parameter ordering)
     const orderedArgs: string[] = [];
-    for (const p of pathParams) orderedArgs.push(`args!.path.${p.name}`);
-    const queryObjectOptional = queryParams.every((p) => p.isOptional);
+
+    // Collect all parameters first
+    const allParameters: {
+      name: string;
+      expression: string;
+      isOptional: boolean;
+    }[] = [];
+
+    // Add path parameters (always required)
+    for (const p of pathParams) {
+      allParameters.push({
+        name: p.name,
+        expression: `args!.path.${p.name}`,
+        isOptional: false,
+      });
+    }
+
+    // Add query parameters
+    const queryObjectOptional = queryParams.every((q) => q.isOptional);
     const qPrefix = queryObjectOptional ? "args?.query?." : "args!.query.";
     for (const p of queryParams) {
-      orderedArgs.push(`${qPrefix}${p.name}`);
+      allParameters.push({
+        name: p.name,
+        expression: `${qPrefix}${p.name}`,
+        isOptional: p.isOptional,
+      });
     }
-    // GET requests should not pass a body placeholder; just pass options
-    orderedArgs.push("requestInit"); // options
+
+    // Add body parameter if exists
+    if (ep.method.toLowerCase() !== "get" && ep.requestBody) {
+      const bodyPrefix = ep.requestBody.isOptional
+        ? "args?.body"
+        : "args!.body";
+      allParameters.push({
+        name: "body",
+        expression: bodyPrefix,
+        isOptional: ep.requestBody.isOptional,
+      });
+    }
+
+    // Sort parameters: required first, then optional (to match API client)
+    allParameters.sort((a, b) => {
+      if (a.isOptional === b.isOptional) return 0;
+      return a.isOptional ? 1 : -1; // Required (false) comes before optional (true)
+    });
+
+    // Extract expressions in sorted order
+    orderedArgs.push(...allParameters.map((p) => p.expression));
+
+    // Always add options parameter last
+    orderedArgs.push("requestInit");
 
     let code = "";
     code += `  function ${hookName}(args${argsType === "void" ? "?" : ""}: ${
@@ -365,18 +409,59 @@ export class HookGenerator {
     const payloadType =
       payloadParts.length > 0 ? `{ ${payloadParts.join("; ")} }` : "void";
 
+    // Build client call argument list to match API client method signature:
+    // Sort parameters: required first, then optional (to match API client parameter ordering)
     const orderedArgs: string[] = [];
-    for (const p of pathParams) orderedArgs.push(`payload!.path.${p.name}`);
-    const q2ObjectOptional = queryParams.every((p) => p.isOptional);
+
+    // Collect all parameters first
+    const allParameters: {
+      name: string;
+      expression: string;
+      isOptional: boolean;
+    }[] = [];
+
+    // Add path parameters (always required)
+    for (const p of pathParams) {
+      allParameters.push({
+        name: p.name,
+        expression: `payload!.path.${p.name}`,
+        isOptional: false,
+      });
+    }
+
+    // Add query parameters
+    const q2ObjectOptional = queryParams.every((q) => q.isOptional);
     const q2Prefix = q2ObjectOptional ? "payload?.query?." : "payload!.query.";
     for (const p of queryParams) {
-      orderedArgs.push(`${q2Prefix}${p.name}`);
+      allParameters.push({
+        name: p.name,
+        expression: `${q2Prefix}${p.name}`,
+        isOptional: p.isOptional,
+      });
     }
-    if (hasBody) {
-      orderedArgs.push(
-        `payload${ep.requestBody!.isOptional ? "?.body" : ".body"}`
-      );
+
+    // Add body parameter if exists
+    if (hasBody && ep.requestBody) {
+      const bodyPrefix = ep.requestBody.isOptional
+        ? "payload?.body"
+        : "payload!.body";
+      allParameters.push({
+        name: "body",
+        expression: bodyPrefix,
+        isOptional: ep.requestBody.isOptional,
+      });
     }
+
+    // Sort parameters: required first, then optional (to match API client)
+    allParameters.sort((a, b) => {
+      if (a.isOptional === b.isOptional) return 0;
+      return a.isOptional ? 1 : -1; // Required (false) comes before optional (true)
+    });
+
+    // Extract expressions in sorted order
+    orderedArgs.push(...allParameters.map((p) => p.expression));
+
+    // Always add options parameter last
     orderedArgs.push("requestInit");
 
     let code = "";

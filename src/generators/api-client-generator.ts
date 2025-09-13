@@ -463,33 +463,44 @@ export class ApiClientGenerator {
   private generateMethodParameters(endpoint: GeneratedEndpoint): string {
     const params: string[] = [];
 
-    // Add path parameters
+    // Collect all parameters
+    const allParams: { name: string; type: string; isOptional: boolean }[] = [];
+
+    // Add path parameters (always required)
     const pathParams = endpoint.parameters.filter((p) => p.location === "path");
-    if (pathParams.length > 0) {
-      const pathParamTypes = pathParams.map((p) => `${p.name}: ${p.type}`);
-      params.push(...pathParamTypes);
-    }
+    pathParams.forEach((p) => {
+      allParams.push({ name: p.name, type: p.type, isOptional: false });
+    });
 
     // Add query parameters
     const queryParams = endpoint.parameters.filter(
       (p) => p.location === "query"
     );
-    if (queryParams.length > 0) {
-      const queryParamTypes = queryParams.map(
-        (p) => `${p.name}${p.isOptional ? "?" : ""}: ${p.type}`
-      );
-      params.push(...queryParamTypes);
-    }
+    queryParams.forEach((p) => {
+      allParams.push({ name: p.name, type: p.type, isOptional: p.isOptional });
+    });
 
     // Add request body
     if (endpoint.requestBody) {
-      const bodyParam = `body${endpoint.requestBody.isOptional ? "?" : ""}: ${
-        endpoint.requestBody.type
-      }`;
-      params.push(bodyParam);
+      allParams.push({
+        name: "body",
+        type: endpoint.requestBody.type,
+        isOptional: endpoint.requestBody.isOptional,
+      });
     }
 
-    // Add options parameter
+    // Sort parameters: required first, then optional
+    allParams.sort((a, b) => {
+      if (a.isOptional === b.isOptional) return 0;
+      return a.isOptional ? 1 : -1; // Required (false) comes before optional (true)
+    });
+
+    // Convert to string format
+    allParams.forEach((p) => {
+      params.push(`${p.name}${p.isOptional ? "?" : ""}: ${p.type}`);
+    });
+
+    // Add options parameter (always optional, always last)
     params.push("options?: RequestInit");
 
     return params.join(", ");
