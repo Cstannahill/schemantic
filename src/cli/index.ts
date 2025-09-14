@@ -13,7 +13,7 @@ import {
   GenerationError,
   GenerationWarning,
 } from "../types/core";
-import { Schemantic } from "../core/Schemantic";
+import { Schemantic } from "../core/schemantic";
 import { PluginLoader } from "../plugins";
 import { getBuiltinPlugins } from "../plugins/builtin";
 import * as readline from "readline";
@@ -191,13 +191,13 @@ export class SchemanticCli {
       const config = await this.loadConfiguration(source, options);
 
       // Create Schemantic instance
-      const Schemantic = new Schemantic(config);
+      const schemanticInstance = new Schemantic(config);
 
       // Load plugins
-      await this.loadPlugins(config, Schemantic);
+      await this.loadPlugins(config, schemanticInstance);
 
       // Generate types and client
-      const result = await Schemantic.generate();
+      const result = await schemanticInstance.generate();
 
       // Output results
       this.outputResults(result, options);
@@ -218,10 +218,10 @@ export class SchemanticCli {
       const config = await this.loadConfiguration(source, options);
 
       // Create Schemantic instance
-      const Schemantic = new Schemantic(config);
+      const schemanticInstance = new Schemantic(config);
 
       // Validate schema
-      const result = await Schemantic.validate();
+      const result = await schemanticInstance.validate();
 
       // Output validation results
       this.outputValidationResults(result, options);
@@ -639,11 +639,11 @@ export class SchemanticCli {
       config.useStrictTypes = strictTypes !== false;
 
       // Create Schemantic instance and generate
-      const Schemantic = new Schemantic(config as SchemanticConfig);
-      await this.loadPlugins(config as SchemanticConfig, Schemantic);
+      const schemanticInstance = new Schemantic(config as SchemanticConfig);
+      await this.loadPlugins(config as SchemanticConfig, schemanticInstance);
 
       console.log("\n⚙️ Generating types and API client...");
-      const result = await Schemantic.generate();
+      const result = await schemanticInstance.generate();
 
       this.outputResults(result, {});
     } finally {

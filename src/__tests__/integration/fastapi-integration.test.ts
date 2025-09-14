@@ -5,7 +5,7 @@ import { createTestConfig } from '../test-config';tegration tests using real Fas
  * These tests verify that schemantic works correctly with actual FastAPI applications
  */
 
-import { Schemantic } from "../../core/Schemantic";
+import { Schemantic } from "../../core/schemantic";
 import { OpenAPISchema } from "../../types/openapi";
 import { createTestConfig } from "../test-config";
 import * as fs from "fs";
@@ -388,8 +388,8 @@ describe("FastAPI Integration Tests", () => {
         generateApiClient: false,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -427,8 +427,8 @@ describe("FastAPI Integration Tests", () => {
         generateApiClient: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
       expect(result.statistics.totalEndpoints).toBe(5); // All the endpoints
@@ -470,8 +470,8 @@ describe("FastAPI Integration Tests", () => {
         generateHooks: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
 
@@ -499,8 +499,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
 
@@ -526,8 +526,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
 
@@ -581,8 +581,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
 
@@ -626,8 +626,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
 

@@ -26,7 +26,7 @@ export { HookGenerator } from "./generators/hook-generator";
 export type { GeneratedHooksFile } from "./generators/hook-generator";
 
 // Re-export commonly used types and utilities
-export { Schemantic } from "./core/Schemantic";
+export { Schemantic } from "./core/schemantic";
 export { SchemanticConfig, DEFAULT_CONFIG } from "./types/core";
 export { OpenAPISchema } from "./types/openapi";
 export { SchemanticPlugin } from "./types/core";

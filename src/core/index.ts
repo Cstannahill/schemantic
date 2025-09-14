@@ -2,4 +2,4 @@
  * Core module exports
  */
 
-export * from "./Schemantic";
+export * from "./schemantic";

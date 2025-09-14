@@ -2,7 +2,7 @@
  * Tests for the main Schemantic class
  */
 
-import { Schemantic } from "../core/Schemantic";
+import { Schemantic } from "../core/schemantic";
 import { SchemanticConfig } from "../types/core";
 import { OpenAPISchema } from "../types/openapi";
 import { createTestConfig } from "./test-config";
@@ -104,18 +104,18 @@ describe("Schemantic", () => {
   describe("constructor", () => {
     it("should create instance with valid config", () => {
       const config = createConfig();
-      const Schemantic = new Schemantic(config);
+      const schemanticInstance = new Schemantic(config);
 
-      expect(Schemantic).toBeInstanceOf(Schemantic);
-      expect(Schemantic.getConfig()).toEqual(config);
+      expect(schemanticInstance).toBeInstanceOf(Schemantic);
+      expect(schemanticInstance.getConfig()).toEqual(config);
     });
 
     it("should handle invalid config gracefully", () => {
       const invalidConfig = {} as SchemanticConfig;
 
       // The constructor should not throw, but validation should happen during generation
-      const Schemantic = new Schemantic(invalidConfig);
-      expect(Schemantic).toBeInstanceOf(Schemantic);
+      const schemanticInstance = new Schemantic(invalidConfig);
+      expect(schemanticInstance).toBeInstanceOf(Schemantic);
     });
   });
 
@@ -126,8 +126,8 @@ describe("Schemantic", () => {
         generateApiClient: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
       expect(result.generatedFiles).toHaveLength(4); // types.ts, api-client.ts, index.ts, barrel.ts
@@ -142,8 +142,8 @@ describe("Schemantic", () => {
         generateApiClient: false,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
       expect(result.generatedFiles).toHaveLength(3); // types.ts, index.ts, barrel.ts
@@ -157,8 +157,8 @@ describe("Schemantic", () => {
         generateApiClient: true,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
       expect(result.generatedFiles).toHaveLength(3); // api-client.ts, index.ts, barrel.ts
@@ -171,8 +171,8 @@ describe("Schemantic", () => {
         schemaData: undefined as unknown as OpenAPISchema, // Invalid schema
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.generate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -182,9 +182,9 @@ describe("Schemantic", () => {
   describe("validate", () => {
     it("should validate valid schema successfully", async () => {
       const config = createConfig();
-      const Schemantic = new Schemantic(config);
+      const schemanticInstance = new Schemantic(config);
 
-      const result = await Schemantic.validate();
+      const result = await schemanticInstance.validate();
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -200,8 +200,8 @@ describe("Schemantic", () => {
         schemaData: invalidSchema,
       });
 
-      const Schemantic = new Schemantic(config);
-      const result = await Schemantic.validate();
+      const schemanticInstance = new Schemantic(config);
+      const result = await schemanticInstance.validate();
 
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -211,9 +211,9 @@ describe("Schemantic", () => {
   describe("plugin management", () => {
     it("should provide plugin manager", () => {
       const config = createConfig();
-      const Schemantic = new Schemantic(config);
+      const schemanticInstance = new Schemantic(config);
 
-      const pluginManager = Schemantic.getPluginManager();
+      const pluginManager = schemanticInstance.getPluginManager();
 
       expect(pluginManager).toBeDefined();
       expect(typeof pluginManager.registerPlugin).toBe("function");
@@ -224,9 +224,9 @@ describe("Schemantic", () => {
   describe("configuration", () => {
     it("should return current configuration", () => {
       const config = createConfig();
-      const Schemantic = new Schemantic(config);
+      const schemanticInstance = new Schemantic(config);
 
-      const returnedConfig = Schemantic.getConfig();
+      const returnedConfig = schemanticInstance.getConfig();
 
       expect(returnedConfig).toEqual(config);
     });

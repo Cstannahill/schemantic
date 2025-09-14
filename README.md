@@ -1,9 +1,8 @@
 # Schemantic
 
-[![npm version](https://badge.fury.io/js/@cstannahill%2Fschemantic.svg)](https://badge.fury.io/js/@cstannahill%2Fschemantic)
+[![npm version](https://badge.fury.io/js/schemantic.svg)](https://badge.fury.io/js/schemantic)
 [![CI/CD](https://github.com/cstannahill/schemantic/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/cstannahill/schemantic/actions/workflows/ci-cd.yml)
-[![codecov](https://codecov.io/gh/cstannahill/schemantic/branch/main/graph/badge.svg)](https://codecov.io/gh/cstannahill/schemantic)
-[![npm downloads](https://img.shields.io/npm/dm/@cstannahill/schemantic.svg)](https://www.npmjs.com/package/@cstannahill/schemantic)
+[![npm downloads](https://img.shields.io/npm/dm/schemantic.svg)](https://www.npmjs.com/package/schemantic)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green?logo=node.js)](https://nodejs.org/)
