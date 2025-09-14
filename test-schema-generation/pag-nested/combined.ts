@@ -1,9 +1,9 @@
 // Combined TypeScript Module
-// Generated: 2025-09-13T23:39:23.990Z
+// Generated: 2025-09-14T06:14:31.690Z
 // Source Directory: pag-nested
 // Architecture: Modular API client with hooks and type definitions
 // api-client
-import { APIPostListResponse, APIPost } from './types';
+import { APIPostListResponse, APIPost } from "./types";
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -20,7 +20,7 @@ export class ApiClientError extends Error {
     public response?: Response
   ) {
     super(message);
-    this.name = 'ApiClientError';
+    this.name = "ApiClientError";
   }
 }
 
@@ -29,7 +29,7 @@ export class BlogApiClient {
   private config: ApiClientConfig;
 
   constructor(config: ApiClientConfig) {
-    this.baseUrl = config.baseUrl.replace(/\/$/, '');
+    this.baseUrl = config.baseUrl.replace(/\/$/, "");
     this.config = {
       timeout: 30000,
       retries: 3,
@@ -38,35 +38,40 @@ export class BlogApiClient {
     };
   }
 
-  async listPosts(limit?: number, offset?: number, options?: RequestInit): Promise<APIPostListResponse> {
+  async listPosts(
+    limit?: number,
+    offset?: number,
+    options?: RequestInit
+  ): Promise<APIPostListResponse> {
     const url = new URL(`${this.baseUrl}${this.buildPath(`/posts`, {})}`);
 
     // Add query parameters
     if (limit !== undefined) {
-      url.searchParams.set('limit', String(limit));
+      url.searchParams.set("limit", String(limit));
     }
     if (offset !== undefined) {
-      url.searchParams.set('offset', String(offset));
+      url.searchParams.set("offset", String(offset));
     }
 
     const requestOptions: RequestInit = {
-      method: 'GET',
+      method: "GET",
       headers: {
         ...this.config.headers,
         ...options?.headers,
       },
       ...options,
     };
-
 
     return this.request<APIPostListResponse>(url.toString(), requestOptions);
   }
 
   async getPost(id: number, options?: RequestInit): Promise<APIPost> {
-    const url = new URL(`${this.baseUrl}${this.buildPath(`/posts/${id}`, { id })}`);
+    const url = new URL(
+      `${this.baseUrl}${this.buildPath(`/posts/${id}`, { id })}`
+    );
 
     const requestOptions: RequestInit = {
-      method: 'GET',
+      method: "GET",
       headers: {
         ...this.config.headers,
         ...options?.headers,
@@ -74,15 +79,17 @@ export class BlogApiClient {
       ...options,
     };
 
-
     return this.request<APIPost>(url.toString(), requestOptions);
   }
 
-  private buildPath(template: string, params: Record<string, string | number>): string {
+  private buildPath(
+    template: string,
+    params: Record<string, string | number>
+  ): string {
     return template.replace(/\{([^}]+)\}/g, (match, key) => {
       const value = params[key];
       if (value === undefined) {
-        throw new Error('Missing required path parameter: ' + key);
+        throw new Error("Missing required path parameter: " + key);
       }
       return String(value);
     });
@@ -90,19 +97,33 @@ export class BlogApiClient {
 
   private toFormData(input: any): FormData {
     const form = new FormData();
-    if (input && typeof input === 'object') {
+    if (input && typeof input === "object") {
       for (const [key, value] of Object.entries(input)) {
         if (value === undefined || value === null) continue;
-        if (value instanceof Blob || (typeof File !== 'undefined' && value instanceof File)) {
+        if (
+          value instanceof Blob ||
+          (typeof File !== "undefined" && value instanceof File)
+        ) {
           form.append(key, value as any);
         } else if (Array.isArray(value)) {
           for (const v of value) {
-            if (v instanceof Blob || (typeof File !== 'undefined' && v instanceof File)) form.append(key, v as any);
-            else if (typeof v === 'object') form.append(key, new Blob([JSON.stringify(v)], { type: 'application/json' }));
+            if (
+              v instanceof Blob ||
+              (typeof File !== "undefined" && v instanceof File)
+            )
+              form.append(key, v as any);
+            else if (typeof v === "object")
+              form.append(
+                key,
+                new Blob([JSON.stringify(v)], { type: "application/json" })
+              );
             else form.append(key, String(v));
           }
-        } else if (typeof value === 'object') {
-          form.append(key, new Blob([JSON.stringify(value)], { type: 'application/json' }));
+        } else if (typeof value === "object") {
+          form.append(
+            key,
+            new Blob([JSON.stringify(value)], { type: "application/json" })
+          );
         } else {
           form.append(key, String(value));
         }
@@ -119,20 +140,33 @@ export class BlogApiClient {
       try {
         const controller = new AbortController();
         const timeout = this.config.timeout ?? 0;
-        const timer = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : undefined;
+        const timer =
+          timeout > 0
+            ? setTimeout(() => controller.abort(), timeout)
+            : undefined;
         // Link external AbortSignal if provided
         if (options.signal) {
           const ext = options.signal;
           if (ext.aborted) controller.abort();
-          else ext.addEventListener('abort', () => controller.abort(), { once: true });
+          else
+            ext.addEventListener("abort", () => controller.abort(), {
+              once: true,
+            });
         }
         const { signal: _omit, ...rest } = options as any;
-        const response = await fetch(url, { ...rest, signal: controller.signal });
+        const response = await fetch(url, {
+          ...rest,
+          signal: controller.signal,
+        });
         if (timer) clearTimeout(timer);
         if (!response.ok) {
-          throw new ApiClientError('Request failed: ' + response.status + ' ' + response.statusText, response.status, response);
+          throw new ApiClientError(
+            "Request failed: " + response.status + " " + response.statusText,
+            response.status,
+            response
+          );
         }
-        if (response.status === 204 || options.method === 'HEAD') {
+        if (response.status === 204 || options.method === "HEAD") {
           return undefined as unknown as T;
         }
         return (await response.json()) as T;
@@ -150,21 +184,24 @@ export class BlogApiClient {
 
   // Convenience helpers for bearer auth
   public setAuthToken(token: string) {
-    this.config.headers = { ...(this.config.headers || {}), Authorization: `Bearer ${token}` };
+    this.config.headers = {
+      ...(this.config.headers || {}),
+      Authorization: `Bearer ${token}`,
+    };
   }
   public clearAuthToken() {
-    if (this.config.headers) delete (this.config.headers as any)['Authorization'];
-  }}
-
-
+    if (this.config.headers)
+      delete (this.config.headers as any)["Authorization"];
+  }
+}
 
 /**
  * Validation middleware for API requests and responses
  */
 export class ValidationError extends Error {
   constructor(public errors: string[], public data: unknown) {
-    super(`Validation failed: ${errors.join(', ')}`);
-    this.name = 'ValidationError';
+    super(`Validation failed: ${errors.join(", ")}`);
+    this.name = "ValidationError";
   }
 }
 
@@ -173,14 +210,14 @@ export class ValidationError extends Error {
  */
 export function validateRequest<T>(data: unknown, schema: z.ZodType<T>): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
     throw new ValidationError(
-      result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`),
+      result.error.errors.map((err) => `${err.path.join(".")}: ${err.message}`),
       data
     );
   }
-  
+
   return result.data;
 }
 
@@ -189,15 +226,17 @@ export function validateRequest<T>(data: unknown, schema: z.ZodType<T>): T {
  */
 export function validateResponse<T>(data: unknown, schema: z.ZodType<T>): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
-    console.warn('Response validation failed:', result.error.errors);
-    throw new ValidationError(result.error.errors.map(err => `${err.path.join(".")}: ${err.message}`), data);
+    console.warn("Response validation failed:", result.error.errors);
+    throw new ValidationError(
+      result.error.errors.map((err) => `${err.path.join(".")}: ${err.message}`),
+      data
+    );
   }
-  
+
   return result.data;
 }
-
 
 /**
  * Utility functions for validation operations
@@ -206,7 +245,9 @@ export function validateResponse<T>(data: unknown, schema: z.ZodType<T>): T {
 /**
  * Create a validation pipeline for multiple schemas
  */
-export function createValidationPipeline<T>(...schemas: ZodType<unknown>[]): ZodType<T> {
+export function createValidationPipeline<T>(
+  ...schemas: ZodType<unknown>[]
+): ZodType<T> {
   return schemas.reduce((acc, schema) => acc.pipe(schema)) as ZodType<T>;
 }
 
@@ -215,7 +256,7 @@ export function createValidationPipeline<T>(...schemas: ZodType<unknown>[]): Zod
  */
 export function createLazyValidator<T>(schemaFactory: () => ZodType<T>) {
   let schema: ZodType<T> | null = null;
-  
+
   return (data: unknown): T => {
     if (!schema) {
       schema = schemaFactory();
@@ -225,63 +266,110 @@ export function createLazyValidator<T>(schemaFactory: () => ZodType<T>) {
 }
 
 // barrel
-// Barrel exports for type-sync generated code
-export * from './types';
-export * from './api-client';
-export * from './hooks';
-
+// Barrel exports for sync-type generated code
+export * from "./types";
+export * from "./api-client";
+export * from "./hooks";
 
 // hooks
-import { APIPostListResponse, APIPost } from './types';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BlogApiClient, ApiClientError } from './api-client';
+import { APIPostListResponse, APIPost } from "./types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { BlogApiClient, ApiClientError } from "./api-client";
 
 export function createApiHooks(client: BlogApiClient) {
-  function useListPostsQuery(args: { query?: { limit?: number; offset?: number } }, requestInit?: RequestInit) {
-    const [data, setData] = useState<APIPostListResponse | undefined>(undefined);
+  function useListPostsQuery(
+    args: { query?: { limit?: number; offset?: number } },
+    requestInit?: RequestInit
+  ) {
+    const [data, setData] = useState<APIPostListResponse | undefined>(
+      undefined
+    );
     const [error, setError] = useState<ApiClientError | undefined>(undefined);
     const [loading, setLoading] = useState(false);
     const argsRef = useRef(args);
-    useEffect(() => { argsRef.current = args; }, [args]);
+    useEffect(() => {
+      argsRef.current = args;
+    }, [args]);
     const fetcher = useCallback(async () => {
-      setLoading(true); setError(undefined);
+      setLoading(true);
+      setError(undefined);
       try {
-        const result = await client.listPosts(args?.query?.limit, args?.query?.offset, requestInit);
+        const result = await client.listPosts(
+          args?.query?.limit,
+          args?.query?.offset,
+          requestInit
+        );
         setData(result);
-      } catch (e) { setError(e as ApiClientError); } finally { setLoading(false); }
+      } catch (e) {
+        setError(e as ApiClientError);
+      } finally {
+        setLoading(false);
+      }
     }, [client, args, requestInit]);
-    useEffect(() => { void fetcher(); }, [fetcher]);
+    useEffect(() => {
+      void fetcher();
+    }, [fetcher]);
     const refetch = useCallback(fetcher, [fetcher]);
     return { data, error, loading, refetch };
   }
-  function useGetPostQuery(args: { path: { id: number } }, requestInit?: RequestInit) {
+  function useGetPostQuery(
+    args: { path: { id: number } },
+    requestInit?: RequestInit
+  ) {
     const [data, setData] = useState<APIPost | undefined>(undefined);
     const [error, setError] = useState<ApiClientError | undefined>(undefined);
     const [loading, setLoading] = useState(false);
     const argsRef = useRef(args);
-    useEffect(() => { argsRef.current = args; }, [args]);
+    useEffect(() => {
+      argsRef.current = args;
+    }, [args]);
     const fetcher = useCallback(async () => {
-      setLoading(true); setError(undefined);
+      setLoading(true);
+      setError(undefined);
       try {
         const result = await client.getPost(args!.path.id, requestInit);
         setData(result);
-      } catch (e) { setError(e as ApiClientError); } finally { setLoading(false); }
+      } catch (e) {
+        setError(e as ApiClientError);
+      } finally {
+        setLoading(false);
+      }
     }, [client, args, requestInit]);
-    useEffect(() => { void fetcher(); }, [fetcher]);
+    useEffect(() => {
+      void fetcher();
+    }, [fetcher]);
     const refetch = useCallback(fetcher, [fetcher]);
     return { data, error, loading, refetch };
   }
   return { useListPostsQuery, useGetPostQuery };
 }
 
-
 // index
-export type { APIPost, BrandedAPIPost, APIPostSchema, validateAPIPost, parseAPIPost, isAPIPost, APIUser, BrandedAPIUser, APIUserSchema, validateAPIUser, parseAPIUser, isAPIUser, APIPostListResponse, BrandedAPIPostListResponse, APIPostListResponseSchema, validateAPIPostListResponse, parseAPIPostListResponse, isAPIPostListResponse } from './types';
-export { BlogApiClient } from './api-client';
-export { createApiHooks } from './hooks';
+export type {
+  APIPost,
+  BrandedAPIPost,
+  APIPostSchema,
+  validateAPIPost,
+  parseAPIPost,
+  isAPIPost,
+  APIUser,
+  BrandedAPIUser,
+  APIUserSchema,
+  validateAPIUser,
+  parseAPIUser,
+  isAPIUser,
+  APIPostListResponse,
+  BrandedAPIPostListResponse,
+  APIPostListResponseSchema,
+  validateAPIPostListResponse,
+  parseAPIPostListResponse,
+  isAPIPostListResponse,
+} from "./types";
+export { BlogApiClient } from "./api-client";
+export { createApiHooks } from "./hooks";
 
 // types
-import { z } from 'zod';
+import { z } from "zod";
 
 export interface APIPost {
   id: number;
@@ -290,31 +378,35 @@ export interface APIPost {
   tags?: string[] | undefined;
 }
 
-
-
 /**
  * Zod validation schema for APIPost
  */
-export const APIPostSchema = z.object({
-  id: z.number().int(),
-  title: z.string(),
-  author: APIUserSchema,
-  tags: z.array(z.string()).optional()
-}).strict();
+export const APIPostSchema = z
+  .object({
+    id: z.number().int(),
+    title: z.string(),
+    author: APIUserSchema,
+    tags: z.array(z.string()).optional(),
+  })
+  .strict();
 
 /**
  * Validate APIPost data with detailed error reporting
  */
-export function validateAPIPost(data: unknown): { success: true; data: APIPost } | { success: false; errors: string[] } {
+export function validateAPIPost(
+  data: unknown
+): { success: true; data: APIPost } | { success: false; errors: string[] } {
   const result = APIPostSchema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
-    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+    errors: result.error.errors.map(
+      (err) => `${err.path.join(".")}: ${err.message}`
+    ),
   };
 }
 
@@ -327,7 +419,7 @@ export function parseAPIPost(data: unknown): APIPost {
 /**
  * Branded type for APIPost with compile-time guarantees
  */
-export type BrandedAPIPost = APIPost & { __brand: 'APIPost' };
+export type BrandedAPIPost = APIPost & { __brand: "APIPost" };
 
 /**
  * Create a branded APIPost instance
@@ -347,29 +439,33 @@ export interface APIUser {
   username: string;
 }
 
-
-
 /**
  * Zod validation schema for APIUser
  */
-export const APIUserSchema = z.object({
-  id: z.number().int(),
-  username: z.string()
-}).strict();
+export const APIUserSchema = z
+  .object({
+    id: z.number().int(),
+    username: z.string(),
+  })
+  .strict();
 
 /**
  * Validate APIUser data with detailed error reporting
  */
-export function validateAPIUser(data: unknown): { success: true; data: APIUser } | { success: false; errors: string[] } {
+export function validateAPIUser(
+  data: unknown
+): { success: true; data: APIUser } | { success: false; errors: string[] } {
   const result = APIUserSchema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
-    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+    errors: result.error.errors.map(
+      (err) => `${err.path.join(".")}: ${err.message}`
+    ),
   };
 }
 
@@ -382,7 +478,7 @@ export function parseAPIUser(data: unknown): APIUser {
 /**
  * Branded type for APIUser with compile-time guarantees
  */
-export type BrandedAPIUser = APIUser & { __brand: 'APIUser' };
+export type BrandedAPIUser = APIUser & { __brand: "APIUser" };
 
 /**
  * Create a branded APIUser instance
@@ -402,29 +498,35 @@ export interface APIPostListResponse {
   total: number;
 }
 
-
-
 /**
  * Zod validation schema for APIPostListResponse
  */
-export const APIPostListResponseSchema = z.object({
-  items: z.array(APIPostSchema),
-  total: z.number().int()
-}).strict();
+export const APIPostListResponseSchema = z
+  .object({
+    items: z.array(APIPostSchema),
+    total: z.number().int(),
+  })
+  .strict();
 
 /**
  * Validate APIPostListResponse data with detailed error reporting
  */
-export function validateAPIPostListResponse(data: unknown): { success: true; data: APIPostListResponse } | { success: false; errors: string[] } {
+export function validateAPIPostListResponse(
+  data: unknown
+):
+  | { success: true; data: APIPostListResponse }
+  | { success: false; errors: string[] } {
   const result = APIPostListResponseSchema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
-    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+    errors: result.error.errors.map(
+      (err) => `${err.path.join(".")}: ${err.message}`
+    ),
   };
 }
 
@@ -437,18 +539,23 @@ export function parseAPIPostListResponse(data: unknown): APIPostListResponse {
 /**
  * Branded type for APIPostListResponse with compile-time guarantees
  */
-export type BrandedAPIPostListResponse = APIPostListResponse & { __brand: 'APIPostListResponse' };
+export type BrandedAPIPostListResponse = APIPostListResponse & {
+  __brand: "APIPostListResponse";
+};
 
 /**
  * Create a branded APIPostListResponse instance
  */
-export function createBrandedAPIPostListResponse(data: APIPostListResponse): BrandedAPIPostListResponse {
+export function createBrandedAPIPostListResponse(
+  data: APIPostListResponse
+): BrandedAPIPostListResponse {
   return data as BrandedAPIPostListResponse;
 }
 /**
  * Runtime type guard for APIPostListResponse
  */
-export function isAPIPostListResponse(value: unknown): value is APIPostListResponse {
+export function isAPIPostListResponse(
+  value: unknown
+): value is APIPostListResponse {
   return APIPostListResponseSchema.safeParse(value).success;
 }
-

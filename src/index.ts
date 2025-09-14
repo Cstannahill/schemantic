@@ -1,5 +1,5 @@
 /**
- * Main entry point for the type-sync package
+ * Main entry point for the sync-type package
  * Exports all public APIs and utilities
  */
 

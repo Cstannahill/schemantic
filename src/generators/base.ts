@@ -1,6 +1,6 @@
 /**
  * Base type generator interface and abstract implementation
- * Provides the foundation for all type generators in the type-sync system
+ * Provides the foundation for all type generators in the sync-type system
  */
 
 import { ResolvedSchema } from "../types/schema";

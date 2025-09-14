@@ -1,7 +1,7 @@
 /**
- * Type exports for the type-sync package
+ * Type exports for the sync-type package
  */
 
-export * from './openapi';
-export * from './schema';
-export * from './core';
+export * from "./openapi";
+export * from "./schema";
+export * from "./core";

@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of Type-Sync
+- Initial release of Sync-Type
 - OpenAPI 3.0+ schema parsing and validation
 - TypeScript type generation from OpenAPI schemas
 - API client generation with proper typing

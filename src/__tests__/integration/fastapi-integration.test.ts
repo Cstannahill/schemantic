@@ -2,7 +2,7 @@
  import { TypeSync } from '../../core/typesync';
 import { OpenAPISchema } from '../../types/openapi';
 import { createTestConfig } from '../test-config';tegration tests using real FastAPI OpenAPI schemas
- * These tests verify that type-sync works correctly with actual FastAPI applications
+ * These tests verify that sync-type works correctly with actual FastAPI applications
  */
 
 import { TypeSync } from "../../core/typesync";

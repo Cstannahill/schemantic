@@ -1,6 +1,6 @@
-# FastAPI + Type-Sync: Complete Tutorial
+# FastAPI + Sync-Type: Complete Tutorial
 
-This tutorial shows you how to build a complete, type-safe full-stack application using FastAPI, Type-Sync, and React with TypeScript.
+This tutorial shows you how to build a complete, type-safe full-stack application using FastAPI, Sync-Type, and React with TypeScript.
 
 ## Prerequisites
 
@@ -294,7 +294,7 @@ Base.metadata.create_all(bind=engine)
 # FastAPI app configuration
 app = FastAPI(
     title="E-Commerce API",
-    description="A comprehensive e-commerce API built with FastAPI and Type-Sync",
+    description="A comprehensive e-commerce API built with FastAPI and Sync-Type",
     version="1.0.0",
     contact={
         "name": "API Support",
@@ -724,16 +724,16 @@ uvicorn main:app --reload
 
 Your API will be available at http://localhost:8000, with interactive docs at http://localhost:8000/docs.
 
-## Part 2: Generate TypeScript Types with Type-Sync
+## Part 2: Generate TypeScript Types with Sync-Type
 
-### 2.1 Install Type-Sync
+### 2.1 Install Sync-Type
 
 ```bash
 # Go back to project root
 cd ..
 
-# Install Type-Sync
-npm install -g type-sync
+# Install Sync-Type
+npm install -g sync-type
 ```
 
 ### 2.2 Generate Types and API Client
@@ -743,7 +743,7 @@ npm install -g type-sync
 mkdir frontend/src/generated
 
 # Generate types and API client with React hooks
-npx type-sync generate \
+npx sync-type generate \
   --url http://localhost:8000/openapi.json \
   --output ./frontend/src/generated \
   --hooks \
@@ -1383,7 +1383,7 @@ if ! curl -s http://localhost:8000/health > /dev/null; then
 fi
 
 # Generate new types
-npx type-sync generate \
+npx sync-type generate \
   --url http://localhost:8000/openapi.json \
   --output ./frontend/src/generated \
   --hooks \
@@ -1494,4 +1494,4 @@ You now have a complete, type-safe full-stack application with:
 4. **Set up automated type generation** in your CI/CD pipeline
 5. **Add testing** with the generated types for both frontend and backend
 
-This tutorial demonstrates the power of Type-Sync in creating maintainable, type-safe full-stack applications where the frontend and backend always stay in sync!
+This tutorial demonstrates the power of Sync-Type in creating maintainable, type-safe full-stack applications where the frontend and backend always stay in sync!

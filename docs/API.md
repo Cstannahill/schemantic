@@ -7,7 +7,7 @@
 The main class for generating TypeScript types and API clients from OpenAPI schemas.
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "type-sync";
+import { TypeSync, TypeSyncConfig } from "sync-type";
 
 const config: TypeSyncConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
@@ -125,7 +125,7 @@ interface TypeSyncConfig {
 Factory class for creating schema parsers.
 
 ```typescript
-import { ParserFactory } from "type-sync";
+import { ParserFactory } from "sync-type";
 
 // Create parser by type
 const parser = ParserFactory.createParser("openapi", config);
@@ -173,7 +173,7 @@ Detects the appropriate parser type from the input.
 Parser implementation for OpenAPI 3.0+ specifications.
 
 ```typescript
-import { OpenAPIParser } from "type-sync";
+import { OpenAPIParser } from "sync-type";
 
 const parser = new OpenAPIParser(config);
 ```
@@ -217,7 +217,7 @@ Creates a schema resolver for the parsed schema.
 Factory class for creating type generators.
 
 ```typescript
-import { TypeGeneratorFactory } from "type-sync";
+import { TypeGeneratorFactory } from "sync-type";
 
 // Create generators from config
 const generators = TypeGeneratorFactory.createFromConfig(config);
@@ -270,7 +270,7 @@ Finds the best generator for a given schema.
 Generator for creating TypeScript interfaces from OpenAPI schema objects.
 
 ```typescript
-import { ObjectTypeGenerator } from "type-sync";
+import { ObjectTypeGenerator } from "sync-type";
 
 const generator = new ObjectTypeGenerator(options);
 ```
@@ -280,7 +280,7 @@ const generator = new ObjectTypeGenerator(options);
 Generator for creating TypeScript enums from OpenAPI schema enums.
 
 ```typescript
-import { EnumTypeGenerator } from "type-sync";
+import { EnumTypeGenerator } from "sync-type";
 
 const generator = new EnumTypeGenerator(options);
 ```
@@ -290,7 +290,7 @@ const generator = new EnumTypeGenerator(options);
 Generator for creating TypeScript API client classes.
 
 ```typescript
-import { ApiClientGenerator } from "type-sync";
+import { ApiClientGenerator } from "sync-type";
 
 const generator = new ApiClientGenerator(context);
 const client = generator.generate(context);
@@ -304,7 +304,7 @@ const client = generator.generate(context);
 Manages plugin registration and execution.
 
 ```typescript
-import { PluginManager } from "type-sync";
+import { PluginManager } from "sync-type";
 
 const pluginManager = new PluginManager();
 ```
@@ -361,7 +361,7 @@ Executes after generation hooks for all enabled plugins.
 Loads plugins from various sources.
 
 ```typescript
-import { PluginLoader } from "type-sync";
+import { PluginLoader } from "sync-type";
 
 const loader = new PluginLoader();
 ```
@@ -567,7 +567,7 @@ interface GenerationWarning {
 ### Built-in Plugins
 
 ```typescript
-import { getBuiltinPlugins, getBuiltinPlugin } from "type-sync";
+import { getBuiltinPlugins, getBuiltinPlugin } from "sync-type";
 
 // Get all built-in plugins
 const plugins = getBuiltinPlugins();
@@ -584,7 +584,7 @@ import {
   autoCreateParser,
   createGenerators,
   generateType,
-} from "type-sync";
+} from "sync-type";
 
 // Create parser
 const parser = createParser("openapi", config);

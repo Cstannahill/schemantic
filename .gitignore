@@ -9,3 +9,4 @@ yarn.lock
 *.log
 .tgz
 test-output/
+ex-prj

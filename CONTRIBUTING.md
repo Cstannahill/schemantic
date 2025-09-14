@@ -1,6 +1,6 @@
-# Contributing to Type-Sync
+# Contributing to Sync-Type
 
-Thank you for your interest in contributing to Type-Sync! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Sync-Type! This document provides guidelines and information for contributors.
 
 ## Code of Conduct
 
@@ -25,8 +25,8 @@ By participating in this project, you agree to abide by our Code of Conduct:
 1. **Fork and Clone**
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/type-sync.git
-   cd type-sync
+   git clone https://github.com/YOUR_USERNAME/sync-type.git
+   cd sync-type
    ```
 
 2. **Install Dependencies**
@@ -59,7 +59,7 @@ By participating in this project, you agree to abide by our Code of Conduct:
 
    # In another terminal, test type generation
    cd ../../
-   npx type-sync generate --url http://localhost:8000/openapi.json --output ./test-output
+   npx sync-type generate --url http://localhost:8000/openapi.json --output ./test-output
    ```
 
 ## Types of Contributions
@@ -168,7 +168,7 @@ By participating in this project, you agree to abide by our Code of Conduct:
 ## Project Structure
 
 ```
-type-sync/
+sync-type/
 ├── src/                      # Source code
 │   ├── cli/                  # Command-line interface
 │   ├── core/                 # Core generation logic
@@ -280,4 +280,4 @@ Contributors are recognized in:
 - [Postman](https://www.postman.com/) for API testing
 - [OpenAPI Generator](https://openapi-generator.tech/) for comparison
 
-Thank you for contributing to Type-Sync! 🚀
+Thank you for contributing to Sync-Type! 🚀

@@ -1,9 +1,9 @@
 // Combined TypeScript Module
-// Generated: 2025-09-13T23:39:23.988Z
+// Generated: 2025-09-14T06:14:31.625Z
 // Source Directory: nested-dictmap-datetime
 // Architecture: Modular API client with hooks and type definitions
 // api-client
-import { APIReport } from './types';
+import { APIReport } from "./types";
 
 export interface ApiClientConfig {
   baseUrl: string;
@@ -20,7 +20,7 @@ export class ApiClientError extends Error {
     public response?: Response
   ) {
     super(message);
-    this.name = 'ApiClientError';
+    this.name = "ApiClientError";
   }
 }
 
@@ -29,7 +29,7 @@ export class NestedDataApiClient {
   private config: ApiClientConfig;
 
   constructor(config: ApiClientConfig) {
-    this.baseUrl = config.baseUrl.replace(/\/$/, '');
+    this.baseUrl = config.baseUrl.replace(/\/$/, "");
     this.config = {
       timeout: 30000,
       retries: 3,
@@ -42,7 +42,7 @@ export class NestedDataApiClient {
     const url = new URL(`${this.baseUrl}${this.buildPath(`/reports`, {})}`);
 
     const requestOptions: RequestInit = {
-      method: 'GET',
+      method: "GET",
       headers: {
         ...this.config.headers,
         ...options?.headers,
@@ -50,15 +50,17 @@ export class NestedDataApiClient {
       ...options,
     };
 
-
     return this.request<APIReport[]>(url.toString(), requestOptions);
   }
 
-  private buildPath(template: string, params: Record<string, string | number>): string {
+  private buildPath(
+    template: string,
+    params: Record<string, string | number>
+  ): string {
     return template.replace(/\{([^}]+)\}/g, (match, key) => {
       const value = params[key];
       if (value === undefined) {
-        throw new Error('Missing required path parameter: ' + key);
+        throw new Error("Missing required path parameter: " + key);
       }
       return String(value);
     });
@@ -66,19 +68,33 @@ export class NestedDataApiClient {
 
   private toFormData(input: any): FormData {
     const form = new FormData();
-    if (input && typeof input === 'object') {
+    if (input && typeof input === "object") {
       for (const [key, value] of Object.entries(input)) {
         if (value === undefined || value === null) continue;
-        if (value instanceof Blob || (typeof File !== 'undefined' && value instanceof File)) {
+        if (
+          value instanceof Blob ||
+          (typeof File !== "undefined" && value instanceof File)
+        ) {
           form.append(key, value as any);
         } else if (Array.isArray(value)) {
           for (const v of value) {
-            if (v instanceof Blob || (typeof File !== 'undefined' && v instanceof File)) form.append(key, v as any);
-            else if (typeof v === 'object') form.append(key, new Blob([JSON.stringify(v)], { type: 'application/json' }));
+            if (
+              v instanceof Blob ||
+              (typeof File !== "undefined" && v instanceof File)
+            )
+              form.append(key, v as any);
+            else if (typeof v === "object")
+              form.append(
+                key,
+                new Blob([JSON.stringify(v)], { type: "application/json" })
+              );
             else form.append(key, String(v));
           }
-        } else if (typeof value === 'object') {
-          form.append(key, new Blob([JSON.stringify(value)], { type: 'application/json' }));
+        } else if (typeof value === "object") {
+          form.append(
+            key,
+            new Blob([JSON.stringify(value)], { type: "application/json" })
+          );
         } else {
           form.append(key, String(value));
         }
@@ -95,20 +111,33 @@ export class NestedDataApiClient {
       try {
         const controller = new AbortController();
         const timeout = this.config.timeout ?? 0;
-        const timer = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : undefined;
+        const timer =
+          timeout > 0
+            ? setTimeout(() => controller.abort(), timeout)
+            : undefined;
         // Link external AbortSignal if provided
         if (options.signal) {
           const ext = options.signal;
           if (ext.aborted) controller.abort();
-          else ext.addEventListener('abort', () => controller.abort(), { once: true });
+          else
+            ext.addEventListener("abort", () => controller.abort(), {
+              once: true,
+            });
         }
         const { signal: _omit, ...rest } = options as any;
-        const response = await fetch(url, { ...rest, signal: controller.signal });
+        const response = await fetch(url, {
+          ...rest,
+          signal: controller.signal,
+        });
         if (timer) clearTimeout(timer);
         if (!response.ok) {
-          throw new ApiClientError('Request failed: ' + response.status + ' ' + response.statusText, response.status, response);
+          throw new ApiClientError(
+            "Request failed: " + response.status + " " + response.statusText,
+            response.status,
+            response
+          );
         }
-        if (response.status === 204 || options.method === 'HEAD') {
+        if (response.status === 204 || options.method === "HEAD") {
           return undefined as unknown as T;
         }
         return (await response.json()) as T;
@@ -126,21 +155,24 @@ export class NestedDataApiClient {
 
   // Convenience helpers for bearer auth
   public setAuthToken(token: string) {
-    this.config.headers = { ...(this.config.headers || {}), Authorization: `Bearer ${token}` };
+    this.config.headers = {
+      ...(this.config.headers || {}),
+      Authorization: `Bearer ${token}`,
+    };
   }
   public clearAuthToken() {
-    if (this.config.headers) delete (this.config.headers as any)['Authorization'];
-  }}
-
-
+    if (this.config.headers)
+      delete (this.config.headers as any)["Authorization"];
+  }
+}
 
 /**
  * Validation middleware for API requests and responses
  */
 export class ValidationError extends Error {
   constructor(public errors: string[], public data: unknown) {
-    super(`Validation failed: ${errors.join(', ')}`);
-    this.name = 'ValidationError';
+    super(`Validation failed: ${errors.join(", ")}`);
+    this.name = "ValidationError";
   }
 }
 
@@ -149,14 +181,14 @@ export class ValidationError extends Error {
  */
 export function validateRequest<T>(data: unknown, schema: z.ZodType<T>): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
     throw new ValidationError(
-      result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`),
+      result.error.errors.map((err) => `${err.path.join(".")}: ${err.message}`),
       data
     );
   }
-  
+
   return result.data;
 }
 
@@ -165,15 +197,17 @@ export function validateRequest<T>(data: unknown, schema: z.ZodType<T>): T {
  */
 export function validateResponse<T>(data: unknown, schema: z.ZodType<T>): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
-    console.warn('Response validation failed:', result.error.errors);
-    throw new ValidationError(result.error.errors.map(err => `${err.path.join(".")}: ${err.message}`), data);
+    console.warn("Response validation failed:", result.error.errors);
+    throw new ValidationError(
+      result.error.errors.map((err) => `${err.path.join(".")}: ${err.message}`),
+      data
+    );
   }
-  
+
   return result.data;
 }
-
 
 /**
  * Utility functions for validation operations
@@ -182,7 +216,9 @@ export function validateResponse<T>(data: unknown, schema: z.ZodType<T>): T {
 /**
  * Create a validation pipeline for multiple schemas
  */
-export function createValidationPipeline<T>(...schemas: ZodType<unknown>[]): ZodType<T> {
+export function createValidationPipeline<T>(
+  ...schemas: ZodType<unknown>[]
+): ZodType<T> {
   return schemas.reduce((acc, schema) => acc.pipe(schema)) as ZodType<T>;
 }
 
@@ -191,7 +227,7 @@ export function createValidationPipeline<T>(...schemas: ZodType<unknown>[]): Zod
  */
 export function createLazyValidator<T>(schemaFactory: () => ZodType<T>) {
   let schema: ZodType<T> | null = null;
-  
+
   return (data: unknown): T => {
     if (!schema) {
       schema = schemaFactory();
@@ -201,16 +237,15 @@ export function createLazyValidator<T>(schemaFactory: () => ZodType<T>) {
 }
 
 // barrel
-// Barrel exports for type-sync generated code
-export * from './types';
-export * from './api-client';
-export * from './hooks';
-
+// Barrel exports for sync-type generated code
+export * from "./types";
+export * from "./api-client";
+export * from "./hooks";
 
 // hooks
-import { APIReport } from './types';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NestedDataApiClient, ApiClientError } from './api-client';
+import { APIReport } from "./types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { NestedDataApiClient, ApiClientError } from "./api-client";
 
 export function createApiHooks(client: NestedDataApiClient) {
   function useListReportsQuery(requestInit?: RequestInit) {
@@ -218,27 +253,52 @@ export function createApiHooks(client: NestedDataApiClient) {
     const [error, setError] = useState<ApiClientError | undefined>(undefined);
     const [loading, setLoading] = useState(false);
     const fetcher = useCallback(async () => {
-      setLoading(true); setError(undefined);
+      setLoading(true);
+      setError(undefined);
       try {
         const result = await client.listReports(requestInit);
         setData(result);
-      } catch (e) { setError(e as ApiClientError); } finally { setLoading(false); }
+      } catch (e) {
+        setError(e as ApiClientError);
+      } finally {
+        setLoading(false);
+      }
     }, [client, requestInit]);
-    useEffect(() => { void fetcher(); }, [fetcher]);
+    useEffect(() => {
+      void fetcher();
+    }, [fetcher]);
     const refetch = useCallback(fetcher, [fetcher]);
     return { data, error, loading, refetch };
   }
   return { useListReportsQuery };
 }
 
-
 // index
-export type { APIReport, BrandedAPIReport, APIReportSchema, validateAPIReport, parseAPIReport, isAPIReport, APIEntry, BrandedAPIEntry, APIEntrySchema, validateAPIEntry, parseAPIEntry, isAPIEntry, APISubEntry, BrandedAPISubEntry, APISubEntrySchema, validateAPISubEntry, parseAPISubEntry, isAPISubEntry } from './types';
-export { NestedDataApiClient } from './api-client';
-export { createApiHooks } from './hooks';
+export type {
+  APIReport,
+  BrandedAPIReport,
+  APIReportSchema,
+  validateAPIReport,
+  parseAPIReport,
+  isAPIReport,
+  APIEntry,
+  BrandedAPIEntry,
+  APIEntrySchema,
+  validateAPIEntry,
+  parseAPIEntry,
+  isAPIEntry,
+  APISubEntry,
+  BrandedAPISubEntry,
+  APISubEntrySchema,
+  validateAPISubEntry,
+  parseAPISubEntry,
+  isAPISubEntry,
+} from "./types";
+export { NestedDataApiClient } from "./api-client";
+export { createApiHooks } from "./hooks";
 
 // types
-import { z } from 'zod';
+import { z } from "zod";
 
 export interface APIReport {
   id: string;
@@ -247,36 +307,41 @@ export interface APIReport {
   entries: APIEntry[];
 }
 
-
-
 /**
  * Zod validation schema for APIReport
  */
-export const APIReportSchema = z.object({
-  id: z.string().uuid(),
-  created_at: z.string().datetime(),
-  metadata: z.object({}).optional(),
-  entries: z.array(APIEntrySchema)
-}).strict().transform((val) => ({
-  id: val["id"],
-  createdAt: val["created_at"],
-  metadata: val["metadata"],
-  entries: val["entries"]
-}));
+export const APIReportSchema = z
+  .object({
+    id: z.string().uuid(),
+    created_at: z.string().datetime(),
+    metadata: z.object({}).optional(),
+    entries: z.array(APIEntrySchema),
+  })
+  .strict()
+  .transform((val) => ({
+    id: val["id"],
+    createdAt: val["created_at"],
+    metadata: val["metadata"],
+    entries: val["entries"],
+  }));
 
 /**
  * Validate APIReport data with detailed error reporting
  */
-export function validateAPIReport(data: unknown): { success: true; data: APIReport } | { success: false; errors: string[] } {
+export function validateAPIReport(
+  data: unknown
+): { success: true; data: APIReport } | { success: false; errors: string[] } {
   const result = APIReportSchema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
-    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+    errors: result.error.errors.map(
+      (err) => `${err.path.join(".")}: ${err.message}`
+    ),
   };
 }
 
@@ -289,7 +354,7 @@ export function parseAPIReport(data: unknown): APIReport {
 /**
  * Branded type for APIReport with compile-time guarantees
  */
-export type BrandedAPIReport = APIReport & { __brand: 'APIReport' };
+export type BrandedAPIReport = APIReport & { __brand: "APIReport" };
 
 /**
  * Create a branded APIReport instance
@@ -310,34 +375,39 @@ export interface APIEntry {
   subentries?: APISubEntry[] | undefined;
 }
 
-
-
 /**
  * Zod validation schema for APIEntry
  */
-export const APIEntrySchema = z.object({
-  value: z.number().optional(),
-  tags: z.array(z.string()).optional(),
-  subentries: z.array(APISubEntrySchema).optional()
-}).strict().transform((val) => ({
-  value: val["value"],
-  tags: val["tags"],
-  subentries: val["subentries"]
-}));
+export const APIEntrySchema = z
+  .object({
+    value: z.number().optional(),
+    tags: z.array(z.string()).optional(),
+    subentries: z.array(APISubEntrySchema).optional(),
+  })
+  .strict()
+  .transform((val) => ({
+    value: val["value"],
+    tags: val["tags"],
+    subentries: val["subentries"],
+  }));
 
 /**
  * Validate APIEntry data with detailed error reporting
  */
-export function validateAPIEntry(data: unknown): { success: true; data: APIEntry } | { success: false; errors: string[] } {
+export function validateAPIEntry(
+  data: unknown
+): { success: true; data: APIEntry } | { success: false; errors: string[] } {
   const result = APIEntrySchema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
-    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+    errors: result.error.errors.map(
+      (err) => `${err.path.join(".")}: ${err.message}`
+    ),
   };
 }
 
@@ -350,7 +420,7 @@ export function parseAPIEntry(data: unknown): APIEntry {
 /**
  * Branded type for APIEntry with compile-time guarantees
  */
-export type BrandedAPIEntry = APIEntry & { __brand: 'APIEntry' };
+export type BrandedAPIEntry = APIEntry & { __brand: "APIEntry" };
 
 /**
  * Create a branded APIEntry instance
@@ -367,44 +437,58 @@ export function isAPIEntry(value: unknown): value is APIEntry {
 
 export interface APISubEntry {
   label?: string | undefined;
-  dataPoints?: {
-  timestamp: string;
-  value: number;
-}[] | undefined;
+  dataPoints?:
+    | {
+        timestamp: string;
+        value: number;
+      }[]
+    | undefined;
 }
-
-
 
 /**
  * Zod validation schema for APISubEntry
  */
-export const APISubEntrySchema = z.object({
-  label: z.string().optional(),
-  data_points: z.array(z.object({
-  timestamp: z.string().datetime(),
-  value: z.number()
-}).strict().transform((val) => ({
-  timestamp: val["timestamp"],
-  value: val["value"]
-}))).optional()
-}).strict().transform((val) => ({
-  label: val["label"],
-  dataPoints: val["data_points"]
-}));
+export const APISubEntrySchema = z
+  .object({
+    label: z.string().optional(),
+    data_points: z
+      .array(
+        z
+          .object({
+            timestamp: z.string().datetime(),
+            value: z.number(),
+          })
+          .strict()
+          .transform((val) => ({
+            timestamp: val["timestamp"],
+            value: val["value"],
+          }))
+      )
+      .optional(),
+  })
+  .strict()
+  .transform((val) => ({
+    label: val["label"],
+    dataPoints: val["data_points"],
+  }));
 
 /**
  * Validate APISubEntry data with detailed error reporting
  */
-export function validateAPISubEntry(data: unknown): { success: true; data: APISubEntry } | { success: false; errors: string[] } {
+export function validateAPISubEntry(
+  data: unknown
+): { success: true; data: APISubEntry } | { success: false; errors: string[] } {
   const result = APISubEntrySchema.safeParse(data);
-  
+
   if (result.success) {
     return { success: true, data: result.data };
   }
-  
+
   return {
     success: false,
-    errors: result.error.errors.map(err => `${err.path.join('.')}: ${err.message}`)
+    errors: result.error.errors.map(
+      (err) => `${err.path.join(".")}: ${err.message}`
+    ),
   };
 }
 
@@ -417,12 +501,14 @@ export function parseAPISubEntry(data: unknown): APISubEntry {
 /**
  * Branded type for APISubEntry with compile-time guarantees
  */
-export type BrandedAPISubEntry = APISubEntry & { __brand: 'APISubEntry' };
+export type BrandedAPISubEntry = APISubEntry & { __brand: "APISubEntry" };
 
 /**
  * Create a branded APISubEntry instance
  */
-export function createBrandedAPISubEntry(data: APISubEntry): BrandedAPISubEntry {
+export function createBrandedAPISubEntry(
+  data: APISubEntry
+): BrandedAPISubEntry {
   return data as BrandedAPISubEntry;
 }
 /**
@@ -431,4 +517,3 @@ export function createBrandedAPISubEntry(data: APISubEntry): BrandedAPISubEntry 
 export function isAPISubEntry(value: unknown): value is APISubEntry {
   return APISubEntrySchema.safeParse(value).success;
 }
-

@@ -243,7 +243,7 @@ jobs:
       - name: Create GitHub release assets
         run: |
           npm pack
-          mv *.tgz type-sync-${GITHUB_REF#refs/tags/}.tgz
+          mv *.tgz sync-type-${GITHUB_REF#refs/tags/}.tgz
 
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
@@ -251,8 +251,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./type-sync-${{ github.event.release.tag_name }}.tgz
-          asset_name: type-sync-${{ github.event.release.tag_name }}.tgz
+          asset_path: ./sync-type-${{ github.event.release.tag_name }}.tgz
+          asset_name: sync-type-${{ github.event.release.tag_name }}.tgz
           asset_content_type: application/gzip
 
   publish-docs:
@@ -293,4 +293,4 @@ jobs:
           publish_dir: ./docs-build
           publish_branch: gh-pages
           force_orphan: true
-          cname: type-sync.dev
+          cname: sync-type.dev

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We provide security updates for the following versions of Type-Sync:
+We provide security updates for the following versions of Sync-Type:
 
 | Version | Supported |
 | ------- | --------- |
@@ -11,7 +11,7 @@ We provide security updates for the following versions of Type-Sync:
 
 ## Reporting a Vulnerability
 
-We take the security of Type-Sync seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of Sync-Type seriously. If you discover a security vulnerability, please follow these steps:
 
 ### 1. Do NOT create a public issue
 
@@ -20,7 +20,7 @@ Please do not report security vulnerabilities through public GitHub issues, disc
 ### 2. Report privately
 
 Instead, please report security vulnerabilities via email to:
-**security@type-sync.dev** (or create a private security advisory on GitHub)
+**security@sync-type.dev** (or create a private security advisory on GitHub)
 
 ### 3. Include details
 
@@ -43,7 +43,7 @@ Please provide as much information as possible, including:
 
 ### For Users
 
-1. **Keep Type-Sync updated** to the latest version
+1. **Keep Sync-Type updated** to the latest version
 2. **Validate input schemas** before processing
 3. **Sanitize generated output** if using in web applications
 4. **Use HTTPS** when fetching schemas from URLs
@@ -118,10 +118,10 @@ We currently do not offer a formal bug bounty program, but we greatly appreciate
 
 For security-related questions or concerns:
 
-- **Email**: security@type-sync.dev
-- **GitHub Security Advisories**: [Create a security advisory](https://github.com/Cstannahill/type-sync/security/advisories/new)
+- **Email**: security@sync-type.dev
+- **GitHub Security Advisories**: [Create a security advisory](https://github.com/Cstannahill/sync-type/security/advisories/new)
 
-For general questions about Type-Sync:
+For general questions about Sync-Type:
 
-- **GitHub Issues**: [Regular issues](https://github.com/Cstannahill/type-sync/issues)
-- **GitHub Discussions**: [Community discussions](https://github.com/Cstannahill/type-sync/discussions)
+- **GitHub Issues**: [Regular issues](https://github.com/Cstannahill/sync-type/issues)
+- **GitHub Discussions**: [Community discussions](https://github.com/Cstannahill/sync-type/discussions)

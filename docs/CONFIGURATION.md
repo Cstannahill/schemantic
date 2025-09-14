@@ -1,10 +1,10 @@
 # Configuration Guide
 
-This guide explains all configuration options available in Type-Sync.
+This guide explains all configuration options available in Sync-Type.
 
 ## Configuration Sources
 
-Type-Sync can be configured through multiple sources:
+Sync-Type can be configured through multiple sources:
 
 1. **Command Line Arguments** - Highest priority
 2. **Configuration Files** - Medium priority
@@ -14,7 +14,7 @@ Type-Sync can be configured through multiple sources:
 
 ### JSON Configuration
 
-Create a `type-sync.config.json` file:
+Create a `sync-type.config.json` file:
 
 ```json
 {
@@ -33,7 +33,7 @@ Create a `type-sync.config.json` file:
 
 ### JavaScript Configuration
 
-Create a `type-sync.config.js` file:
+Create a `sync-type.config.js` file:
 
 ```javascript
 module.exports = {
@@ -52,10 +52,10 @@ module.exports = {
 
 ### TypeScript Configuration
 
-Create a `type-sync.config.ts` file:
+Create a `sync-type.config.ts` file:
 
 ```typescript
-import { TypeSyncConfig } from "type-sync";
+import { TypeSyncConfig } from "sync-type";
 
 const config: TypeSyncConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
@@ -100,7 +100,7 @@ curl -s http://localhost:8000/openapi.json -o ./openapi-schema.json
 curl -k -s https://localhost:5001/swagger/v1/swagger.json -o ./openapi-schema.json
 
 # Generate from file
-npx type-sync generate --file ./openapi-schema.json --output ./src/generated --client --types
+npx sync-type generate --file ./openapi-schema.json --output ./src/generated --client --types
 ```
 
 #### `schemaFile`
@@ -567,7 +567,7 @@ const nodeConfig: TypeSyncConfig = {
 
 ## Configuration Validation
 
-Type-Sync validates your configuration and will throw errors for:
+Sync-Type validates your configuration and will throw errors for:
 
 - Missing required fields
 - Invalid values
@@ -636,10 +636,10 @@ For complex configurations, use configuration files instead of CLI arguments:
 
 ```bash
 # Instead of long CLI command
-npx type-sync generate --url http://localhost:8000/openapi.json --output ./generated --naming camelCase --plugins jsdoc,validation
+npx sync-type generate --url http://localhost:8000/openapi.json --output ./generated --naming camelCase --plugins jsdoc,validation
 
 # Use configuration file
-npx type-sync generate --config type-sync.config.json
+npx sync-type generate --config sync-type.config.json
 ```
 
 ### 2. Environment-Specific Configurations

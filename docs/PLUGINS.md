@@ -1,10 +1,10 @@
 # Plugin Development Guide
 
-This guide explains how to create custom plugins for Type-Sync to extend its functionality.
+This guide explains how to create custom plugins for Sync-Type to extend its functionality.
 
 ## Plugin Overview
 
-Plugins in Type-Sync allow you to:
+Plugins in Sync-Type allow you to:
 
 - Transform schemas before type generation
 - Modify generated types and API clients
@@ -21,25 +21,48 @@ interface TypeSyncPlugin {
   name: string;
   version: string;
   description: string;
-  
+
   // Lifecycle hooks
   beforeGeneration?(context: GenerationContext): Promise<void> | void;
-  afterGeneration?(context: GenerationContext, result: GenerationResult): Promise<void> | void;
-  
+  afterGeneration?(
+    context: GenerationContext,
+    result: GenerationResult
+  ): Promise<void> | void;
+
   // Type generation hooks
-  beforeTypeGeneration?(typeName: string, schema: ResolvedSchema, context: GenerationContext): Promise<void> | void;
-  afterTypeGeneration?(typeName: string, generatedType: GeneratedType, context: GenerationContext): Promise<void> | void;
-  
+  beforeTypeGeneration?(
+    typeName: string,
+    schema: ResolvedSchema,
+    context: GenerationContext
+  ): Promise<void> | void;
+  afterTypeGeneration?(
+    typeName: string,
+    generatedType: GeneratedType,
+    context: GenerationContext
+  ): Promise<void> | void;
+
   // Client generation hooks
   beforeClientGeneration?(context: GenerationContext): Promise<void> | void;
-  afterClientGeneration?(generatedClient: GeneratedApiClient, context: GenerationContext): Promise<void> | void;
-  
+  afterClientGeneration?(
+    generatedClient: GeneratedApiClient,
+    context: GenerationContext
+  ): Promise<void> | void;
+
   // Schema transformation hooks
-  transformSchema?(schema: ResolvedSchema, context: GenerationContext): ResolvedSchema;
-  
+  transformSchema?(
+    schema: ResolvedSchema,
+    context: GenerationContext
+  ): ResolvedSchema;
+
   // Custom generators
-  customTypeGenerators?: Record<string, (schema: ResolvedSchema, context: GenerationContext) => GeneratedType>;
-  customClientGenerators?: Record<string, (context: GenerationContext) => GeneratedApiClient>;
+  customTypeGenerators?: Record<
+    string,
+    (schema: ResolvedSchema, context: GenerationContext) => GeneratedType
+  >;
+  customClientGenerators?: Record<
+    string,
+    (context: GenerationContext) => GeneratedApiClient
+  >;
 }
 ```
 
@@ -48,19 +71,19 @@ interface TypeSyncPlugin {
 Here's a minimal plugin:
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, GeneratedType } from 'type-sync';
+import { TypeSyncPlugin, GenerationContext, GeneratedType } from "sync-type";
 
 const myPlugin: TypeSyncPlugin = {
-  name: 'my-plugin',
-  version: '1.0.0',
-  description: 'My custom plugin',
-  
+  name: "my-plugin",
+  version: "1.0.0",
+  description: "My custom plugin",
+
   beforeGeneration: async (context: GenerationContext) => {
-    console.log('Starting generation...');
+    console.log("Starting generation...");
   },
-  
+
   afterGeneration: async (context: GenerationContext, result: any) => {
-    console.log('Generation completed!');
+    console.log("Generation completed!");
   },
 };
 ```
@@ -83,7 +106,7 @@ beforeGeneration: async (context: GenerationContext) => {
   if (!context.config.customOption) {
     throw new Error('Custom option is required');
   }
-  
+
   // Set up plugin state
   context.pluginState = { myData: 'value' };
 },
@@ -103,7 +126,7 @@ afterGeneration: async (context: GenerationContext, result: any) => {
   if (result.success) {
     await generateAdditionalFiles(context);
   }
-  
+
   // Clean up
   delete context.pluginState;
 },
@@ -123,7 +146,7 @@ Called before generating a specific type. Use this to:
 beforeTypeGeneration: async (typeName: string, schema: ResolvedSchema, context: GenerationContext) => {
   // Add custom metadata
   schema._customMetadata = { processed: true };
-  
+
   // Skip certain types
   if (typeName.includes('Internal')) {
     return;
@@ -143,7 +166,7 @@ Called after generating a specific type. Use this to:
 afterTypeGeneration: async (typeName: string, generatedType: GeneratedType, context: GenerationContext) => {
   // Add custom imports
   generatedType.content = `import { CustomType } from './custom';\n\n${generatedType.content}`;
-  
+
   // Add custom decorators
   if (generatedType.isInterface) {
     generatedType.content = generatedType.content.replace(
@@ -189,7 +212,7 @@ afterClientGeneration: async (generatedClient: GeneratedApiClient, context: Gene
     return 'custom result';
   }
   `;
-  
+
   generatedClient.content = generatedClient.content.replace(
     /}\s*$/,
     `${customMethods}\n}`
@@ -215,7 +238,7 @@ transformSchema: (schema: ResolvedSchema, context: GenerationContext): ResolvedS
       if (typeof propSchema === 'object' && propSchema !== null) {
         // Add custom metadata
         propSchema._customProperty = true;
-        
+
         // Transform specific types
         if (propSchema.format === 'uuid') {
           propSchema._customType = 'CustomUuid';
@@ -223,7 +246,7 @@ transformSchema: (schema: ResolvedSchema, context: GenerationContext): ResolvedS
       }
     }
   }
-  
+
   return schema;
 },
 ```
@@ -248,7 +271,7 @@ customTypeGenerators: {
       sourceSchema: schema,
     };
   },
-  
+
   'date-time': (schema: ResolvedSchema, context: GenerationContext): GeneratedType => {
     return {
       name: 'DateTime',
@@ -272,7 +295,7 @@ Add custom client generators:
 customClientGenerators: {
   'react-query': (context: GenerationContext): GeneratedApiClient => {
     const hooks = generateReactQueryHooks(context);
-    
+
     return {
       name: 'ReactQueryHooks',
       content: hooks,
@@ -281,10 +304,10 @@ customClientGenerators: {
       endpoints: [],
     };
   },
-  
+
   'axios': (context: GenerationContext): GeneratedApiClient => {
     const client = generateAxiosClient(context);
-    
+
     return {
       name: 'AxiosClient',
       content: client,
@@ -304,13 +327,19 @@ Adds JSDoc comments to generated types:
 
 ```typescript
 const jsdocPlugin: TypeSyncPlugin = {
-  name: 'jsdoc',
-  version: '1.0.0',
-  description: 'Adds JSDoc comments to generated types',
-  
-  afterTypeGeneration: async (typeName: string, generatedType: GeneratedType, context: GenerationContext) => {
-    if (!generatedType.content.includes('/**')) {
-      const comment = `/**\n * ${generatedType.sourceSchema.description || `Generated type: ${typeName}`}\n */\n`;
+  name: "jsdoc",
+  version: "1.0.0",
+  description: "Adds JSDoc comments to generated types",
+
+  afterTypeGeneration: async (
+    typeName: string,
+    generatedType: GeneratedType,
+    context: GenerationContext
+  ) => {
+    if (!generatedType.content.includes("/**")) {
+      const comment = `/**\n * ${
+        generatedType.sourceSchema.description || `Generated type: ${typeName}`
+      }\n */\n`;
       generatedType.content = comment + generatedType.content;
     }
   },
@@ -323,31 +352,35 @@ Adds validation decorators for class-validator:
 
 ```typescript
 const validationPlugin: TypeSyncPlugin = {
-  name: 'validation',
-  version: '1.0.0',
-  description: 'Adds validation decorators to generated types',
-  
-  afterTypeGeneration: async (typeName: string, generatedType: GeneratedType, context: GenerationContext) => {
+  name: "validation",
+  version: "1.0.0",
+  description: "Adds validation decorators to generated types",
+
+  afterTypeGeneration: async (
+    typeName: string,
+    generatedType: GeneratedType,
+    context: GenerationContext
+  ) => {
     if (generatedType.isInterface) {
       // Add validation imports
       const imports = `import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';\n\n`;
-      
+
       // Add validation decorators to properties
       let content = generatedType.content;
       content = content.replace(
         /(\w+)(\?)?: (\w+);/g,
         (match, propName, optional, type) => {
           const decorators = [];
-          
-          if (type === 'string') decorators.push('@IsString()');
-          if (type === 'number') decorators.push('@IsNumber()');
-          if (optional) decorators.push('@IsOptional()');
-          else decorators.push('@IsNotEmpty()');
-          
-          return `${decorators.join('\n  ')}\n  ${match}`;
+
+          if (type === "string") decorators.push("@IsString()");
+          if (type === "number") decorators.push("@IsNumber()");
+          if (optional) decorators.push("@IsOptional()");
+          else decorators.push("@IsNotEmpty()");
+
+          return `${decorators.join("\n  ")}\n  ${match}`;
         }
       );
-      
+
       generatedType.content = imports + content;
     }
   },
@@ -360,19 +393,19 @@ Generates React hooks for API endpoints:
 
 ```typescript
 const reactHooksPlugin: TypeSyncPlugin = {
-  name: 'react-hooks',
-  version: '1.0.0',
-  description: 'Generates React hooks for API endpoints',
-  
+  name: "react-hooks",
+  version: "1.0.0",
+  description: "Generates React hooks for API endpoints",
+
   customClientGenerators: {
-    'react-hooks': (context: GenerationContext): GeneratedApiClient => {
+    "react-hooks": (context: GenerationContext): GeneratedApiClient => {
       const hooks = generateReactHooks(context);
-      
+
       return {
-        name: 'ApiHooks',
+        name: "ApiHooks",
         content: hooks,
-        dependencies: ['react-query'],
-        exports: ['useApiHooks'],
+        dependencies: ["react-query"],
+        exports: ["useApiHooks"],
         endpoints: [],
       };
     },
@@ -382,26 +415,28 @@ const reactHooksPlugin: TypeSyncPlugin = {
 function generateReactHooks(context: GenerationContext): string {
   let hooks = `import { useQuery, useMutation, useQueryClient } from 'react-query';\n`;
   hooks += `import { ApiClient } from './api-client';\n\n`;
-  
+
   hooks += `export const useApiHooks = (client: ApiClient) => {\n`;
   hooks += `  const queryClient = useQueryClient();\n\n`;
-  
+
   // Generate hooks for each endpoint
   for (const [path, pathItem] of Object.entries(context.schema.paths)) {
-    if (typeof pathItem === 'object' && pathItem !== null) {
-      const operations = ['get', 'post', 'put', 'delete', 'patch'] as const;
-      
+    if (typeof pathItem === "object" && pathItem !== null) {
+      const operations = ["get", "post", "put", "delete", "patch"] as const;
+
       for (const method of operations) {
         const operation = pathItem[method];
         if (operation) {
-          const hookName = generateHookName(operation.operationId || `${method}${path}`);
+          const hookName = generateHookName(
+            operation.operationId || `${method}${path}`
+          );
           const hook = generateHook(operation, method, path);
           hooks += `  ${hookName} = ${hook};\n`;
         }
       }
     }
   }
-  
+
   hooks += `};\n`;
   return hooks;
 }
@@ -412,22 +447,22 @@ function generateReactHooks(context: GenerationContext): string {
 ### From File
 
 ```typescript
-import { PluginLoader } from 'type-sync';
+import { PluginLoader } from "sync-type";
 
 const loader = new PluginLoader();
-const plugin = await loader.loadPluginFromFile('./my-plugin.js');
+const plugin = await loader.loadPluginFromFile("./my-plugin.js");
 ```
 
 ### From Package
 
 ```typescript
-const plugin = await loader.loadPluginFromPackage('my-typesync-plugin');
+const plugin = await loader.loadPluginFromPackage("my-typesync-plugin");
 ```
 
 ### From Directory
 
 ```typescript
-const plugins = await loader.loadPluginsFromDirectory('./plugins');
+const plugins = await loader.loadPluginsFromDirectory("./plugins");
 ```
 
 ## Plugin Registration
@@ -435,13 +470,13 @@ const plugins = await loader.loadPluginsFromDirectory('./plugins');
 ### In Code
 
 ```typescript
-import { TypeSync } from 'type-sync';
+import { TypeSync } from "sync-type";
 
 const typeSync = new TypeSync(config);
 const pluginManager = typeSync.getPluginManager();
 
 pluginManager.registerPlugin(myPlugin);
-pluginManager.enablePlugin('my-plugin');
+pluginManager.enablePlugin("my-plugin");
 ```
 
 ### Via Configuration
@@ -450,8 +485,8 @@ pluginManager.enablePlugin('my-plugin');
 const config: TypeSyncConfig = {
   // ... other config
   plugins: [
-    { name: 'my-plugin', enabled: true },
-    { name: 'jsdoc', enabled: true },
+    { name: "my-plugin", enabled: true },
+    { name: "jsdoc", enabled: true },
   ],
 };
 ```
@@ -459,7 +494,7 @@ const config: TypeSyncConfig = {
 ### Via CLI
 
 ```bash
-npx type-sync generate --plugins my-plugin,jsdoc
+npx sync-type generate --plugins my-plugin,jsdoc
 ```
 
 ## Best Practices
@@ -489,11 +524,11 @@ const cache = new Map();
 
 transformSchema: (schema: ResolvedSchema, context: GenerationContext): ResolvedSchema => {
   const cacheKey = JSON.stringify(schema);
-  
+
   if (cache.has(cacheKey)) {
     return cache.get(cacheKey);
   }
-  
+
   const result = expensiveTransformation(schema);
   cache.set(cacheKey, result);
   return result;
@@ -506,8 +541,8 @@ Document your plugin thoroughly:
 
 ```typescript
 const myPlugin: TypeSyncPlugin = {
-  name: 'my-plugin',
-  version: '1.0.0',
+  name: "my-plugin",
+  version: "1.0.0",
   description: `
     My custom plugin that adds special functionality.
     
@@ -519,7 +554,7 @@ const myPlugin: TypeSyncPlugin = {
     Usage:
     Enable via configuration or CLI: --plugins my-plugin
   `,
-  
+
   // ... implementation
 };
 ```
@@ -529,19 +564,19 @@ const myPlugin: TypeSyncPlugin = {
 Test your plugins:
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from 'type-sync';
+import { TypeSync, TypeSyncConfig } from "sync-type";
 
-describe('My Plugin', () => {
-  it('should transform schemas correctly', async () => {
+describe("My Plugin", () => {
+  it("should transform schemas correctly", async () => {
     const config: TypeSyncConfig = {
       schemaData: testSchema,
-      outputDir: './test-output',
-      plugins: [{ name: 'my-plugin', enabled: true }],
+      outputDir: "./test-output",
+      plugins: [{ name: "my-plugin", enabled: true }],
     };
-    
+
     const typeSync = new TypeSync(config);
     const result = await typeSync.generate();
-    
+
     expect(result.success).toBe(true);
     expect(result.generatedFiles).toHaveLength(1);
   });
@@ -554,10 +589,10 @@ Use semantic versioning for your plugins:
 
 ```typescript
 const myPlugin: TypeSyncPlugin = {
-  name: 'my-plugin',
-  version: '1.2.3', // Major.Minor.Patch
-  description: 'My plugin description',
-  
+  name: "my-plugin",
+  version: "1.2.3", // Major.Minor.Patch
+  description: "My plugin description",
+
   // ... implementation
 };
 ```
@@ -572,12 +607,12 @@ const myPlugin: TypeSyncPlugin = {
 {
   "name": "typesync-my-plugin",
   "version": "1.0.0",
-  "description": "My custom Type-Sync plugin",
+  "description": "My custom Sync-Type plugin",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "keywords": ["typesync", "plugin", "typescript", "openapi"],
   "peerDependencies": {
-    "type-sync": "^1.0.0"
+    "sync-type": "^1.0.0"
   }
 }
 ```
@@ -586,8 +621,8 @@ const myPlugin: TypeSyncPlugin = {
 
 ```typescript
 // src/index.ts
-export { myPlugin } from './plugin';
-export * from './types';
+export { myPlugin } from "./plugin";
+export * from "./types";
 ```
 
 3. Build and publish:
@@ -606,8 +641,8 @@ npm install typesync-my-plugin
 ```
 
 ```typescript
-import { myPlugin } from 'typesync-my-plugin';
-import { TypeSync } from 'type-sync';
+import { myPlugin } from "typesync-my-plugin";
+import { TypeSync } from "sync-type";
 
 const typeSync = new TypeSync(config);
 typeSync.getPluginManager().registerPlugin(myPlugin);
@@ -629,9 +664,7 @@ Enable debug mode to see plugin execution:
 ```typescript
 const config: TypeSyncConfig = {
   // ... other config
-  plugins: [
-    { name: 'my-plugin', enabled: true, options: { debug: true } },
-  ],
+  plugins: [{ name: "my-plugin", enabled: true, options: { debug: true } }],
 };
 ```
 
@@ -642,9 +675,9 @@ Add logging to your plugin:
 ```typescript
 beforeTypeGeneration: async (typeName: string, schema: ResolvedSchema, context: GenerationContext) => {
   console.log(`[My Plugin] Processing type: ${typeName}`);
-  
+
   // Plugin logic
-  
+
   console.log(`[My Plugin] Completed processing: ${typeName}`);
 },
 ```

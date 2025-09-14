@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * CLI interface for type-sync
+ * CLI interface for sync-type
  * Provides command-line interface for generating TypeScript types and API clients
  */
 
@@ -45,7 +45,7 @@ export class TypeSyncCli {
    */
   private setupProgram(): void {
     this.program
-      .name("type-sync")
+      .name("sync-type")
       .description(
         "Generate TypeScript types and API clients from OpenAPI schemas"
       )
@@ -152,7 +152,7 @@ export class TypeSyncCli {
   private addInitCommand(): void {
     this.program
       .command("init [directory]")
-      .description("Initialize a new type-sync configuration")
+      .description("Initialize a new sync-type configuration")
       .option("-t, --template <template>", "Configuration template", "default")
       .option("--yes", "Skip interactive prompts")
       .action(async (directory, options) => {
@@ -303,48 +303,48 @@ export class TypeSyncCli {
       }
     } else {
       // Show general help with examples
-      console.log("📚 Type-Sync CLI Examples:");
+      console.log("📚 Sync-Type CLI Examples:");
       console.log("\n� Basic Usage:");
       console.log("  # Generate from FastAPI server");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json"
+        "  npx sync-type generate --url http://localhost:8000/openapi.json"
       );
       console.log("\n  # Generate from local file");
-      console.log("  npx type-sync generate --file ./openapi-schema.json");
+      console.log("  npx sync-type generate --file ./openapi-schema.json");
       console.log("\n  # Custom output directory");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json --output ./src/api"
+        "  npx sync-type generate --url http://localhost:8000/openapi.json --output ./src/api"
       );
       console.log("\n⚛️ React Integration:");
       console.log("  # Generate with React hooks");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json --hooks"
+        "  npx sync-type generate --url http://localhost:8000/openapi.json --hooks"
       );
       console.log("\n🎛️ Interactive Mode:");
-      console.log("  npx type-sync generate --interactive");
+      console.log("  npx sync-type generate --interactive");
       console.log("\n⚙️ Configuration:");
       console.log("  # Initialize configuration");
-      console.log("  npx type-sync init");
+      console.log("  npx sync-type init");
       console.log("\n  # Use configuration file");
-      console.log("  npx type-sync generate --config ./typesync.config.json");
+      console.log("  npx sync-type generate --config ./typesync.config.json");
       console.log("\n✅ Validation:");
       console.log("  # Validate schema");
       console.log(
-        "  npx type-sync validate --url http://localhost:8000/openapi.json"
+        "  npx sync-type validate --url http://localhost:8000/openapi.json"
       );
       console.log("\n� Advanced:");
       console.log("  # Custom naming and filtering");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json \\"
+        "  npx sync-type generate --url http://localhost:8000/openapi.json \\"
       );
       console.log(
         "    --naming PascalCase --prefix MyAPI --exclude-paths '/health,/docs'"
       );
       console.log("\n📖 For complete documentation:");
-      console.log("  https://github.com/Cstannahill/type-sync#readme");
+      console.log("  https://github.com/Cstannahill/sync-type#readme");
       console.log("\n💡 Get help for specific commands:");
-      console.log("  npx type-sync help generate");
-      console.log("  npx type-sync generate --help");
+      console.log("  npx sync-type help generate");
+      console.log("  npx sync-type generate --help");
     }
   }
 
@@ -582,7 +582,7 @@ export class TypeSyncCli {
    * Run interactive mode
    */
   private async runInteractiveMode(): Promise<void> {
-    console.log("🚀 Type-Sync Interactive Mode\n");
+    console.log("🚀 Sync-Type Interactive Mode\n");
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -656,7 +656,7 @@ export class TypeSyncCli {
     directory: string,
     _options: CliOptions
   ): Promise<void> {
-    console.log("🚀 Type-Sync Configuration Initialization\n");
+    console.log("🚀 Sync-Type Configuration Initialization\n");
 
     const rl = readline.createInterface({
       input: process.stdin,

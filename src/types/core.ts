@@ -1,10 +1,10 @@
 /**
- * Core types for the type-sync package
+ * Core types for the sync-type package
  * These types define the internal structure and interfaces used throughout the system
  */
 
-import { OpenAPISchema } from './openapi';
-import { ResolvedSchema, SchemaResolver } from './schema';
+import { OpenAPISchema } from "./openapi";
+import { ResolvedSchema, SchemaResolver } from "./schema";
 
 /**
  * Configuration for the type generation process
@@ -14,37 +14,37 @@ export interface TypeSyncConfig {
   schemaUrl?: string;
   schemaFile?: string;
   schemaData?: OpenAPISchema;
-  
+
   // Output configuration
   outputDir: string;
   outputFileName?: string;
-  
+
   // Generation options
   generateTypes: boolean;
   generateApiClient: boolean;
   generateHooks?: boolean;
   generateQueries?: boolean;
-  
+
   // TypeScript configuration
   useStrictTypes: boolean;
   useOptionalChaining: boolean;
   useNullishCoalescing: boolean;
-  
+
   // Naming conventions
-  namingConvention: 'camelCase' | 'snake_case' | 'PascalCase';
+  namingConvention: "camelCase" | "snake_case" | "PascalCase";
   typePrefix?: string;
   typeSuffix?: string;
-  
+
   // Customization
   customTypeMappings?: Record<string, string>;
   excludePaths?: string[];
   includePaths?: string[];
   excludeSchemas?: string[];
   includeSchemas?: string[];
-  
+
   // Plugin configuration
   plugins?: PluginConfig[];
-  
+
   // Advanced options
   preserveComments: boolean;
   generateIndexFile: boolean;
@@ -107,7 +107,7 @@ export interface GeneratedParameter {
   type: string;
   isOptional: boolean;
   isRequired: boolean;
-  location: 'query' | 'header' | 'path' | 'cookie';
+  location: "query" | "header" | "path" | "cookie";
   description?: string;
 }
 
@@ -174,7 +174,7 @@ export interface GenerationResult {
 export interface GeneratedFile {
   path: string;
   content: string;
-  type: 'type' | 'client' | 'hook' | 'query' | 'index' | 'barrel';
+  type: "type" | "client" | "hook" | "query" | "index" | "barrel";
   dependencies: string[];
   size: number;
 }
@@ -188,7 +188,7 @@ export interface GenerationError {
   source?: string;
   line?: number;
   column?: number;
-  severity: 'error' | 'warning';
+  severity: "error" | "warning";
 }
 
 /**
@@ -220,25 +220,48 @@ export interface TypeSyncPlugin {
   name: string;
   version: string;
   description: string;
-  
+
   // Lifecycle hooks
   beforeGeneration?(context: GenerationContext): Promise<void> | void;
-  afterGeneration?(context: GenerationContext, result: GenerationResult): Promise<void> | void;
-  
+  afterGeneration?(
+    context: GenerationContext,
+    result: GenerationResult
+  ): Promise<void> | void;
+
   // Type generation hooks
-  beforeTypeGeneration?(typeName: string, schema: ResolvedSchema, context: GenerationContext): Promise<void> | void;
-  afterTypeGeneration?(typeName: string, generatedType: GeneratedType, context: GenerationContext): Promise<void> | void;
-  
+  beforeTypeGeneration?(
+    typeName: string,
+    schema: ResolvedSchema,
+    context: GenerationContext
+  ): Promise<void> | void;
+  afterTypeGeneration?(
+    typeName: string,
+    generatedType: GeneratedType,
+    context: GenerationContext
+  ): Promise<void> | void;
+
   // Client generation hooks
   beforeClientGeneration?(context: GenerationContext): Promise<void> | void;
-  afterClientGeneration?(generatedClient: GeneratedApiClient, context: GenerationContext): Promise<void> | void;
-  
+  afterClientGeneration?(
+    generatedClient: GeneratedApiClient,
+    context: GenerationContext
+  ): Promise<void> | void;
+
   // Schema transformation hooks
-  transformSchema?(schema: ResolvedSchema, context: GenerationContext): ResolvedSchema;
-  
+  transformSchema?(
+    schema: ResolvedSchema,
+    context: GenerationContext
+  ): ResolvedSchema;
+
   // Custom generators
-  customTypeGenerators?: Record<string, (schema: ResolvedSchema, context: GenerationContext) => GeneratedType>;
-  customClientGenerators?: Record<string, (context: GenerationContext) => GeneratedApiClient>;
+  customTypeGenerators?: Record<
+    string,
+    (schema: ResolvedSchema, context: GenerationContext) => GeneratedType
+  >;
+  customClientGenerators?: Record<
+    string,
+    (context: GenerationContext) => GeneratedApiClient
+  >;
 }
 
 /**
@@ -252,7 +275,7 @@ export const DEFAULT_CONFIG: Partial<TypeSyncConfig> = {
   useStrictTypes: true,
   useOptionalChaining: true,
   useNullishCoalescing: true,
-  namingConvention: 'camelCase',
+  namingConvention: "camelCase",
   preserveComments: true,
   generateIndexFile: true,
   generateBarrelExports: true,
