@@ -14,10 +14,10 @@ Schemantic's plugin system allows you to:
 
 ## Plugin Interface
 
-Every plugin must implement the `TypeSyncPlugin` interface:
+Every plugin must implement the `SchemanticPlugin` interface:
 
 ```typescript
-interface TypeSyncPlugin {
+interface SchemanticPlugin {
   name: string;
   version: string;
   description: string;
@@ -82,7 +82,7 @@ interface TypeSyncPlugin {
 
 ```typescript
 interface GenerationContext {
-  config: TypeSyncConfig;
+  config: SchemanticConfig;
   schema: OpenAPIV3.Document;
   outputDir: string;
   logger: Logger;
@@ -132,9 +132,9 @@ interface GeneratedFile {
 ### 1. Simple Transform Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, GeneratedType } from "schemantic";
+import { SchemanticPlugin, GenerationContext, GeneratedType } from "schemantic";
 
-const addCommentsPlugin: TypeSyncPlugin = {
+const addCommentsPlugin: SchemanticPlugin = {
   name: "add-comments",
   version: "1.0.0",
   description: "Adds helpful comments to generated types",
@@ -156,10 +156,10 @@ export default addCommentsPlugin;
 ### 2. Schema Transform Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext } from "schemantic";
+import { SchemanticPlugin, GenerationContext } from "schemantic";
 import { OpenAPIV3 } from "openapi-types";
 
-const schemaTransformPlugin: TypeSyncPlugin = {
+const schemaTransformPlugin: SchemanticPlugin = {
   name: "schema-transformer",
   version: "1.0.0",
   description: "Transforms schema before processing",
@@ -195,9 +195,9 @@ export default schemaTransformPlugin;
 ### 3. Custom Type Generator Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, TypeGenerator } from "schemantic";
+import { SchemanticPlugin, GenerationContext, TypeGenerator } from "schemantic";
 
-const customGeneratorPlugin: TypeSyncPlugin = {
+const customGeneratorPlugin: SchemanticPlugin = {
   name: "validation-generator",
   version: "1.0.0",
   description: "Generates validation schemas alongside types",
@@ -265,9 +265,9 @@ export default customGeneratorPlugin;
 ### 1. CLI Command Extension
 
 ```typescript
-import { TypeSyncPlugin, CliCommand } from "schemantic";
+import { SchemanticPlugin, CliCommand } from "schemantic";
 
-const cliExtensionPlugin: TypeSyncPlugin = {
+const cliExtensionPlugin: SchemanticPlugin = {
   name: "cli-extension",
   version: "1.0.0",
   description: "Adds custom CLI commands",
@@ -297,9 +297,13 @@ const cliExtensionPlugin: TypeSyncPlugin = {
 ### 2. File Output Generator
 
 ```typescript
-import { TypeSyncPlugin, OutputGenerator, GenerationContext } from "schemantic";
+import {
+  SchemanticPlugin,
+  OutputGenerator,
+  GenerationContext,
+} from "schemantic";
 
-const docGeneratorPlugin: TypeSyncPlugin = {
+const docGeneratorPlugin: SchemanticPlugin = {
   name: "doc-generator",
   version: "1.0.0",
   description: "Generates API documentation",
@@ -349,7 +353,7 @@ const docGeneratorPlugin: TypeSyncPlugin = {
 ### 3. Configuration-Based Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext } from "schemantic";
+import { SchemanticPlugin, GenerationContext } from "schemantic";
 
 interface PluginConfig {
   addTimestamps: boolean;
@@ -357,7 +361,7 @@ interface PluginConfig {
   excludePatterns: string[];
 }
 
-class ConfigurablePlugin implements TypeSyncPlugin {
+class ConfigurablePlugin implements SchemanticPlugin {
   name = "configurable-plugin";
   version = "1.0.0";
   description = "A configurable plugin example";
@@ -465,7 +469,7 @@ npx schemantic generate --plugins my-plugin
 ### 2. NPM Package Plugin
 
 ```typescript
-// @my-org/typesync-plugin/index.js
+// @my-org/Schemantic-plugin/index.js
 const plugin = {
   name: "npm-plugin",
   version: "1.0.0",
@@ -483,32 +487,32 @@ module.exports = plugin;
 Load with CLI:
 
 ```bash
-npm install @my-org/typesync-plugin
-npx schemantic plugin load @my-org/typesync-plugin
+npm install @my-org/Schemantic-plugin
+npx schemantic plugin load @my-org/Schemantic-plugin
 npx schemantic generate --plugins npm-plugin
 ```
 
 ### 3. Programmatic Plugin
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "schemantic";
+import { Schemantic, SchemanticConfig } from "schemantic";
 import myPlugin from "./my-plugin";
 
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
   plugins: [{ name: "my-plugin", enabled: true }],
 };
 
-const typeSync = new TypeSync(config);
-const pluginManager = typeSync.getPluginManager();
+const Schemantic = new Schemantic(config);
+const pluginManager = Schemantic.getPluginManager();
 
 // Register custom plugin
 pluginManager.registerPlugin(myPlugin);
 pluginManager.enablePlugin("my-plugin");
 
 // Generate with plugin
-const result = await typeSync.generate();
+const result = await Schemantic.generate();
 ```
 
 ## Testing Plugins
@@ -556,21 +560,21 @@ describe("MyPlugin", () => {
 ### Integration Testing
 
 ```typescript
-import { TypeSync } from "schemantic";
+import { Schemantic } from "schemantic";
 import myPlugin from "./my-plugin";
 
 describe("Plugin Integration", () => {
   it("should work with full generation process", async () => {
-    const typeSync = new TypeSync({
+    const Schemantic = new Schemantic({
       schemaFile: "./test-schema.json",
       outputDir: "./test-output",
     });
 
-    const pluginManager = typeSync.getPluginManager();
+    const pluginManager = Schemantic.getPluginManager();
     pluginManager.registerPlugin(myPlugin);
     pluginManager.enablePlugin("my-plugin");
 
-    const result = await typeSync.generate();
+    const result = await Schemantic.generate();
     expect(result.success).toBe(true);
 
     // Verify plugin effects in generated files
@@ -587,7 +591,7 @@ describe("Plugin Integration", () => {
 ### 1. Error Handling
 
 ```typescript
-const robustPlugin: TypeSyncPlugin = {
+const robustPlugin: SchemanticPlugin = {
   name: "robust-plugin",
   version: "1.0.0",
   description: "Example of robust error handling",
@@ -609,7 +613,7 @@ const robustPlugin: TypeSyncPlugin = {
 ### 2. Performance Considerations
 
 ```typescript
-const performantPlugin: TypeSyncPlugin = {
+const performantPlugin: SchemanticPlugin = {
   name: 'performant-plugin',
   version: '1.0.0',
   description: 'Example of performance-conscious plugin',
@@ -645,7 +649,7 @@ const configSchema = Joi.object({
   }),
 });
 
-const validatedPlugin: TypeSyncPlugin = {
+const validatedPlugin: SchemanticPlugin = {
   name: "validated-plugin",
   version: "1.0.0",
   description: "Plugin with configuration validation",
@@ -670,7 +674,7 @@ const validatedPlugin: TypeSyncPlugin = {
 ### 1. NPM Package Structure
 
 ```
-my-typesync-plugin/
+my-Schemantic-plugin/
 ├── package.json
 ├── index.js
 ├── README.md
@@ -683,11 +687,11 @@ my-typesync-plugin/
 
 ```json
 {
-  "name": "@my-org/typesync-plugin-name",
+  "name": "@my-org/Schemantic-plugin-name",
   "version": "1.0.0",
   "description": "Description of your plugin",
   "main": "index.js",
-  "keywords": ["typesync", "plugin", "openapi", "typescript"],
+  "keywords": ["Schemantic", "plugin", "openapi", "typescript"],
   "peerDependencies": {
     "schemantic": "^1.0.0"
   },
@@ -703,14 +707,14 @@ Consider adding your plugin to the community registry by submitting a PR to the 
 
 Popular community plugins include:
 
-- `@typesync/plugin-zod` - Generates Zod validation schemas
-- `@typesync/plugin-react-query` - Generates React Query hooks
-- `@typesync/plugin-swagger-ui` - Generates Swagger UI documentation
-- `@typesync/plugin-mock-data` - Generates mock data factories
+- `@Schemantic/plugin-zod` - Generates Zod validation schemas
+- `@Schemantic/plugin-react-query` - Generates React Query hooks
+- `@Schemantic/plugin-swagger-ui` - Generates Swagger UI documentation
+- `@Schemantic/plugin-mock-data` - Generates mock data factories
 
 ## Support
 
 - 📖 [Plugin API Reference](./API.md#plugin-api)
 - 💬 [Plugin Development Discussions](https://github.com/Cstannahill/schemantic/discussions)
 - 🐛 [Report Plugin Issues](https://github.com/Cstannahill/schemantic/issues)
-- 📧 [Plugin Development Support](mailto:plugins@typesync.dev)
+- 📧 [Plugin Development Support](mailto:plugins@Schemantic.dev)

@@ -1,13 +1,13 @@
 /**
- * Tests for the main TypeSync class
+ * Tests for the main Schemantic class
  */
 
-import { TypeSync } from "../core/typesync";
-import { TypeSyncConfig } from "../types/core";
+import { Schemantic } from "../core/Schemantic";
+import { SchemanticConfig } from "../types/core";
 import { OpenAPISchema } from "../types/openapi";
 import { createTestConfig } from "./test-config";
 
-describe("TypeSync", () => {
+describe("Schemantic", () => {
   const mockSchema: OpenAPISchema = {
     openapi: "3.0.0",
     info: {
@@ -88,8 +88,8 @@ describe("TypeSync", () => {
   };
 
   const createConfig = (
-    overrides: Partial<TypeSyncConfig> = {}
-  ): TypeSyncConfig =>
+    overrides: Partial<SchemanticConfig> = {}
+  ): SchemanticConfig =>
     createTestConfig({
       schemaData: mockSchema,
       outputDir: "./test-output",
@@ -104,18 +104,18 @@ describe("TypeSync", () => {
   describe("constructor", () => {
     it("should create instance with valid config", () => {
       const config = createConfig();
-      const typeSync = new TypeSync(config);
+      const Schemantic = new Schemantic(config);
 
-      expect(typeSync).toBeInstanceOf(TypeSync);
-      expect(typeSync.getConfig()).toEqual(config);
+      expect(Schemantic).toBeInstanceOf(Schemantic);
+      expect(Schemantic.getConfig()).toEqual(config);
     });
 
     it("should handle invalid config gracefully", () => {
-      const invalidConfig = {} as TypeSyncConfig;
+      const invalidConfig = {} as SchemanticConfig;
 
       // The constructor should not throw, but validation should happen during generation
-      const typeSync = new TypeSync(invalidConfig);
-      expect(typeSync).toBeInstanceOf(TypeSync);
+      const Schemantic = new Schemantic(invalidConfig);
+      expect(Schemantic).toBeInstanceOf(Schemantic);
     });
   });
 
@@ -126,8 +126,8 @@ describe("TypeSync", () => {
         generateApiClient: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
       expect(result.generatedFiles).toHaveLength(4); // types.ts, api-client.ts, index.ts, barrel.ts
@@ -142,8 +142,8 @@ describe("TypeSync", () => {
         generateApiClient: false,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
       expect(result.generatedFiles).toHaveLength(3); // types.ts, index.ts, barrel.ts
@@ -157,8 +157,8 @@ describe("TypeSync", () => {
         generateApiClient: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
       expect(result.generatedFiles).toHaveLength(3); // api-client.ts, index.ts, barrel.ts
@@ -171,8 +171,8 @@ describe("TypeSync", () => {
         schemaData: undefined as unknown as OpenAPISchema, // Invalid schema
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -182,9 +182,9 @@ describe("TypeSync", () => {
   describe("validate", () => {
     it("should validate valid schema successfully", async () => {
       const config = createConfig();
-      const typeSync = new TypeSync(config);
+      const Schemantic = new Schemantic(config);
 
-      const result = await typeSync.validate();
+      const result = await Schemantic.validate();
 
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -200,8 +200,8 @@ describe("TypeSync", () => {
         schemaData: invalidSchema,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.validate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.validate();
 
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -211,9 +211,9 @@ describe("TypeSync", () => {
   describe("plugin management", () => {
     it("should provide plugin manager", () => {
       const config = createConfig();
-      const typeSync = new TypeSync(config);
+      const Schemantic = new Schemantic(config);
 
-      const pluginManager = typeSync.getPluginManager();
+      const pluginManager = Schemantic.getPluginManager();
 
       expect(pluginManager).toBeDefined();
       expect(typeof pluginManager.registerPlugin).toBe("function");
@@ -224,9 +224,9 @@ describe("TypeSync", () => {
   describe("configuration", () => {
     it("should return current configuration", () => {
       const config = createConfig();
-      const typeSync = new TypeSync(config);
+      const Schemantic = new Schemantic(config);
 
-      const returnedConfig = typeSync.getConfig();
+      const returnedConfig = Schemantic.getConfig();
 
       expect(returnedConfig).toEqual(config);
     });

@@ -83,9 +83,9 @@ Notes:
 ### Programmatic Usage
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "schemantic";
+import { Schemantic, SchemanticConfig } from "schemantic";
 
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   generateTypes: true,
@@ -94,8 +94,8 @@ const config: TypeSyncConfig = {
   namingConvention: "camelCase",
 };
 
-const typeSync = new TypeSync(config);
-const result = await typeSync.generate();
+const Schemantic = new Schemantic(config);
+const result = await Schemantic.generate();
 
 if (result.success) {
   console.log(`Generated ${result.generatedFiles.length} files`);
@@ -109,7 +109,7 @@ if (result.success) {
 ### Basic Configuration
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   // Input sources (choose one)
   schemaUrl: "http://localhost:8000/openapi.json",
   schemaFile: "./schema.json",
@@ -133,7 +133,7 @@ const config: TypeSyncConfig = {
 
   // Naming conventions
   namingConvention: "camelCase", // 'camelCase' | 'snake_case' | 'PascalCase'
-  // By default, TypeSync prefixes type names with "API". Customize if desired:
+  // By default, Schemantic prefixes type names with "API". Customize if desired:
   typePrefix: "API",
   typeSuffix: "Type",
 
@@ -280,7 +280,7 @@ npx schemantic generate \
   --plugins jsdoc,validation,react-hooks
 
 # Use configuration file
-npx schemantic generate --config ./typesync.config.json
+npx schemantic generate --config ./Schemantic.config.json
 
 # Watch mode for development
 npx schemantic generate --url http://localhost:8000/openapi.json --watch
@@ -327,7 +327,7 @@ npx schemantic plugin list
 
 # Load custom plugin
 npx schemantic plugin load ./my-custom-plugin.js
-npx schemantic plugin load @my-org/typesync-plugin
+npx schemantic plugin load @my-org/Schemantic-plugin
 ```
 
 ## Generated Output
@@ -467,7 +467,7 @@ Schemantic includes a powerful plugin system for extending functionality:
 
 ```typescript
 // Enable plugins via configuration
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   // ... other config
   plugins: [
     { name: 'jsdoc', enabled: true },
@@ -483,9 +483,9 @@ npx schemantic generate --plugins jsdoc,validation,react-hooks
 ### Creating Custom Plugins
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, GeneratedType } from "schemantic";
+import { SchemanticPlugin, GenerationContext, GeneratedType } from "schemantic";
 
-const customPlugin: TypeSyncPlugin = {
+const customPlugin: SchemanticPlugin = {
   name: "custom-plugin",
   version: "1.0.0",
   description: "Custom plugin for special transformations",
@@ -589,7 +589,7 @@ npx schemantic generate --url http://localhost:8000/openapi.json --output ./src/
 ### Custom Type Mappings
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   // ... other config
   customTypeMappings: {
     uuid: "string",
@@ -603,7 +603,7 @@ const config: TypeSyncConfig = {
 ### Path and Schema Filtering
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   // ... other config
   excludePaths: ["/health", "/docs", "/redoc"],
   includePaths: ["/api/v1/*"],

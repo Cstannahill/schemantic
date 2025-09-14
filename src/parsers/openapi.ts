@@ -16,7 +16,7 @@ import {
   OpenAPIParameter,
 } from "../types/openapi";
 import { ResolvedSchema } from "../types/schema";
-import { TypeSyncConfig } from "../types/core";
+import { SchemanticConfig } from "../types/core";
 import {
   BaseSchemaParser,
   SchemaInput,
@@ -38,7 +38,7 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
     "3.1.0",
   ];
 
-  constructor(config: TypeSyncConfig) {
+  constructor(config: SchemanticConfig) {
     super(config);
   }
 

@@ -9,7 +9,7 @@ import { ResolvedSchema, SchemaResolver } from "./schema";
 /**
  * Configuration for the type generation process
  */
-export interface TypeSyncConfig {
+export interface SchemanticConfig {
   // Input configuration
   schemaUrl?: string;
   schemaFile?: string;
@@ -135,7 +135,7 @@ export interface GeneratedResponse {
  * Generation context passed to plugins and generators
  */
 export interface GenerationContext {
-  config: TypeSyncConfig;
+  config: SchemanticConfig;
   schema: OpenAPISchema;
   resolvedSchemas: Map<string, ResolvedSchema>;
   generatedTypes: Map<string, GeneratedType>;
@@ -216,7 +216,7 @@ export interface GenerationStatistics {
 /**
  * Plugin interface
  */
-export interface TypeSyncPlugin {
+export interface SchemanticPlugin {
   name: string;
   version: string;
   description: string;
@@ -267,7 +267,7 @@ export interface TypeSyncPlugin {
 /**
  * Default configuration
  */
-export const DEFAULT_CONFIG: Partial<TypeSyncConfig> = {
+export const DEFAULT_CONFIG: Partial<SchemanticConfig> = {
   generateTypes: true,
   generateApiClient: true,
   generateHooks: false,

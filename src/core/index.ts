@@ -2,4 +2,4 @@
  * Core module exports
  */
 
-export * from './typesync';
+export * from "./Schemantic";

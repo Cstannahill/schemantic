@@ -21,7 +21,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -61,7 +61,7 @@ interface BrandedTypesOptions {
 /**
  * Advanced Branded Types Plugin Implementation
  */
-export const brandedTypesPlugin: TypeSyncPlugin = {
+export const brandedTypesPlugin: SchemanticPlugin = {
   name: "branded-types",
   version: "2.0.0",
   description:

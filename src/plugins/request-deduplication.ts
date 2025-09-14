@@ -20,7 +20,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedApiClient,
 } from "../types/core";
@@ -59,7 +59,7 @@ interface RequestDeduplicationOptions {
 /**
  * Advanced Request Deduplication Plugin Implementation
  */
-export const requestDeduplicationPlugin: TypeSyncPlugin = {
+export const requestDeduplicationPlugin: SchemanticPlugin = {
   name: "request-deduplication",
   version: "2.0.0",
   description:

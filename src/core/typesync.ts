@@ -1,5 +1,5 @@
 /**
- * Main TypeSync class
+ * Main Schemantic class
  * Orchestrates the entire type generation process
  */
 
@@ -8,7 +8,7 @@ import * as path from "path";
 import { OpenAPISchema, OpenAPISchemaObject } from "../types/openapi";
 import { ResolvedSchema } from "../types/schema";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   GenerationContext,
   GenerationResult,
   GeneratedType,
@@ -21,7 +21,7 @@ import {
 } from "../types/core";
 
 // Re-export commonly used types and constants
-export { TypeSyncConfig, DEFAULT_CONFIG } from "../types/core";
+export { SchemanticConfig, DEFAULT_CONFIG } from "../types/core";
 import { ParserFactory } from "../parsers";
 import { TypeGeneratorFactory } from "../generators";
 import { ApiClientGenerator } from "../generators/api-client-generator";
@@ -29,16 +29,16 @@ import { HookGenerator } from "../generators/hook-generator";
 import { PluginManager } from "../plugins";
 
 /**
- * Main TypeSync class
+ * Main Schemantic class
  */
-export class TypeSync {
-  private config: TypeSyncConfig;
+export class Schemantic {
+  private config: SchemanticConfig;
   private pluginManager: PluginManager;
   private schema?: OpenAPISchema;
   private resolvedSchemas: Map<string, ResolvedSchema> = new Map();
   private typeRegistry: TypeRegistry;
 
-  constructor(config: TypeSyncConfig) {
+  constructor(config: SchemanticConfig) {
     this.config = config;
     this.pluginManager = new PluginManager();
     this.typeRegistry = this.createTypeRegistry();
@@ -610,7 +610,7 @@ export * from './hooks';
   /**
    * Get configuration
    */
-  getConfig(): TypeSyncConfig {
+  getConfig(): SchemanticConfig {
     return this.config;
   }
 

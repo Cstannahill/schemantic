@@ -24,8 +24,8 @@ We'll build an e-commerce API with the following features:
 
 ```bash
 # Create project directory
-mkdir fastapi-typesync-demo
-cd fastapi-typesync-demo
+mkdir fastapi-Schemantic-demo
+cd fastapi-Schemantic-demo
 
 # Create backend directory
 mkdir backend

@@ -1,11 +1,11 @@
 /**
- import { TypeSync } from '../../core/typesync';
+ import { Schemantic } from '../../core/Schemantic';
 import { OpenAPISchema } from '../../types/openapi';
 import { createTestConfig } from '../test-config';tegration tests using real FastAPI OpenAPI schemas
  * These tests verify that schemantic works correctly with actual FastAPI applications
  */
 
-import { TypeSync } from "../../core/typesync";
+import { Schemantic } from "../../core/Schemantic";
 import { OpenAPISchema } from "../../types/openapi";
 import { createTestConfig } from "../test-config";
 import * as fs from "fs";
@@ -388,8 +388,8 @@ describe("FastAPI Integration Tests", () => {
         generateApiClient: false,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
       expect(result.errors).toHaveLength(0);
@@ -427,8 +427,8 @@ describe("FastAPI Integration Tests", () => {
         generateApiClient: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
       expect(result.statistics.totalEndpoints).toBe(5); // All the endpoints
@@ -470,8 +470,8 @@ describe("FastAPI Integration Tests", () => {
         generateHooks: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
 
@@ -499,8 +499,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
 
@@ -526,8 +526,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
 
@@ -581,8 +581,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
 
@@ -626,8 +626,8 @@ describe("FastAPI Integration Tests", () => {
         generateTypes: true,
       });
 
-      const typeSync = new TypeSync(config);
-      const result = await typeSync.generate();
+      const Schemantic = new Schemantic(config);
+      const result = await Schemantic.generate();
 
       expect(result.success).toBe(true);
 

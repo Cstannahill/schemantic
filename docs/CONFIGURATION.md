@@ -55,9 +55,9 @@ module.exports = {
 Create a `schemantic.config.ts` file:
 
 ```typescript
-import { TypeSyncConfig } from "schemantic";
+import { SchemanticConfig } from "schemantic";
 
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   generateTypes: true,
@@ -366,7 +366,7 @@ export TYPE_SYNC_NAMING_CONVENTION="camelCase"
 Access in configuration:
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: process.env.TYPE_SYNC_SCHEMA_URL,
   outputDir: process.env.TYPE_SYNC_OUTPUT_DIR || "./generated",
   namingConvention:
@@ -435,7 +435,7 @@ const config: TypeSyncConfig = {
 ### Basic Configuration
 
 ```typescript
-const basicConfig: TypeSyncConfig = {
+const basicConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
   generateTypes: true,
@@ -446,7 +446,7 @@ const basicConfig: TypeSyncConfig = {
 ### Advanced Configuration
 
 ```typescript
-const advancedConfig: TypeSyncConfig = {
+const advancedConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   outputFileName: "api-client.ts",
@@ -490,7 +490,7 @@ const advancedConfig: TypeSyncConfig = {
 ### FastAPI Specific Configuration
 
 ```typescript
-const fastApiConfig: TypeSyncConfig = {
+const fastApiConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
 
@@ -522,7 +522,7 @@ const fastApiConfig: TypeSyncConfig = {
 ### React Application Configuration
 
 ```typescript
-const reactConfig: TypeSyncConfig = {
+const reactConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/api",
 
@@ -546,7 +546,7 @@ const reactConfig: TypeSyncConfig = {
 ### Node.js Application Configuration
 
 ```typescript
-const nodeConfig: TypeSyncConfig = {
+const nodeConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./lib/api",
 
@@ -604,7 +604,7 @@ const conflictingConfig = {
 You can extend configurations:
 
 ```typescript
-const baseConfig: TypeSyncConfig = {
+const baseConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
   generateTypes: true,
@@ -613,7 +613,7 @@ const baseConfig: TypeSyncConfig = {
   namingConvention: "camelCase",
 };
 
-const developmentConfig: TypeSyncConfig = {
+const developmentConfig: SchemanticConfig = {
   ...baseConfig,
   plugins: [
     { name: "jsdoc", enabled: true },
@@ -621,7 +621,7 @@ const developmentConfig: TypeSyncConfig = {
   ],
 };
 
-const productionConfig: TypeSyncConfig = {
+const productionConfig: SchemanticConfig = {
   ...baseConfig,
   outputDir: "./dist/api",
   plugins: [{ name: "jsdoc", enabled: true }],
@@ -648,7 +648,7 @@ Create different configurations for different environments:
 
 ```typescript
 // config/development.ts
-export const developmentConfig: TypeSyncConfig = {
+export const developmentConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   plugins: [
@@ -658,7 +658,7 @@ export const developmentConfig: TypeSyncConfig = {
 };
 
 // config/production.ts
-export const productionConfig: TypeSyncConfig = {
+export const productionConfig: SchemanticConfig = {
   schemaUrl: "https://api.example.com/openapi.json",
   outputDir: "./dist/api",
   plugins: [{ name: "jsdoc", enabled: true }],

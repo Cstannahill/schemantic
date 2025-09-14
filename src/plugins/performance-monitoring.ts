@@ -19,7 +19,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -354,7 +354,7 @@ const performanceAnalyzer = new PerformanceAnalyzer();
 /**
  * Advanced Performance Monitoring Plugin Implementation
  */
-export const performanceMonitoringPlugin: TypeSyncPlugin = {
+export const performanceMonitoringPlugin: SchemanticPlugin = {
   name: "performance-monitoring",
   version: "2.0.0",
   description:

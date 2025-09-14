@@ -14,10 +14,10 @@ Plugins in Schemantic allow you to:
 
 ## Plugin Interface
 
-All plugins must implement the `TypeSyncPlugin` interface:
+All plugins must implement the `SchemanticPlugin` interface:
 
 ```typescript
-interface TypeSyncPlugin {
+interface SchemanticPlugin {
   name: string;
   version: string;
   description: string;
@@ -71,9 +71,9 @@ interface TypeSyncPlugin {
 Here's a minimal plugin:
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, GeneratedType } from "schemantic";
+import { SchemanticPlugin, GenerationContext, GeneratedType } from "schemantic";
 
-const myPlugin: TypeSyncPlugin = {
+const myPlugin: SchemanticPlugin = {
   name: "my-plugin",
   version: "1.0.0",
   description: "My custom plugin",
@@ -326,7 +326,7 @@ customClientGenerators: {
 Adds JSDoc comments to generated types:
 
 ```typescript
-const jsdocPlugin: TypeSyncPlugin = {
+const jsdocPlugin: SchemanticPlugin = {
   name: "jsdoc",
   version: "1.0.0",
   description: "Adds JSDoc comments to generated types",
@@ -351,7 +351,7 @@ const jsdocPlugin: TypeSyncPlugin = {
 Adds validation decorators for class-validator:
 
 ```typescript
-const validationPlugin: TypeSyncPlugin = {
+const validationPlugin: SchemanticPlugin = {
   name: "validation",
   version: "1.0.0",
   description: "Adds validation decorators to generated types",
@@ -392,7 +392,7 @@ const validationPlugin: TypeSyncPlugin = {
 Generates React hooks for API endpoints:
 
 ```typescript
-const reactHooksPlugin: TypeSyncPlugin = {
+const reactHooksPlugin: SchemanticPlugin = {
   name: "react-hooks",
   version: "1.0.0",
   description: "Generates React hooks for API endpoints",
@@ -456,7 +456,7 @@ const plugin = await loader.loadPluginFromFile("./my-plugin.js");
 ### From Package
 
 ```typescript
-const plugin = await loader.loadPluginFromPackage("my-typesync-plugin");
+const plugin = await loader.loadPluginFromPackage("my-Schemantic-plugin");
 ```
 
 ### From Directory
@@ -470,10 +470,10 @@ const plugins = await loader.loadPluginsFromDirectory("./plugins");
 ### In Code
 
 ```typescript
-import { TypeSync } from "schemantic";
+import { Schemantic } from "schemantic";
 
-const typeSync = new TypeSync(config);
-const pluginManager = typeSync.getPluginManager();
+const Schemantic = new Schemantic(config);
+const pluginManager = Schemantic.getPluginManager();
 
 pluginManager.registerPlugin(myPlugin);
 pluginManager.enablePlugin("my-plugin");
@@ -482,7 +482,7 @@ pluginManager.enablePlugin("my-plugin");
 ### Via Configuration
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   // ... other config
   plugins: [
     { name: "my-plugin", enabled: true },
@@ -540,7 +540,7 @@ transformSchema: (schema: ResolvedSchema, context: GenerationContext): ResolvedS
 Document your plugin thoroughly:
 
 ```typescript
-const myPlugin: TypeSyncPlugin = {
+const myPlugin: SchemanticPlugin = {
   name: "my-plugin",
   version: "1.0.0",
   description: `
@@ -564,18 +564,18 @@ const myPlugin: TypeSyncPlugin = {
 Test your plugins:
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "schemantic";
+import { Schemantic, SchemanticConfig } from "schemantic";
 
 describe("My Plugin", () => {
   it("should transform schemas correctly", async () => {
-    const config: TypeSyncConfig = {
+    const config: SchemanticConfig = {
       schemaData: testSchema,
       outputDir: "./test-output",
       plugins: [{ name: "my-plugin", enabled: true }],
     };
 
-    const typeSync = new TypeSync(config);
-    const result = await typeSync.generate();
+    const Schemantic = new Schemantic(config);
+    const result = await Schemantic.generate();
 
     expect(result.success).toBe(true);
     expect(result.generatedFiles).toHaveLength(1);
@@ -588,7 +588,7 @@ describe("My Plugin", () => {
 Use semantic versioning for your plugins:
 
 ```typescript
-const myPlugin: TypeSyncPlugin = {
+const myPlugin: SchemanticPlugin = {
   name: "my-plugin",
   version: "1.2.3", // Major.Minor.Patch
   description: "My plugin description",
@@ -605,12 +605,12 @@ const myPlugin: TypeSyncPlugin = {
 
 ```json
 {
-  "name": "typesync-my-plugin",
+  "name": "Schemantic-my-plugin",
   "version": "1.0.0",
   "description": "My custom Schemantic plugin",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "keywords": ["typesync", "plugin", "typescript", "openapi"],
+  "keywords": ["Schemantic", "plugin", "typescript", "openapi"],
   "peerDependencies": {
     "schemantic": "^1.0.0"
   }
@@ -637,15 +637,15 @@ npm publish
 Users can install and use your plugin:
 
 ```bash
-npm install typesync-my-plugin
+npm install Schemantic-my-plugin
 ```
 
 ```typescript
-import { myPlugin } from "typesync-my-plugin";
-import { TypeSync } from "schemantic";
+import { myPlugin } from "Schemantic-my-plugin";
+import { Schemantic } from "schemantic";
 
-const typeSync = new TypeSync(config);
-typeSync.getPluginManager().registerPlugin(myPlugin);
+const Schemantic = new Schemantic(config);
+Schemantic.getPluginManager().registerPlugin(myPlugin);
 ```
 
 ## Troubleshooting
@@ -662,7 +662,7 @@ typeSync.getPluginManager().registerPlugin(myPlugin);
 Enable debug mode to see plugin execution:
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   // ... other config
   plugins: [{ name: "my-plugin", enabled: true, options: { debug: true } }],
 };

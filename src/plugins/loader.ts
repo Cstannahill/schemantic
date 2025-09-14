@@ -5,18 +5,18 @@
 
 import * as fs from "fs/promises";
 import * as path from "path";
-import { TypeSyncPlugin } from "../types/core";
+import { SchemanticPlugin } from "../types/core";
 
 /**
  * Plugin loader class
  */
 export class PluginLoader {
-  private loadedPlugins: Map<string, TypeSyncPlugin> = new Map();
+  private loadedPlugins: Map<string, SchemanticPlugin> = new Map();
 
   /**
    * Load plugin from file path
    */
-  async loadPluginFromFile(filePath: string): Promise<TypeSyncPlugin> {
+  async loadPluginFromFile(filePath: string): Promise<SchemanticPlugin> {
     try {
       // Check if file exists
       await fs.access(filePath);
@@ -46,7 +46,7 @@ export class PluginLoader {
   /**
    * Load plugin from package
    */
-  async loadPluginFromPackage(packageName: string): Promise<TypeSyncPlugin> {
+  async loadPluginFromPackage(packageName: string): Promise<SchemanticPlugin> {
     try {
       // Load the package
       const pluginModule = await import(packageName);
@@ -77,9 +77,9 @@ export class PluginLoader {
    */
   async loadPluginsFromDirectory(
     directoryPath: string
-  ): Promise<TypeSyncPlugin[]> {
+  ): Promise<SchemanticPlugin[]> {
     try {
-      const plugins: TypeSyncPlugin[] = [];
+      const plugins: SchemanticPlugin[] = [];
 
       // Read directory contents
       const entries = await fs.readdir(directoryPath, { withFileTypes: true });
@@ -111,7 +111,7 @@ export class PluginLoader {
   /**
    * Load plugin from object
    */
-  loadPluginFromObject(plugin: TypeSyncPlugin): TypeSyncPlugin {
+  loadPluginFromObject(plugin: SchemanticPlugin): SchemanticPlugin {
     // Validate plugin
     this.validatePlugin(plugin);
 
@@ -124,7 +124,9 @@ export class PluginLoader {
   /**
    * Extract plugin from module
    */
-  private extractPluginFromModule(module: unknown): TypeSyncPlugin | undefined {
+  private extractPluginFromModule(
+    module: unknown
+  ): SchemanticPlugin | undefined {
     // Try different export patterns
     if (
       typeof module === "object" &&
@@ -132,7 +134,7 @@ export class PluginLoader {
       "default" in module &&
       this.isValidPlugin((module as { default: unknown }).default)
     ) {
-      return (module as { default: TypeSyncPlugin }).default;
+      return (module as { default: SchemanticPlugin }).default;
     }
 
     if (
@@ -141,7 +143,7 @@ export class PluginLoader {
       "plugin" in module &&
       this.isValidPlugin((module as { plugin: unknown }).plugin)
     ) {
-      return (module as { plugin: TypeSyncPlugin }).plugin;
+      return (module as { plugin: SchemanticPlugin }).plugin;
     }
 
     if (this.isValidPlugin(module)) {
@@ -154,7 +156,7 @@ export class PluginLoader {
         module as Record<string, unknown>
       )) {
         if (this.isValidPlugin(value)) {
-          return value as TypeSyncPlugin;
+          return value as SchemanticPlugin;
         }
       }
     }
@@ -165,9 +167,9 @@ export class PluginLoader {
   /**
    * Check if object is a valid plugin
    */
-  private isValidPlugin(obj: unknown): obj is TypeSyncPlugin {
+  private isValidPlugin(obj: unknown): obj is SchemanticPlugin {
     if (!obj || typeof obj !== "object") return false;
-    const maybe = obj as Partial<TypeSyncPlugin>;
+    const maybe = obj as Partial<SchemanticPlugin>;
     return (
       typeof maybe.name === "string" &&
       typeof maybe.version === "string" &&
@@ -178,7 +180,7 @@ export class PluginLoader {
   /**
    * Validate plugin
    */
-  private validatePlugin(plugin: TypeSyncPlugin): void {
+  private validatePlugin(plugin: SchemanticPlugin): void {
     if (!plugin.name || typeof plugin.name !== "string") {
       throw new Error("Plugin must have a valid name");
     }
@@ -200,14 +202,14 @@ export class PluginLoader {
   /**
    * Get loaded plugin
    */
-  getLoadedPlugin(name: string): TypeSyncPlugin | undefined {
+  getLoadedPlugin(name: string): SchemanticPlugin | undefined {
     return this.loadedPlugins.get(name);
   }
 
   /**
    * Get all loaded plugins
    */
-  getAllLoadedPlugins(): TypeSyncPlugin[] {
+  getAllLoadedPlugins(): SchemanticPlugin[] {
     return Array.from(this.loadedPlugins.values());
   }
 
@@ -254,7 +256,7 @@ export interface PluginLoadingOptions {
   /**
    * Custom validation function
    */
-  customValidator?: (plugin: TypeSyncPlugin) => boolean;
+  customValidator?: (plugin: SchemanticPlugin) => boolean;
 }
 
 /**
@@ -262,7 +264,7 @@ export interface PluginLoadingOptions {
  */
 export async function loadPluginFromFile(
   filePath: string
-): Promise<TypeSyncPlugin> {
+): Promise<SchemanticPlugin> {
   const loader = new PluginLoader();
   return loader.loadPluginFromFile(filePath);
 }
@@ -272,7 +274,7 @@ export async function loadPluginFromFile(
  */
 export async function loadPluginFromPackage(
   packageName: string
-): Promise<TypeSyncPlugin> {
+): Promise<SchemanticPlugin> {
   const loader = new PluginLoader();
   return loader.loadPluginFromPackage(packageName);
 }
@@ -282,7 +284,7 @@ export async function loadPluginFromPackage(
  */
 export async function loadPluginsFromDirectory(
   directoryPath: string
-): Promise<TypeSyncPlugin[]> {
+): Promise<SchemanticPlugin[]> {
   const loader = new PluginLoader();
   return loader.loadPluginsFromDirectory(directoryPath);
 }

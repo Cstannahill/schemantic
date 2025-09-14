@@ -4,7 +4,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GenerationResult,
   GeneratedType,
@@ -16,13 +16,13 @@ import { ResolvedSchema } from "../types/schema";
  * Plugin manager class
  */
 export class PluginManager {
-  private plugins: Map<string, TypeSyncPlugin> = new Map();
+  private plugins: Map<string, SchemanticPlugin> = new Map();
   private enabledPlugins: Set<string> = new Set();
 
   /**
    * Register a plugin
    */
-  registerPlugin(plugin: TypeSyncPlugin): void {
+  registerPlugin(plugin: SchemanticPlugin): void {
     this.plugins.set(plugin.name, plugin);
   }
 
@@ -60,23 +60,23 @@ export class PluginManager {
   /**
    * Get all registered plugins
    */
-  getAllPlugins(): TypeSyncPlugin[] {
+  getAllPlugins(): SchemanticPlugin[] {
     return Array.from(this.plugins.values());
   }
 
   /**
    * Get enabled plugins
    */
-  getEnabledPlugins(): TypeSyncPlugin[] {
+  getEnabledPlugins(): SchemanticPlugin[] {
     return Array.from(this.enabledPlugins)
       .map((name) => this.plugins.get(name))
-      .filter((plugin): plugin is TypeSyncPlugin => plugin !== undefined);
+      .filter((plugin): plugin is SchemanticPlugin => plugin !== undefined);
   }
 
   /**
    * Get a specific plugin
    */
-  getPlugin(name: string): TypeSyncPlugin | undefined {
+  getPlugin(name: string): SchemanticPlugin | undefined {
     return this.plugins.get(name);
   }
 

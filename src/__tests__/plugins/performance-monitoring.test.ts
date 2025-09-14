@@ -15,7 +15,7 @@ import {
   generatePerformanceReport,
 } from "../../plugins/performance-monitoring";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   PluginConfig,
   GenerationContext,
   GeneratedType,
@@ -26,7 +26,7 @@ import { ExtendedSchemaObject } from "../../types/schema";
 import { createTestConfig, createTestSchema } from "../test-config";
 
 describe("PerformanceMonitoringPlugin", () => {
-  let config: TypeSyncConfig;
+  let config: SchemanticConfig;
   let testSchema: OpenAPISchema;
   let mockContext: GenerationContext;
 

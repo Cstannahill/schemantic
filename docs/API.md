@@ -2,21 +2,21 @@
 
 ## Core Classes
 
-### TypeSync
+### Schemantic
 
 The main class for generating TypeScript types and API clients from OpenAPI schemas.
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "schemantic";
+import { Schemantic, SchemanticConfig } from "schemantic";
 
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   generateTypes: true,
   generateApiClient: true,
 };
 
-const typeSync = new TypeSync(config);
+const Schemantic = new Schemantic(config);
 ```
 
 #### Methods
@@ -28,7 +28,7 @@ Generates TypeScript types and API clients from the configured OpenAPI schema.
 **Returns:** `Promise<GenerationResult>`
 
 ```typescript
-const result = await typeSync.generate();
+const result = await Schemantic.generate();
 
 if (result.success) {
   console.log(`Generated ${result.generatedFiles.length} files`);
@@ -44,7 +44,7 @@ Validates the OpenAPI schema without generating any files.
 **Returns:** `Promise<ValidationResult>`
 
 ```typescript
-const validation = await typeSync.validate();
+const validation = await Schemantic.validate();
 
 if (validation.isValid) {
   console.log("Schema is valid");
@@ -60,22 +60,22 @@ Returns the plugin manager instance for registering and managing plugins.
 **Returns:** `PluginManager`
 
 ```typescript
-const pluginManager = typeSync.getPluginManager();
+const pluginManager = Schemantic.getPluginManager();
 pluginManager.registerPlugin(customPlugin);
 ```
 
-##### `getConfig(): TypeSyncConfig`
+##### `getConfig(): SchemanticConfig`
 
 Returns the current configuration.
 
-**Returns:** `TypeSyncConfig`
+**Returns:** `SchemanticConfig`
 
-### TypeSyncConfig
+### SchemanticConfig
 
-Configuration interface for the TypeSync class.
+Configuration interface for the Schemantic class.
 
 ```typescript
-interface TypeSyncConfig {
+interface SchemanticConfig {
   // Input configuration
   schemaUrl?: string;
   schemaFile?: string;
@@ -136,25 +136,25 @@ const autoParser = ParserFactory.autoCreateParser(input, config);
 
 #### Methods
 
-##### `createParser(type: ParserType, config: TypeSyncConfig): SchemaParser`
+##### `createParser(type: ParserType, config: SchemanticConfig): SchemaParser`
 
 Creates a parser instance of the specified type.
 
 **Parameters:**
 
 - `type` - The parser type ('openapi', 'swagger', 'json-schema')
-- `config` - TypeSync configuration
+- `config` - Schemantic configuration
 
 **Returns:** `SchemaParser`
 
-##### `autoCreateParser(input: SchemaInput, config: TypeSyncConfig): SchemaParser`
+##### `autoCreateParser(input: SchemaInput, config: SchemanticConfig): SchemaParser`
 
 Automatically detects the parser type and creates an appropriate instance.
 
 **Parameters:**
 
 - `input` - Schema input source
-- `config` - TypeSync configuration
+- `config` - Schemantic configuration
 
 **Returns:** `SchemaParser`
 
@@ -232,13 +232,13 @@ const generatedType = TypeGeneratorFactory.generateType(
 
 #### Methods
 
-##### `createFromConfig(config: TypeSyncConfig): TypeGenerator[]`
+##### `createFromConfig(config: SchemanticConfig): TypeGenerator[]`
 
 Creates type generators based on configuration.
 
 **Parameters:**
 
-- `config` - TypeSync configuration
+- `config` - Schemantic configuration
 
 **Returns:** `TypeGenerator[]`
 
@@ -311,7 +311,7 @@ const pluginManager = new PluginManager();
 
 #### Methods
 
-##### `registerPlugin(plugin: TypeSyncPlugin): void`
+##### `registerPlugin(plugin: SchemanticPlugin): void`
 
 Registers a plugin with the manager.
 
@@ -368,7 +368,7 @@ const loader = new PluginLoader();
 
 #### Methods
 
-##### `loadPluginFromFile(filePath: string): Promise<TypeSyncPlugin>`
+##### `loadPluginFromFile(filePath: string): Promise<SchemanticPlugin>`
 
 Loads a plugin from a file.
 
@@ -376,9 +376,9 @@ Loads a plugin from a file.
 
 - `filePath` - Path to plugin file
 
-**Returns:** `Promise<TypeSyncPlugin>`
+**Returns:** `Promise<SchemanticPlugin>`
 
-##### `loadPluginFromPackage(packageName: string): Promise<TypeSyncPlugin>`
+##### `loadPluginFromPackage(packageName: string): Promise<SchemanticPlugin>`
 
 Loads a plugin from an npm package.
 
@@ -386,9 +386,9 @@ Loads a plugin from an npm package.
 
 - `packageName` - Package name
 
-**Returns:** `Promise<TypeSyncPlugin>`
+**Returns:** `Promise<SchemanticPlugin>`
 
-##### `loadPluginsFromDirectory(directoryPath: string): Promise<TypeSyncPlugin[]>`
+##### `loadPluginsFromDirectory(directoryPath: string): Promise<SchemanticPlugin[]>`
 
 Loads all plugins from a directory.
 
@@ -396,14 +396,14 @@ Loads all plugins from a directory.
 
 - `directoryPath` - Directory path
 
-**Returns:** `Promise<TypeSyncPlugin[]>`
+**Returns:** `Promise<SchemanticPlugin[]>`
 
-### TypeSyncPlugin
+### SchemanticPlugin
 
-Plugin interface for extending TypeSync functionality.
+Plugin interface for extending Schemantic functionality.
 
 ```typescript
-interface TypeSyncPlugin {
+interface SchemanticPlugin {
   name: string;
   version: string;
   description: string;
@@ -522,7 +522,7 @@ Context passed to plugins and generators.
 
 ```typescript
 interface GenerationContext {
-  config: TypeSyncConfig;
+  config: SchemanticConfig;
   schema: OpenAPISchema;
   resolvedSchemas: Map<string, ResolvedSchema>;
   generatedTypes: Map<string, GeneratedType>;

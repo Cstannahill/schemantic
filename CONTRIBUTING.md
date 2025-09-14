@@ -186,7 +186,7 @@ schemantic/
 
 ### Key Components
 
-- **Core**: Main TypeSync class and configuration
+- **Core**: Main Schemantic class and configuration
 - **Generators**: Convert schema objects to TypeScript code
 - **Parsers**: Parse OpenAPI schemas into internal format
 - **Plugins**: Extensible system for custom functionality

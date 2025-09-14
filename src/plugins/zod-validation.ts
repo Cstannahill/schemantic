@@ -17,7 +17,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -91,7 +91,7 @@ function recordPerformanceMetric(operation: string, duration: number): void {
 /**
  * Advanced Zod Validation Plugin Implementation
  */
-export const zodValidationPlugin: TypeSyncPlugin = {
+export const zodValidationPlugin: SchemanticPlugin = {
   name: "zod-validation",
   version: "2.0.0",
   description:

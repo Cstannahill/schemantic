@@ -103,7 +103,7 @@ This guide documents the development of advanced plugins for Schemantic, impleme
 ### Plugin Structure Template
 
 ```typescript
-export const advancedPlugin: TypeSyncPlugin = {
+export const advancedPlugin: SchemanticPlugin = {
   name: "advanced-feature",
   version: "1.0.0",
   description: "Advanced feature implementation with performance optimizations",

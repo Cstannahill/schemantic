@@ -20,7 +20,7 @@
 
 import { brandedTypesPlugin } from "../../plugins/branded-types";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   PluginConfig,
   GenerationContext,
   GeneratedType,
@@ -30,7 +30,7 @@ import { ExtendedSchemaObject } from "../../types/schema";
 import { createTestConfig, createTestSchema } from "../test-config";
 
 describe("BrandedTypesPlugin", () => {
-  let config: TypeSyncConfig;
+  let config: SchemanticConfig;
   let testSchema: OpenAPISchema;
   let mockContext: GenerationContext;
 

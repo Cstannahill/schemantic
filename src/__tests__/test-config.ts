@@ -2,28 +2,30 @@
  * Test configuration and utilities
  */
 
-import { TypeSyncConfig, DEFAULT_CONFIG } from '../types/core';
-import { OpenAPISchema } from '../types/openapi';
+import { SchemanticConfig, DEFAULT_CONFIG } from "../types/core";
+import { OpenAPISchema } from "../types/openapi";
 
 /**
  * Create a test configuration
  */
-export function createTestConfig(overrides: Partial<TypeSyncConfig> = {}): TypeSyncConfig {
-  const config: TypeSyncConfig = {
-    outputDir: './test-output',
+export function createTestConfig(
+  overrides: Partial<SchemanticConfig> = {}
+): SchemanticConfig {
+  const config: SchemanticConfig = {
+    outputDir: "./test-output",
     generateTypes: true,
     generateApiClient: true,
     useStrictTypes: true,
     useOptionalChaining: true,
     useNullishCoalescing: true,
-    namingConvention: 'camelCase',
+    namingConvention: "camelCase",
     preserveComments: true,
     generateIndexFile: true,
     generateBarrelExports: true,
     ...DEFAULT_CONFIG,
     ...overrides,
   };
-  
+
   return config;
 }
 
@@ -32,26 +34,26 @@ export function createTestConfig(overrides: Partial<TypeSyncConfig> = {}): TypeS
  */
 export function createTestSchema(): OpenAPISchema {
   return {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Test API',
-      version: '1.0.0',
-      description: 'A test API for unit tests',
+      title: "Test API",
+      version: "1.0.0",
+      description: "A test API for unit tests",
     },
     paths: {
-      '/users': {
+      "/users": {
         get: {
-          operationId: 'getUsers',
-          summary: 'Get all users',
+          operationId: "getUsers",
+          summary: "Get all users",
           responses: {
-            '200': {
-              description: 'List of users',
+            "200": {
+              description: "List of users",
               content: {
-                'application/json': {
+                "application/json": {
                   schema: {
-                    type: 'array',
+                    type: "array",
                     items: {
-                      $ref: '#/components/schemas/User',
+                      $ref: "#/components/schemas/User",
                     },
                   },
                 },
@@ -60,24 +62,24 @@ export function createTestSchema(): OpenAPISchema {
           },
         },
         post: {
-          operationId: 'createUser',
-          summary: 'Create a new user',
+          operationId: "createUser",
+          summary: "Create a new user",
           requestBody: {
             content: {
-              'application/json': {
+              "application/json": {
                 schema: {
-                  $ref: '#/components/schemas/CreateUserRequest',
+                  $ref: "#/components/schemas/CreateUserRequest",
                 },
               },
             },
           },
           responses: {
-            '201': {
-              description: 'Created user',
+            "201": {
+              description: "Created user",
               content: {
-                'application/json': {
+                "application/json": {
                   schema: {
-                    $ref: '#/components/schemas/User',
+                    $ref: "#/components/schemas/User",
                   },
                 },
               },
@@ -85,65 +87,65 @@ export function createTestSchema(): OpenAPISchema {
           },
         },
       },
-      '/users/{id}': {
+      "/users/{id}": {
         get: {
-          operationId: 'getUserById',
-          summary: 'Get user by ID',
+          operationId: "getUserById",
+          summary: "Get user by ID",
           parameters: [
             {
-              name: 'id',
-              in: 'path',
+              name: "id",
+              in: "path",
               required: true,
               schema: {
-                type: 'string',
+                type: "string",
               },
             },
           ],
           responses: {
-            '200': {
-              description: 'User details',
+            "200": {
+              description: "User details",
               content: {
-                'application/json': {
+                "application/json": {
                   schema: {
-                    $ref: '#/components/schemas/User',
+                    $ref: "#/components/schemas/User",
                   },
                 },
               },
             },
-            '404': {
-              description: 'User not found',
+            "404": {
+              description: "User not found",
             },
           },
         },
         put: {
-          operationId: 'updateUser',
-          summary: 'Update user',
+          operationId: "updateUser",
+          summary: "Update user",
           parameters: [
             {
-              name: 'id',
-              in: 'path',
+              name: "id",
+              in: "path",
               required: true,
               schema: {
-                type: 'string',
+                type: "string",
               },
             },
           ],
           requestBody: {
             content: {
-              'application/json': {
+              "application/json": {
                 schema: {
-                  $ref: '#/components/schemas/UpdateUserRequest',
+                  $ref: "#/components/schemas/UpdateUserRequest",
                 },
               },
             },
           },
           responses: {
-            '200': {
-              description: 'Updated user',
+            "200": {
+              description: "Updated user",
               content: {
-                'application/json': {
+                "application/json": {
                   schema: {
-                    $ref: '#/components/schemas/User',
+                    $ref: "#/components/schemas/User",
                   },
                 },
               },
@@ -151,24 +153,24 @@ export function createTestSchema(): OpenAPISchema {
           },
         },
         delete: {
-          operationId: 'deleteUser',
-          summary: 'Delete user',
+          operationId: "deleteUser",
+          summary: "Delete user",
           parameters: [
             {
-              name: 'id',
-              in: 'path',
+              name: "id",
+              in: "path",
               required: true,
               schema: {
-                type: 'string',
+                type: "string",
               },
             },
           ],
           responses: {
-            '204': {
-              description: 'User deleted',
+            "204": {
+              description: "User deleted",
             },
-            '404': {
-              description: 'User not found',
+            "404": {
+              description: "User not found",
             },
           },
         },
@@ -177,121 +179,121 @@ export function createTestSchema(): OpenAPISchema {
     components: {
       schemas: {
         User: {
-          type: 'object',
-          description: 'A user object',
+          type: "object",
+          description: "A user object",
           properties: {
             id: {
-              type: 'string',
-              format: 'uuid',
-              description: 'Unique identifier',
+              type: "string",
+              format: "uuid",
+              description: "Unique identifier",
             },
             email: {
-              type: 'string',
-              format: 'email',
-              description: 'User email address',
+              type: "string",
+              format: "email",
+              description: "User email address",
             },
             firstName: {
-              type: 'string',
-              description: 'User first name',
+              type: "string",
+              description: "User first name",
             },
             lastName: {
-              type: 'string',
-              description: 'User last name',
+              type: "string",
+              description: "User last name",
             },
             role: {
-              type: 'string',
-              enum: ['admin', 'user', 'moderator'],
-              description: 'User role',
+              type: "string",
+              enum: ["admin", "user", "moderator"],
+              description: "User role",
             },
             isActive: {
-              type: 'boolean',
-              description: 'Whether the user is active',
+              type: "boolean",
+              description: "Whether the user is active",
             },
             createdAt: {
-              type: 'string',
-              format: 'date-time',
-              description: 'Creation timestamp',
+              type: "string",
+              format: "date-time",
+              description: "Creation timestamp",
             },
             updatedAt: {
-              type: 'string',
-              format: 'date-time',
-              description: 'Last update timestamp',
+              type: "string",
+              format: "date-time",
+              description: "Last update timestamp",
             },
           },
-          required: ['id', 'email', 'firstName', 'lastName'],
+          required: ["id", "email", "firstName", "lastName"],
         },
         CreateUserRequest: {
-          type: 'object',
-          description: 'Request to create a new user',
+          type: "object",
+          description: "Request to create a new user",
           properties: {
             email: {
-              type: 'string',
-              format: 'email',
-              description: 'User email address',
+              type: "string",
+              format: "email",
+              description: "User email address",
             },
             firstName: {
-              type: 'string',
-              description: 'User first name',
+              type: "string",
+              description: "User first name",
             },
             lastName: {
-              type: 'string',
-              description: 'User last name',
+              type: "string",
+              description: "User last name",
             },
             role: {
-              type: 'string',
-              enum: ['admin', 'user', 'moderator'],
-              default: 'user',
-              description: 'User role',
+              type: "string",
+              enum: ["admin", "user", "moderator"],
+              default: "user",
+              description: "User role",
             },
           },
-          required: ['email', 'firstName', 'lastName'],
+          required: ["email", "firstName", "lastName"],
         },
         UpdateUserRequest: {
-          type: 'object',
-          description: 'Request to update a user',
+          type: "object",
+          description: "Request to update a user",
           properties: {
             email: {
-              type: 'string',
-              format: 'email',
-              description: 'User email address',
+              type: "string",
+              format: "email",
+              description: "User email address",
             },
             firstName: {
-              type: 'string',
-              description: 'User first name',
+              type: "string",
+              description: "User first name",
             },
             lastName: {
-              type: 'string',
-              description: 'User last name',
+              type: "string",
+              description: "User last name",
             },
             role: {
-              type: 'string',
-              enum: ['admin', 'user', 'moderator'],
-              description: 'User role',
+              type: "string",
+              enum: ["admin", "user", "moderator"],
+              description: "User role",
             },
             isActive: {
-              type: 'boolean',
-              description: 'Whether the user is active',
+              type: "boolean",
+              description: "Whether the user is active",
             },
           },
         },
         Error: {
-          type: 'object',
-          description: 'Error response',
+          type: "object",
+          description: "Error response",
           properties: {
             code: {
-              type: 'string',
-              description: 'Error code',
+              type: "string",
+              description: "Error code",
             },
             message: {
-              type: 'string',
-              description: 'Error message',
+              type: "string",
+              description: "Error message",
             },
             details: {
-              type: 'object',
-              description: 'Additional error details',
+              type: "object",
+              description: "Additional error details",
             },
           },
-          required: ['code', 'message'],
+          required: ["code", "message"],
         },
       },
     },
@@ -303,64 +305,64 @@ export function createTestSchema(): OpenAPISchema {
  */
 export function createComplexTestSchema(): OpenAPISchema {
   return {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Complex Test API',
-      version: '1.0.0',
-      description: 'A complex test API with various schema types',
+      title: "Complex Test API",
+      version: "1.0.0",
+      description: "A complex test API with various schema types",
     },
     paths: {
-      '/products': {
+      "/products": {
         get: {
-          operationId: 'getProducts',
+          operationId: "getProducts",
           parameters: [
             {
-              name: 'category',
-              in: 'query',
+              name: "category",
+              in: "query",
               schema: {
-                type: 'string',
-                enum: ['electronics', 'clothing', 'books'],
+                type: "string",
+                enum: ["electronics", "clothing", "books"],
               },
             },
             {
-              name: 'limit',
-              in: 'query',
+              name: "limit",
+              in: "query",
               schema: {
-                type: 'integer',
+                type: "integer",
                 minimum: 1,
                 maximum: 100,
                 default: 20,
               },
             },
             {
-              name: 'offset',
-              in: 'query',
+              name: "offset",
+              in: "query",
               schema: {
-                type: 'integer',
+                type: "integer",
                 minimum: 0,
                 default: 0,
               },
             },
           ],
           responses: {
-            '200': {
-              description: 'List of products',
+            "200": {
+              description: "List of products",
               content: {
-                'application/json': {
+                "application/json": {
                   schema: {
-                    type: 'object',
+                    type: "object",
                     properties: {
                       products: {
-                        type: 'array',
+                        type: "array",
                         items: {
-                          $ref: '#/components/schemas/Product',
+                          $ref: "#/components/schemas/Product",
                         },
                       },
                       total: {
-                        type: 'integer',
+                        type: "integer",
                       },
                       hasMore: {
-                        type: 'boolean',
+                        type: "boolean",
                       },
                     },
                   },
@@ -374,135 +376,141 @@ export function createComplexTestSchema(): OpenAPISchema {
     components: {
       schemas: {
         Product: {
-          type: 'object',
+          type: "object",
           properties: {
             id: {
-              type: 'string',
-              format: 'uuid',
+              type: "string",
+              format: "uuid",
             },
             name: {
-              type: 'string',
+              type: "string",
             },
             description: {
-              type: 'string',
+              type: "string",
             },
             price: {
-              type: 'number',
-              format: 'decimal',
+              type: "number",
+              format: "decimal",
             },
             category: {
-              $ref: '#/components/schemas/Category',
+              $ref: "#/components/schemas/Category",
             },
             tags: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'string',
+                type: "string",
               },
             },
             metadata: {
-              type: 'object',
+              type: "object",
               additionalProperties: true,
             },
             specifications: {
-              type: 'object',
+              type: "object",
               properties: {
                 weight: {
-                  type: 'number',
+                  type: "number",
                 },
                 dimensions: {
-                  type: 'object',
+                  type: "object",
                   properties: {
-                    width: { type: 'number' },
-                    height: { type: 'number' },
-                    depth: { type: 'number' },
+                    width: { type: "number" },
+                    height: { type: "number" },
+                    depth: { type: "number" },
                   },
                 },
               },
             },
             availability: {
-              type: 'object',
+              type: "object",
               properties: {
                 inStock: {
-                  type: 'boolean',
+                  type: "boolean",
                 },
                 quantity: {
-                  type: 'integer',
+                  type: "integer",
                   minimum: 0,
                 },
                 lastRestocked: {
-                  type: 'string',
-                  format: 'date-time',
+                  type: "string",
+                  format: "date-time",
                 },
               },
             },
           },
-          required: ['id', 'name', 'price', 'category'],
+          required: ["id", "name", "price", "category"],
         },
         Category: {
-          type: 'object',
+          type: "object",
           properties: {
             id: {
-              type: 'string',
+              type: "string",
             },
             name: {
-              type: 'string',
+              type: "string",
             },
             parent: {
-              $ref: '#/components/schemas/Category',
+              $ref: "#/components/schemas/Category",
             },
           },
-          required: ['id', 'name'],
+          required: ["id", "name"],
         },
         Order: {
-          type: 'object',
+          type: "object",
           properties: {
             id: {
-              type: 'string',
-              format: 'uuid',
+              type: "string",
+              format: "uuid",
             },
             customerId: {
-              type: 'string',
-              format: 'uuid',
+              type: "string",
+              format: "uuid",
             },
             items: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
                   productId: {
-                    type: 'string',
-                    format: 'uuid',
+                    type: "string",
+                    format: "uuid",
                   },
                   quantity: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1,
                   },
                   price: {
-                    type: 'number',
-                    format: 'decimal',
+                    type: "number",
+                    format: "decimal",
                   },
                 },
-                required: ['productId', 'quantity', 'price'],
+                required: ["productId", "quantity", "price"],
               },
             },
             status: {
-              type: 'string',
-              enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+              type: "string",
+              enum: [
+                "pending",
+                "confirmed",
+                "shipped",
+                "delivered",
+                "cancelled",
+              ],
             },
             total: {
-              type: 'number',
-              format: 'decimal',
+              type: "number",
+              format: "decimal",
             },
             createdAt: {
-              type: 'string',
-              format: 'date-time',
+              type: "string",
+              format: "date-time",
             },
             updatedAt: {
-              type: 'string',
-              format: 'date-time',
+              type: "string",
+              format: "date-time",
             },
           },
-          required: ['id', 'customerId', 'items', 'status', 'total'],
+          required: ["id", "customerId", "items", "status", "total"],
         },
       },
     },
@@ -524,11 +532,11 @@ export const mockFs = {
  * Setup mock file system
  */
 export function setupMockFs(): void {
-  jest.mock('fs/promises', () => mockFs);
-  
+  jest.mock("fs/promises", () => mockFs);
+
   mockFs.mkdir.mockResolvedValue(undefined);
   mockFs.writeFile.mockResolvedValue(undefined);
-  mockFs.readFile.mockResolvedValue('{}');
+  mockFs.readFile.mockResolvedValue("{}");
   mockFs.access.mockResolvedValue(undefined);
   mockFs.readdir.mockResolvedValue([]);
 }
@@ -543,18 +551,18 @@ export function resetMockFs(): void {
 /**
  * Basic test to ensure the test utilities work
  */
-describe('Test Utilities', () => {
-  it('should create test configuration', () => {
+describe("Test Utilities", () => {
+  it("should create test configuration", () => {
     const config = createTestConfig();
     expect(config).toBeDefined();
-    expect(config.outputDir).toBe('./test-output');
+    expect(config.outputDir).toBe("./test-output");
     expect(config.generateTypes).toBe(true);
   });
 
-  it('should create test schema', () => {
+  it("should create test schema", () => {
     const schema = createTestSchema();
     expect(schema).toBeDefined();
-    expect(schema.openapi).toBe('3.0.0');
-    expect(schema.info.title).toBe('Test API');
+    expect(schema.openapi).toBe("3.0.0");
+    expect(schema.info.title).toBe("Test API");
   });
 });
