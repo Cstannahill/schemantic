@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * CLI entry point for sync-type
+ * CLI entry point for schemantic
  * This file is compiled from TypeScript and serves as the binary entry point
  */
 

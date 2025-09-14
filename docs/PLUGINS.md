@@ -1,10 +1,10 @@
 # Plugin Development Guide
 
-This guide explains how to create custom plugins for Sync-Type to extend its functionality.
+This guide explains how to create custom plugins for Schemantic to extend its functionality.
 
 ## Plugin Overview
 
-Plugins in Sync-Type allow you to:
+Plugins in Schemantic allow you to:
 
 - Transform schemas before type generation
 - Modify generated types and API clients
@@ -71,7 +71,7 @@ interface TypeSyncPlugin {
 Here's a minimal plugin:
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, GeneratedType } from "sync-type";
+import { TypeSyncPlugin, GenerationContext, GeneratedType } from "schemantic";
 
 const myPlugin: TypeSyncPlugin = {
   name: "my-plugin",
@@ -447,7 +447,7 @@ function generateReactHooks(context: GenerationContext): string {
 ### From File
 
 ```typescript
-import { PluginLoader } from "sync-type";
+import { PluginLoader } from "schemantic";
 
 const loader = new PluginLoader();
 const plugin = await loader.loadPluginFromFile("./my-plugin.js");
@@ -470,7 +470,7 @@ const plugins = await loader.loadPluginsFromDirectory("./plugins");
 ### In Code
 
 ```typescript
-import { TypeSync } from "sync-type";
+import { TypeSync } from "schemantic";
 
 const typeSync = new TypeSync(config);
 const pluginManager = typeSync.getPluginManager();
@@ -494,7 +494,7 @@ const config: TypeSyncConfig = {
 ### Via CLI
 
 ```bash
-npx sync-type generate --plugins my-plugin,jsdoc
+npx schemantic generate --plugins my-plugin,jsdoc
 ```
 
 ## Best Practices
@@ -564,7 +564,7 @@ const myPlugin: TypeSyncPlugin = {
 Test your plugins:
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "sync-type";
+import { TypeSync, TypeSyncConfig } from "schemantic";
 
 describe("My Plugin", () => {
   it("should transform schemas correctly", async () => {
@@ -607,12 +607,12 @@ const myPlugin: TypeSyncPlugin = {
 {
   "name": "typesync-my-plugin",
   "version": "1.0.0",
-  "description": "My custom Sync-Type plugin",
+  "description": "My custom Schemantic plugin",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "keywords": ["typesync", "plugin", "typescript", "openapi"],
   "peerDependencies": {
-    "sync-type": "^1.0.0"
+    "schemantic": "^1.0.0"
   }
 }
 ```
@@ -642,7 +642,7 @@ npm install typesync-my-plugin
 
 ```typescript
 import { myPlugin } from "typesync-my-plugin";
-import { TypeSync } from "sync-type";
+import { TypeSync } from "schemantic";
 
 const typeSync = new TypeSync(config);
 typeSync.getPluginManager().registerPlugin(myPlugin);

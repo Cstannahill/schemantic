@@ -490,7 +490,7 @@ export class TypeSync {
     const clientFileBase = (
       this.config.outputFileName || `api-client.ts`
     ).replace(/\.ts$/, "");
-    const content = `// Barrel exports for sync-type generated code
+    const content = `// Barrel exports for schemantic generated code
 export * from './types';
 export * from './${clientFileBase}';
 export * from './hooks';

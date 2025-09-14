@@ -7,7 +7,7 @@
 The main class for generating TypeScript types and API clients from OpenAPI schemas.
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "sync-type";
+import { TypeSync, TypeSyncConfig } from "schemantic";
 
 const config: TypeSyncConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
@@ -125,7 +125,7 @@ interface TypeSyncConfig {
 Factory class for creating schema parsers.
 
 ```typescript
-import { ParserFactory } from "sync-type";
+import { ParserFactory } from "schemantic";
 
 // Create parser by type
 const parser = ParserFactory.createParser("openapi", config);
@@ -173,7 +173,7 @@ Detects the appropriate parser type from the input.
 Parser implementation for OpenAPI 3.0+ specifications.
 
 ```typescript
-import { OpenAPIParser } from "sync-type";
+import { OpenAPIParser } from "schemantic";
 
 const parser = new OpenAPIParser(config);
 ```
@@ -217,7 +217,7 @@ Creates a schema resolver for the parsed schema.
 Factory class for creating type generators.
 
 ```typescript
-import { TypeGeneratorFactory } from "sync-type";
+import { TypeGeneratorFactory } from "schemantic";
 
 // Create generators from config
 const generators = TypeGeneratorFactory.createFromConfig(config);
@@ -270,7 +270,7 @@ Finds the best generator for a given schema.
 Generator for creating TypeScript interfaces from OpenAPI schema objects.
 
 ```typescript
-import { ObjectTypeGenerator } from "sync-type";
+import { ObjectTypeGenerator } from "schemantic";
 
 const generator = new ObjectTypeGenerator(options);
 ```
@@ -280,7 +280,7 @@ const generator = new ObjectTypeGenerator(options);
 Generator for creating TypeScript enums from OpenAPI schema enums.
 
 ```typescript
-import { EnumTypeGenerator } from "sync-type";
+import { EnumTypeGenerator } from "schemantic";
 
 const generator = new EnumTypeGenerator(options);
 ```
@@ -290,7 +290,7 @@ const generator = new EnumTypeGenerator(options);
 Generator for creating TypeScript API client classes.
 
 ```typescript
-import { ApiClientGenerator } from "sync-type";
+import { ApiClientGenerator } from "schemantic";
 
 const generator = new ApiClientGenerator(context);
 const client = generator.generate(context);
@@ -304,7 +304,7 @@ const client = generator.generate(context);
 Manages plugin registration and execution.
 
 ```typescript
-import { PluginManager } from "sync-type";
+import { PluginManager } from "schemantic";
 
 const pluginManager = new PluginManager();
 ```
@@ -361,7 +361,7 @@ Executes after generation hooks for all enabled plugins.
 Loads plugins from various sources.
 
 ```typescript
-import { PluginLoader } from "sync-type";
+import { PluginLoader } from "schemantic";
 
 const loader = new PluginLoader();
 ```
@@ -567,7 +567,7 @@ interface GenerationWarning {
 ### Built-in Plugins
 
 ```typescript
-import { getBuiltinPlugins, getBuiltinPlugin } from "sync-type";
+import { getBuiltinPlugins, getBuiltinPlugin } from "schemantic";
 
 // Get all built-in plugins
 const plugins = getBuiltinPlugins();
@@ -584,7 +584,7 @@ import {
   autoCreateParser,
   createGenerators,
   generateType,
-} from "sync-type";
+} from "schemantic";
 
 // Create parser
 const parser = createParser("openapi", config);

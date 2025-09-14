@@ -1,5 +1,5 @@
 /**
- * Core types for the sync-type package
+ * Core types for the schemantic package
  * These types define the internal structure and interfaces used throughout the system
  */
 

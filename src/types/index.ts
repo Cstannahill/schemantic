@@ -1,5 +1,5 @@
 /**
- * Type exports for the sync-type package
+ * Type exports for the schemantic package
  */
 
 export * from "./openapi";

@@ -1,6 +1,6 @@
 /**
  * Base parser interface and abstract implementation
- * Provides the foundation for all schema parsers in the sync-type system
+ * Provides the foundation for all schema parsers in the schemantic system
  */
 
 import { OpenAPISchema } from "../types/openapi";

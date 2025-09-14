@@ -1,5 +1,5 @@
 /**
- * Main entry point for the sync-type package
+ * Main entry point for the schemantic package
  * Exports all public APIs and utilities
  */
 

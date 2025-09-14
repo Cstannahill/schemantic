@@ -1,5 +1,5 @@
 /**
- * Plugin manager for the sync-type system
+ * Plugin manager for the schemantic system
  * Handles loading, registration, and execution of plugins
  */
 

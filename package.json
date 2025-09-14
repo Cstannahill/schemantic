@@ -1,5 +1,5 @@
 {
-  "name": "sync-type",
+  "name": "schemantic",
   "version": "0.1.0",
   "description": "A fully typed, extensible TypeScript type generator for FastAPI OpenAPI schemas",
   "main": "dist/index.js",
@@ -14,7 +14,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "sync-type": "dist/cli/index.js"
+    "schemantic": "dist/cli/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -53,11 +53,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cstannahill/sync-type.git"
+    "url": "git+https://github.com/Cstannahill/schemantic.git"
   },
-  "homepage": "https://github.com/Cstannahill/sync-type#readme",
+  "homepage": "https://github.com/Cstannahill/schemantic#readme",
   "bugs": {
-    "url": "https://github.com/Cstannahill/sync-type/issues"
+    "url": "https://github.com/Cstannahill/schemantic/issues"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

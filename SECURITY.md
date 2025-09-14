@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We provide security updates for the following versions of Sync-Type:
+We provide security updates for the following versions of Schemantic:
 
 | Version | Supported |
 | ------- | --------- |
@@ -11,7 +11,7 @@ We provide security updates for the following versions of Sync-Type:
 
 ## Reporting a Vulnerability
 
-We take the security of Sync-Type seriously. If you discover a security vulnerability, please follow these steps:
+We take the security of Schemantic seriously. If you discover a security vulnerability, please follow these steps:
 
 ### 1. Do NOT create a public issue
 
@@ -20,7 +20,7 @@ Please do not report security vulnerabilities through public GitHub issues, disc
 ### 2. Report privately
 
 Instead, please report security vulnerabilities via email to:
-**security@sync-type.dev** (or create a private security advisory on GitHub)
+**security@schemantic.dev** (or create a private security advisory on GitHub)
 
 ### 3. Include details
 
@@ -43,7 +43,7 @@ Please provide as much information as possible, including:
 
 ### For Users
 
-1. **Keep Sync-Type updated** to the latest version
+1. **Keep Schemantic updated** to the latest version
 2. **Validate input schemas** before processing
 3. **Sanitize generated output** if using in web applications
 4. **Use HTTPS** when fetching schemas from URLs
@@ -118,10 +118,10 @@ We currently do not offer a formal bug bounty program, but we greatly appreciate
 
 For security-related questions or concerns:
 
-- **Email**: security@sync-type.dev
-- **GitHub Security Advisories**: [Create a security advisory](https://github.com/Cstannahill/sync-type/security/advisories/new)
+- **Email**: security@schemantic.dev
+- **GitHub Security Advisories**: [Create a security advisory](https://github.com/Cstannahill/schemantic/security/advisories/new)
 
-For general questions about Sync-Type:
+For general questions about Schemantic:
 
-- **GitHub Issues**: [Regular issues](https://github.com/Cstannahill/sync-type/issues)
-- **GitHub Discussions**: [Community discussions](https://github.com/Cstannahill/sync-type/discussions)
+- **GitHub Issues**: [Regular issues](https://github.com/Cstannahill/schemantic/issues)
+- **GitHub Discussions**: [Community discussions](https://github.com/Cstannahill/schemantic/discussions)

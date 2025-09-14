@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * CLI interface for sync-type
+ * CLI interface for schemantic
  * Provides command-line interface for generating TypeScript types and API clients
  */
 
@@ -45,7 +45,7 @@ export class TypeSyncCli {
    */
   private setupProgram(): void {
     this.program
-      .name("sync-type")
+      .name("schemantic")
       .description(
         "Generate TypeScript types and API clients from OpenAPI schemas"
       )
@@ -152,7 +152,7 @@ export class TypeSyncCli {
   private addInitCommand(): void {
     this.program
       .command("init [directory]")
-      .description("Initialize a new sync-type configuration")
+      .description("Initialize a new schemantic configuration")
       .option("-t, --template <template>", "Configuration template", "default")
       .option("--yes", "Skip interactive prompts")
       .action(async (directory, options) => {
@@ -303,48 +303,48 @@ export class TypeSyncCli {
       }
     } else {
       // Show general help with examples
-      console.log("📚 Sync-Type CLI Examples:");
+      console.log("📚 Schemantic CLI Examples:");
       console.log("\n� Basic Usage:");
       console.log("  # Generate from FastAPI server");
       console.log(
-        "  npx sync-type generate --url http://localhost:8000/openapi.json"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json"
       );
       console.log("\n  # Generate from local file");
-      console.log("  npx sync-type generate --file ./openapi-schema.json");
+      console.log("  npx schemantic generate --file ./openapi-schema.json");
       console.log("\n  # Custom output directory");
       console.log(
-        "  npx sync-type generate --url http://localhost:8000/openapi.json --output ./src/api"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json --output ./src/api"
       );
       console.log("\n⚛️ React Integration:");
       console.log("  # Generate with React hooks");
       console.log(
-        "  npx sync-type generate --url http://localhost:8000/openapi.json --hooks"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json --hooks"
       );
       console.log("\n🎛️ Interactive Mode:");
-      console.log("  npx sync-type generate --interactive");
+      console.log("  npx schemantic generate --interactive");
       console.log("\n⚙️ Configuration:");
       console.log("  # Initialize configuration");
-      console.log("  npx sync-type init");
+      console.log("  npx schemantic init");
       console.log("\n  # Use configuration file");
-      console.log("  npx sync-type generate --config ./typesync.config.json");
+      console.log("  npx schemantic generate --config ./typesync.config.json");
       console.log("\n✅ Validation:");
       console.log("  # Validate schema");
       console.log(
-        "  npx sync-type validate --url http://localhost:8000/openapi.json"
+        "  npx schemantic validate --url http://localhost:8000/openapi.json"
       );
       console.log("\n� Advanced:");
       console.log("  # Custom naming and filtering");
       console.log(
-        "  npx sync-type generate --url http://localhost:8000/openapi.json \\"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json \\"
       );
       console.log(
         "    --naming PascalCase --prefix MyAPI --exclude-paths '/health,/docs'"
       );
       console.log("\n📖 For complete documentation:");
-      console.log("  https://github.com/Cstannahill/sync-type#readme");
+      console.log("  https://github.com/Cstannahill/schemantic#readme");
       console.log("\n💡 Get help for specific commands:");
-      console.log("  npx sync-type help generate");
-      console.log("  npx sync-type generate --help");
+      console.log("  npx schemantic help generate");
+      console.log("  npx schemantic generate --help");
     }
   }
 
@@ -582,7 +582,7 @@ export class TypeSyncCli {
    * Run interactive mode
    */
   private async runInteractiveMode(): Promise<void> {
-    console.log("🚀 Sync-Type Interactive Mode\n");
+    console.log("🚀 Schemantic Interactive Mode\n");
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -656,7 +656,7 @@ export class TypeSyncCli {
     directory: string,
     _options: CliOptions
   ): Promise<void> {
-    console.log("🚀 Sync-Type Configuration Initialization\n");
+    console.log("🚀 Schemantic Configuration Initialization\n");
 
     const rl = readline.createInterface({
       input: process.stdin,

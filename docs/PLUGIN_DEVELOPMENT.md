@@ -1,10 +1,10 @@
 # Plugin Development Guide
 
-This guide explains how to create custom plugins for Sync-Type to extend its functionality.
+This guide explains how to create custom plugins for Schemantic to extend its functionality.
 
 ## Overview
 
-Sync-Type's plugin system allows you to:
+Schemantic's plugin system allows you to:
 
 - Transform OpenAPI schemas before processing
 - Customize type generation logic
@@ -132,7 +132,7 @@ interface GeneratedFile {
 ### 1. Simple Transform Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, GeneratedType } from "sync-type";
+import { TypeSyncPlugin, GenerationContext, GeneratedType } from "schemantic";
 
 const addCommentsPlugin: TypeSyncPlugin = {
   name: "add-comments",
@@ -156,7 +156,7 @@ export default addCommentsPlugin;
 ### 2. Schema Transform Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext } from "sync-type";
+import { TypeSyncPlugin, GenerationContext } from "schemantic";
 import { OpenAPIV3 } from "openapi-types";
 
 const schemaTransformPlugin: TypeSyncPlugin = {
@@ -195,7 +195,7 @@ export default schemaTransformPlugin;
 ### 3. Custom Type Generator Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext, TypeGenerator } from "sync-type";
+import { TypeSyncPlugin, GenerationContext, TypeGenerator } from "schemantic";
 
 const customGeneratorPlugin: TypeSyncPlugin = {
   name: "validation-generator",
@@ -265,7 +265,7 @@ export default customGeneratorPlugin;
 ### 1. CLI Command Extension
 
 ```typescript
-import { TypeSyncPlugin, CliCommand } from "sync-type";
+import { TypeSyncPlugin, CliCommand } from "schemantic";
 
 const cliExtensionPlugin: TypeSyncPlugin = {
   name: "cli-extension",
@@ -297,7 +297,7 @@ const cliExtensionPlugin: TypeSyncPlugin = {
 ### 2. File Output Generator
 
 ```typescript
-import { TypeSyncPlugin, OutputGenerator, GenerationContext } from "sync-type";
+import { TypeSyncPlugin, OutputGenerator, GenerationContext } from "schemantic";
 
 const docGeneratorPlugin: TypeSyncPlugin = {
   name: "doc-generator",
@@ -349,7 +349,7 @@ const docGeneratorPlugin: TypeSyncPlugin = {
 ### 3. Configuration-Based Plugin
 
 ```typescript
-import { TypeSyncPlugin, GenerationContext } from "sync-type";
+import { TypeSyncPlugin, GenerationContext } from "schemantic";
 
 interface PluginConfig {
   addTimestamps: boolean;
@@ -411,7 +411,7 @@ export default plugin;
 
 ## Plugin Utilities
 
-Sync-Type provides utilities to help with plugin development:
+Schemantic provides utilities to help with plugin development:
 
 ```typescript
 interface PluginUtilities {
@@ -458,8 +458,8 @@ module.exports = {
 Load with CLI:
 
 ```bash
-npx sync-type plugin load ./my-plugin.js
-npx sync-type generate --plugins my-plugin
+npx schemantic plugin load ./my-plugin.js
+npx schemantic generate --plugins my-plugin
 ```
 
 ### 2. NPM Package Plugin
@@ -484,14 +484,14 @@ Load with CLI:
 
 ```bash
 npm install @my-org/typesync-plugin
-npx sync-type plugin load @my-org/typesync-plugin
-npx sync-type generate --plugins npm-plugin
+npx schemantic plugin load @my-org/typesync-plugin
+npx schemantic generate --plugins npm-plugin
 ```
 
 ### 3. Programmatic Plugin
 
 ```typescript
-import { TypeSync, TypeSyncConfig } from "sync-type";
+import { TypeSync, TypeSyncConfig } from "schemantic";
 import myPlugin from "./my-plugin";
 
 const config: TypeSyncConfig = {
@@ -518,7 +518,7 @@ const result = await typeSync.generate();
 ```typescript
 import { describe, it, expect } from "jest";
 import myPlugin from "./my-plugin";
-import { GenerationContext, GeneratedType } from "sync-type";
+import { GenerationContext, GeneratedType } from "schemantic";
 
 describe("MyPlugin", () => {
   it("should add comments to generated types", async () => {
@@ -556,7 +556,7 @@ describe("MyPlugin", () => {
 ### Integration Testing
 
 ```typescript
-import { TypeSync } from "sync-type";
+import { TypeSync } from "schemantic";
 import myPlugin from "./my-plugin";
 
 describe("Plugin Integration", () => {
@@ -689,7 +689,7 @@ my-typesync-plugin/
   "main": "index.js",
   "keywords": ["typesync", "plugin", "openapi", "typescript"],
   "peerDependencies": {
-    "sync-type": "^1.0.0"
+    "schemantic": "^1.0.0"
   },
   "files": ["index.js", "README.md", "LICENSE"]
 }
@@ -697,7 +697,7 @@ my-typesync-plugin/
 
 ### 3. Plugin Registry
 
-Consider adding your plugin to the community registry by submitting a PR to the Sync-Type plugins repository.
+Consider adding your plugin to the community registry by submitting a PR to the Schemantic plugins repository.
 
 ## Community Plugins
 
@@ -711,6 +711,6 @@ Popular community plugins include:
 ## Support
 
 - 📖 [Plugin API Reference](./API.md#plugin-api)
-- 💬 [Plugin Development Discussions](https://github.com/Cstannahill/sync-type/discussions)
-- 🐛 [Report Plugin Issues](https://github.com/Cstannahill/sync-type/issues)
+- 💬 [Plugin Development Discussions](https://github.com/Cstannahill/schemantic/discussions)
+- 🐛 [Report Plugin Issues](https://github.com/Cstannahill/schemantic/issues)
 - 📧 [Plugin Development Support](mailto:plugins@typesync.dev)
