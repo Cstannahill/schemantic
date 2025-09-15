@@ -62,7 +62,7 @@
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.3.3",
+    "@types/node": "^24.4.0",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "eslint": "^9.35.0",
@@ -83,8 +83,8 @@
     "!dist/**/*.spec.*"
   ],
   "dependencies": {
-    "axios": "^1.12.1",
-    "chokidar": "^4.0.1",
+    "axios": "^1.12.2",
+    "chokidar": "^4.0.3",
     "commander": "^14.0.1"
   }
 }
