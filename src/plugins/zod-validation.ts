@@ -605,11 +605,14 @@ function buildObjectSchema(
   const strictMode = options.strictMode ? ".strict()" : "";
   const base = `z.object({\n${properties.join(",\n")}\n})${strictMode}`;
   if (wantsCamel && transformPairs.length > 0) {
-    return `${base}.transform((val) => ({\n${transformPairs.join(",\n")}\n}))`;
+    // Type the transform parameter to avoid implicit any in generated code
+    return `${base}.transform((val: Record<string, unknown>) => ({\n${transformPairs.join(
+      ",\n"
+    )}\n}))`;
   }
+  // Default: return the base schema when no transform is required
   return base;
 }
-
 /**
  * Build Zod union/discriminatedUnion schema for oneOf
  */
@@ -708,15 +711,20 @@ export const ${typeName}Schema = ${zodSchema};
  */
 export function validate${typeName}(data: unknown): { success: true; data: ${typeName} } | { success: false; errors: string[] } {
   const result = ${typeName}Schema.safeParse(data);
-  
+
   if (!result.success) {
     const issues = (result.error as any).issues || [];
     console.warn('Response validation failed:', issues);
-    throw new ValidationError(issues, data);
+    // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
+    return {
+      success: false,
+      errors: issues.length > 0
+        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        : []
+    };
   }
-    success: false,
-    errors: result.error.errors.map(err => \`\${err.path.join('.')}: \${err.message}\`)
-  };
+
+  return { success: true, data: result.data };
 }
 
 /**
@@ -724,7 +732,8 @@ export function validate${typeName}(data: unknown): { success: true; data: ${typ
  */
 export function parse${typeName}(data: unknown): ${typeName} {
   return ${typeName}Schema.parse(data);
-}${brandedType}${typeGuard}`;
+}
+${brandedType}${typeGuard}`;
 }
 
 /**
