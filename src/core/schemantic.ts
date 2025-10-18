@@ -361,17 +361,34 @@ export class Schemantic {
     // Generate imports from dependencies
     const imports = this.generateImportsFromDependencies(allDependencies);
 
-    // Generate types content (remove any existing imports from individual types)
-    const typesContent = generatedTypes
-      .map((type) => {
-        // Remove any import statements from the type content
-        return type.content
-          .replace(/^import\s+.*?from\s+['"][^'"]*['"];?\s*$/gm, "")
-          .trim();
-      })
-      .filter((content) => content.length > 0);
+    // Generate types content ordered by dependencies.
+    // Preserve each GeneratedType.content as a whole (except stripping any import lines),
+    // then emit in an order where dependencies appear before dependents using the typeRegistry.
+    const typeContentMap: Record<string, string> = {};
+    for (const t of generatedTypes) {
+      const cleaned = t.content
+        .replace(/^import\s+.*?from\s+['"][^'"]*['"];?\s*$/gm, "")
+        .trim();
+      if (cleaned.length > 0) typeContentMap[t.name] = cleaned;
+    }
 
-    const content = imports + typesContent.join("\n\n");
+    const orderedNames = this.typeRegistry.resolveDependencies();
+
+    const emittedBlocks: string[] = [];
+
+    for (const name of orderedNames) {
+      if (typeContentMap[name]) {
+        emittedBlocks.push(typeContentMap[name]);
+        delete typeContentMap[name];
+      }
+    }
+
+    // Append any remaining types (defensive)
+    for (const rem of Object.values(typeContentMap)) {
+      emittedBlocks.push(rem);
+    }
+
+    const content = imports + emittedBlocks.join("\n\n");
     const filePath = path.join(this.config.outputDir, "types.ts");
 
     await fs.writeFile(filePath, content, "utf-8");
@@ -490,11 +507,49 @@ export class Schemantic {
     const clientFileBase = (
       this.config.outputFileName || `api-client.ts`
     ).replace(/\.ts$/, "");
-    const content = `// Barrel exports for schemantic generated code
-export * from './types';
-export * from './${clientFileBase}';
-export * from './hooks';
-`;
+    // Build barrel exports carefully to avoid duplicate symbol re-exports
+    //  - Always export types
+    //  - Re-export client value symbols but skip any symbols that collide with types exports
+    //  - Export hooks only when hooks were generated/enabled
+
+    // Collect exported symbol names from generated types
+    const typeExports = new Set<string>();
+    for (const t of _generatedTypes) {
+      for (const e of t.exports || []) typeExports.add(e);
+    }
+
+    // Collect client exports and filter collisions with types
+    const clientExports: string[] = [];
+    for (const c of _generatedClients || []) {
+      for (const e of c.exports || []) {
+        // Skip types-only exports (like type aliases) if they collide with type exports
+        if (typeExports.has(e)) continue;
+        // Avoid duplicate additions
+        if (!clientExports.includes(e)) clientExports.push(e);
+      }
+    }
+
+    const lines: string[] = [];
+    lines.push("// Barrel exports for schemantic generated code");
+    // Always export ./types
+    lines.push("export * from './types';");
+
+    // Export client symbols explicitly (avoid wildcard which may cause conflicts)
+    if (clientExports.length > 0) {
+      lines.push(
+        `export { ${clientExports.join(", ")} } from './${clientFileBase}';`
+      );
+    } else {
+      // If there were no client symbols to re-export, still export the module values (safe)
+      lines.push(`export * from './${clientFileBase}';`);
+    }
+
+    // Only export hooks if hooks generation is enabled in config
+    if (this.config.generateHooks) {
+      lines.push("export * from './hooks';");
+    }
+
+    const content = lines.join("\n") + "\n";
 
     const filePath = path.join(this.config.outputDir, "barrel.ts");
 
