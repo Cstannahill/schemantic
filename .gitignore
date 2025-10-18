@@ -10,3 +10,6 @@ yarn.lock
 .tgz
 test-output/
 ex-prj
+workflows-in-progress/
+.npmrc
+

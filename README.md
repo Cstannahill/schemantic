@@ -94,6 +94,8 @@ const config: SchemanticConfig = {
 };
 
 const Schemantic = new Schemantic(config);
+Note: React hooks generation is temporarily disabled in the CLI and built-in plugin list due to a known issue causing generation corruption in some schemas. We are tracking a fix — in the meantime, enable hooks by manually enabling the `react-hooks` plugin in your config after reviewing the risks.
+
 const result = await Schemantic.generate();
 
 if (result.success) {
@@ -278,7 +280,7 @@ npx schemantic generate \
 # Enable plugins
 npx schemantic generate \
   --url http://localhost:8000/openapi.json \
-  --plugins jsdoc,validation,react-hooks
+  --plugins jsdoc,validation
 
 # Use configuration file
 npx schemantic generate --config ./schemantic.config.json
