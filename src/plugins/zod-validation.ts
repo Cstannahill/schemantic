@@ -36,7 +36,11 @@ type ZodType<T = unknown> = {
     | {
         success: false;
         error: {
-          errors: Array<{ path: (string | number)[]; message: string }>;
+          issues: Array<{
+            path: (string | number)[];
+            message: string;
+            code?: string;
+          }>;
         };
       };
   pipe<U>(schema: ZodType<U>): ZodType<U>;
@@ -93,7 +97,7 @@ function recordPerformanceMetric(operation: string, duration: number): void {
  */
 export const zodValidationPlugin: SchemanticPlugin = {
   name: "zod-validation",
-  version: "2.0.0",
+  version: "0.1.0",
   description:
     "Advanced Zod schema generation with performance optimizations and type safety enhancements",
 
@@ -705,11 +709,11 @@ export const ${typeName}Schema = ${zodSchema};
 export function validate${typeName}(data: unknown): { success: true; data: ${typeName} } | { success: false; errors: string[] } {
   const result = ${typeName}Schema.safeParse(data);
   
-  if (result.success) {
-    return { success: true, data: result.data };
+  if (!result.success) {
+    const issues = (result.error as any).issues || [];
+    console.warn('Response validation failed:', issues);
+    throw new ValidationError(issues, data);
   }
-  
-  return {
     success: false,
     errors: result.error.errors.map(err => \`\${err.path.join('.')}: \${err.message}\`)
   };
@@ -750,7 +754,7 @@ function generateValidationMiddleware(
     );
   }
   const strictModeCode = options.strictMode
-    ? 'throw new ValidationError(result.error.errors.map(err => `${err.path.join(".")}: ${err.message}`), data);'
+    ? "throw new ValidationError((result.error as any).issues || [], data);"
     : "// In non-strict mode, return data as-is";
 
   return `
@@ -758,9 +762,15 @@ function generateValidationMiddleware(
  * Validation middleware for API requests and responses
  */
 export class ValidationError extends Error {
-  constructor(public errors: string[], public data: unknown) {
-    super(\`Validation failed: \${errors.join(', ')}\`);
+  public issues: Array<{ path: (string | number)[]; message: string; code?: string }>;
+  constructor(issues: Array<{ path: (string | number)[]; message: string; code?: string }>, public data: unknown) {
+    const message = issues
+      .map((iss) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+      .join('; ');
+  super('Validation failed: ' + message);
     this.name = 'ValidationError';
+    this.issues = issues;
+    Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
@@ -769,14 +779,12 @@ export class ValidationError extends Error {
  */
 export function validateRequest<T>(data: unknown, schema: ZodType<T>): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
-    throw new ValidationError(
-      result.error.errors.map(err => \`\${err.path.join('.')}: \${err.message}\`),
-      data
-    );
+    const issues = (result.error as any).issues || [];
+    throw new ValidationError(issues, data);
   }
-  
+
   return result.data;
 }
 
@@ -785,12 +793,13 @@ export function validateRequest<T>(data: unknown, schema: ZodType<T>): T {
  */
 export function validateResponse<T>(data: unknown, schema: ZodType<T>): T {
   const result = schema.safeParse(data);
-  
+
   if (!result.success) {
-    console.warn('Response validation failed:', result.error.errors);
+    const issues = (result.error as any).issues || [];
+    console.warn('Response validation failed:', issues);
     ${strictModeCode}
   }
-  
+
   return result.data;
 }`;
 }

@@ -356,7 +356,7 @@ const performanceAnalyzer = new PerformanceAnalyzer();
  */
 export const performanceMonitoringPlugin: SchemanticPlugin = {
   name: "performance-monitoring",
-  version: "2.0.0",
+  version: "0.1.0",
   description:
     "Advanced performance monitoring with statistical analysis and optimization recommendations",
 

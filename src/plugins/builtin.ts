@@ -27,7 +27,7 @@ import brandedTypesPlugin from "./branded-types";
  */
 export const jsdocPlugin: SchemanticPlugin = {
   name: "jsdoc",
-  version: "1.0.0",
+  version: "0.1.0",
   description: "Adds JSDoc comments to generated types and methods",
 
   beforeTypeGeneration: async (
@@ -79,7 +79,7 @@ export const jsdocPlugin: SchemanticPlugin = {
  */
 export const validationPlugin: SchemanticPlugin = {
   name: "validation",
-  version: "1.0.0",
+  version: "0.1.0",
   description: "Adds validation decorators to generated types",
 
   transformSchema: (
@@ -233,7 +233,7 @@ function generateValidationDecorators(
  */
 export const reactHooksPlugin: SchemanticPlugin = {
   name: "react-hooks",
-  version: "1.0.0",
+  version: "0.1.0",
   description: "Generates React hooks for API endpoints",
 
   customClientGenerators: {
@@ -281,7 +281,7 @@ function generateReactHooks(
  */
 export const strictModePlugin: SchemanticPlugin = {
   name: "strict-mode",
-  version: "1.0.0",
+  version: "0.1.0",
   description: "Adds TypeScript strict mode enhancements",
 
   transformSchema: (
