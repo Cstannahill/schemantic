@@ -10,7 +10,7 @@ describe("integration: zod validation shape", () => {
   test("generated client includes ValidationError with issues and validateResponse uses issues", async () => {
     const schemaPath = path.resolve(
       __dirname,
-      "../../../test-output/image-conversion-schema-openapi.json"
+      "../../../test-schemas/image-conversion-schema-openapi.json"
     );
     const outDir = path.resolve(
       __dirname,
