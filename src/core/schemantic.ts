@@ -335,14 +335,7 @@ export class Schemantic {
       files.push(indexFile);
     }
 
-    // Generate barrel exports
-    if (this.config.generateBarrelExports) {
-      const barrelFile = await this.generateBarrelFile(
-        generatedTypes,
-        generatedClients
-      );
-      files.push(barrelFile);
-    }
+    // Barrel exports removed: all exports consolidated in index.ts
 
     return files;
   }
@@ -492,73 +485,6 @@ export class Schemantic {
       path: filePath,
       content,
       type: "index",
-      dependencies: [],
-      size: Buffer.byteLength(content, "utf-8"),
-    };
-  }
-
-  /**
-   * Generate barrel file
-   */
-  private async generateBarrelFile(
-    _generatedTypes: GeneratedType[],
-    _generatedClients: GeneratedApiClient[]
-  ): Promise<GeneratedFile> {
-    const clientFileBase = (
-      this.config.outputFileName || `api-client.ts`
-    ).replace(/\.ts$/, "");
-    // Build barrel exports carefully to avoid duplicate symbol re-exports
-    //  - Always export types
-    //  - Re-export client value symbols but skip any symbols that collide with types exports
-    //  - Export hooks only when hooks were generated/enabled
-
-    // Collect exported symbol names from generated types
-    const typeExports = new Set<string>();
-    for (const t of _generatedTypes) {
-      for (const e of t.exports || []) typeExports.add(e);
-    }
-
-    // Collect client exports and filter collisions with types
-    const clientExports: string[] = [];
-    for (const c of _generatedClients || []) {
-      for (const e of c.exports || []) {
-        // Skip types-only exports (like type aliases) if they collide with type exports
-        if (typeExports.has(e)) continue;
-        // Avoid duplicate additions
-        if (!clientExports.includes(e)) clientExports.push(e);
-      }
-    }
-
-    const lines: string[] = [];
-    lines.push("// Barrel exports for schemantic generated code");
-    // Always export ./types
-    lines.push("export * from './types';");
-
-    // Export client symbols explicitly (avoid wildcard which may cause conflicts)
-    if (clientExports.length > 0) {
-      lines.push(
-        `export { ${clientExports.join(", ")} } from './${clientFileBase}';`
-      );
-    } else {
-      // If there were no client symbols to re-export, still export the module values (safe)
-      lines.push(`export * from './${clientFileBase}';`);
-    }
-
-    // Only export hooks if hooks generation is enabled in config
-    if (this.config.generateHooks) {
-      lines.push("export * from './hooks';");
-    }
-
-    const content = lines.join("\n") + "\n";
-
-    const filePath = path.join(this.config.outputDir, "barrel.ts");
-
-    await fs.writeFile(filePath, content, "utf-8");
-
-    return {
-      path: filePath,
-      content,
-      type: "barrel",
       dependencies: [],
       size: Buffer.byteLength(content, "utf-8"),
     };

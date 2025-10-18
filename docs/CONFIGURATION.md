@@ -345,13 +345,7 @@ Whether to generate an index file that exports all generated types.
 generateIndexFile: true;
 ```
 
-#### `generateBarrelExports`
-
-Whether to generate barrel export files.
-
-```typescript
-generateBarrelExports: true;
-```
+> Note: The `generateBarrelExports` option has been removed in v0.3.0. Exports are consolidated into `index.ts` and `barrel.ts` is no longer generated.
 
 ## Environment Variables
 
@@ -483,7 +477,6 @@ const advancedConfig: SchemanticConfig = {
 
   preserveComments: true,
   generateIndexFile: true,
-  generateBarrelExports: true,
 };
 ```
 

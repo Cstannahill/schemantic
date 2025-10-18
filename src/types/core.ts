@@ -48,7 +48,6 @@ export interface SchemanticConfig {
   // Advanced options
   preserveComments: boolean;
   generateIndexFile: boolean;
-  generateBarrelExports: boolean;
 }
 
 /**
@@ -174,7 +173,7 @@ export interface GenerationResult {
 export interface GeneratedFile {
   path: string;
   content: string;
-  type: "type" | "client" | "hook" | "query" | "index" | "barrel";
+  type: "type" | "client" | "hook" | "query" | "index";
   dependencies: string[];
   size: number;
 }
@@ -278,5 +277,4 @@ export const DEFAULT_CONFIG: Partial<SchemanticConfig> = {
   namingConvention: "camelCase",
   preserveComments: true,
   generateIndexFile: true,
-  generateBarrelExports: true,
 };

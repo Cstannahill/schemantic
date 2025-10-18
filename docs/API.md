@@ -114,7 +114,8 @@ interface SchemanticConfig {
   // Advanced options
   preserveComments: boolean;
   generateIndexFile: boolean;
-  generateBarrelExports: boolean;
+
+  // Note: `generateBarrelExports` was removed in v0.3.0 — exports are consolidated in `index.ts`.
 }
 ```
 

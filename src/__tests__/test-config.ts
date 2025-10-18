@@ -21,7 +21,6 @@ export function createTestConfig(
     namingConvention: "camelCase",
     preserveComments: true,
     generateIndexFile: true,
-    generateBarrelExports: true,
     ...DEFAULT_CONFIG,
     ...overrides,
   };

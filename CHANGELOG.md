@@ -9,6 +9,21 @@ Got it — here’s your updated, clean and complete **`CHANGELOG.md`** entry re
 
 ---
 
+## [0.3.0] — 2025-10-18
+
+### Removed
+
+- Removed `barrel.ts` generation and the `generateBarrelExports` configuration option.
+
+  - Exports are now consolidated into `index.ts` by default. This reduces duplication and simplifies generated output.
+
+### Migration notes
+
+- If you previously relied on a generated `barrel.ts`, update your code to import from the generated `index.ts` (e.g., `import { MyApiClient } from './generated';`).
+- The `generateBarrelExports` option has been removed; there is no replacement flag. If you require a custom barrel file, create it in your project outside of the generated files.
+
+---
+
 ## [0.2.1] — 2025-10-18
 
 ### Fixed

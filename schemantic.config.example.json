@@ -9,7 +9,6 @@
   "namingConvention": "camelCase",
   "preserveComments": true,
   "generateIndexFile": true,
-  "generateBarrelExports": true,
   "schemaUrl": "http://localhost:8000/openapi.json",
   "outputDir": "local-test/react-app/src/lib/api",
   "typePrefix": "",

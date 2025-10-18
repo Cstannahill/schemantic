@@ -130,7 +130,7 @@ describe("Schemantic", () => {
       const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
-      expect(result.generatedFiles).toHaveLength(4); // types.ts, api-client.ts, index.ts, barrel.ts
+      expect(result.generatedFiles).toHaveLength(3); // types.ts, api-client.ts, index.ts
       expect(result.statistics.totalTypes).toBe(2); // User, CreateUserRequest
       expect(result.statistics.totalEndpoints).toBe(2); // getUsers, createUser
       expect(result.errors).toHaveLength(0);
@@ -146,7 +146,7 @@ describe("Schemantic", () => {
       const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
-      expect(result.generatedFiles).toHaveLength(3); // types.ts, index.ts, barrel.ts
+      expect(result.generatedFiles).toHaveLength(2); // types.ts, index.ts
       expect(result.statistics.totalTypes).toBe(2);
       expect(result.statistics.totalEndpoints).toBe(0);
     });
@@ -161,7 +161,7 @@ describe("Schemantic", () => {
       const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
-      expect(result.generatedFiles).toHaveLength(3); // api-client.ts, index.ts, barrel.ts
+      expect(result.generatedFiles).toHaveLength(2); // api-client.ts, index.ts
       expect(result.statistics.totalTypes).toBe(0);
       expect(result.statistics.totalEndpoints).toBe(2);
     });

@@ -773,7 +773,7 @@ export class SchemanticCli {
       useStrictTypes: true,
       namingConvention: "camelCase",
       typeSuffix: "",
-      generateBarrelExports: true,
+      // generateBarrelExports removed - barrel.ts is no longer generated
       useOptionalChaining: true,
       useNullishCoalescing: true,
       preserveComments: true,

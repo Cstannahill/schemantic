@@ -35,7 +35,6 @@ describe("integration: zod validation shape", () => {
       typeSuffix: "",
       preserveComments: true,
       generateIndexFile: false,
-      generateBarrelExports: false,
       plugins: [{ name: "zod-validation", enabled: true }],
     } as unknown as SchemanticConfig;
 

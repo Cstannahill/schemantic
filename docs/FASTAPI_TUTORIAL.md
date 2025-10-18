@@ -754,7 +754,7 @@ npx schemantic generate \
 # - types.ts (TypeScript interfaces)
 # - api-client.ts (API client class)
 # - hooks.ts (React hooks)
-# - index.ts (barrel exports)
+# - index.ts (consolidated exports; `barrel.ts` removed in v0.3.0)
 ```
 
 ### 2.3 Verify Generated Types

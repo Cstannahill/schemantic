@@ -1,7 +1,7 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import { Schemantic } from "../../core/schemantic";
-import { DEFAULT_CONFIG } from "../../types/core";
+import { DEFAULT_CONFIG, SchemanticConfig } from "../../types/core";
 
 describe("integration: prefix handling", () => {
   jest.setTimeout(20000);
@@ -28,8 +28,7 @@ describe("integration: prefix handling", () => {
       typePrefix: "",
       typeSuffix: "",
       generateIndexFile: false,
-      generateBarrelExports: false,
-    } as any;
+    } as unknown as SchemanticConfig;
 
     const s = new Schemantic(config);
     const result = await s.generate();
