@@ -50,7 +50,7 @@ npx schemantic generate \
   --url http://localhost:8000/openapi.json \
   --output ./src/generated \
   --naming camelCase \
-  --prefix API \
+  --prefix "MyAPI" \
   --suffix Type
 ```
 
@@ -133,7 +133,8 @@ const config: SchemanticConfig = {
   // Naming conventions
   namingConvention: "camelCase", // 'camelCase' | 'snake_case' | 'PascalCase'
   // By default, Schemantic prefixes type names with "API". Customize if desired:
-  typePrefix: "API",
+  // By default no prefix is added. Set a value here to add one, e.g. "MyAPI":
+  typePrefix: "",
   typeSuffix: "Type",
 
   // Customization
@@ -202,7 +203,8 @@ npx schemantic generate --help
 --naming <convention>        Naming convention (camelCase|snake_case|PascalCase)
 
 # Customization
---prefix <prefix>            Type name prefix (default: API)
+# Customization
+--prefix <prefix>            Type name prefix (default: none)
 --suffix <suffix>            Type name suffix
 --exclude-paths <paths>      Exclude paths (comma-separated)
 --include-paths <paths>      Include paths (comma-separated)
@@ -279,7 +281,7 @@ npx schemantic generate \
   --plugins jsdoc,validation,react-hooks
 
 # Use configuration file
-npx schemantic generate --config ./Schemantic.config.json
+npx schemantic generate --config ./schemantic.config.json
 
 # Watch mode for development
 npx schemantic generate --url http://localhost:8000/openapi.json --watch
@@ -334,8 +336,8 @@ npx schemantic plugin load @my-org/Schemantic-plugin
 ### Types
 
 ```typescript
-// Generated from OpenAPI schema
-export interface APIUser {
+// Generated from OpenAPI schema (no prefix by default)
+export interface User {
   id: string;
   email: string;
   firstName: string;
@@ -344,19 +346,19 @@ export interface APIUser {
   updatedAt: string;
 }
 
-export interface APICreateUserRequest {
+export interface CreateUserRequest {
   email: string;
   firstName: string;
   lastName: string;
 }
 
-export interface APIUpdateUserRequest {
+export interface UpdateUserRequest {
   email?: string;
   firstName?: string;
   lastName?: string;
 }
 
-export enum APIUserRole {
+export enum UserRole {
   ADMIN = "admin",
   USER = "user",
   MODERATOR = "moderator",

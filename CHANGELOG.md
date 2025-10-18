@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - 2025-09-13
+### Fixed
+
+- Respect empty `typePrefix` by default (no automatic `API` prefix). Added an integration test to prevent regressions.
+- Make CLI `--config` flag usable without an explicit path and standardize the configuration filename to `schemantic.config.json`.
+- Prevent generator from importing TypeScript builtins (e.g. `Record`) from generated `./types`.
+
+### Added
+
+- Add a lightweight CI workflow to run the prefix integration test on push/PR.
+
+## [0.1.0] - 2025-09-13
 
 ### Added
 
@@ -61,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Error Handling**: Graceful error handling with detailed error messages
 - **Testing**: Comprehensive test suite with 100% coverage goals
 
-## [1.0.0] - 2024-01-01
+## [0.1.0] - 2024-09-12
 
 ### Added
 

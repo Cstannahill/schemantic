@@ -748,7 +748,7 @@ npx schemantic generate \
   --output ./frontend/src/generated \
   --hooks \
   --naming camelCase \
-  --prefix "API"
+  # No prefix by default; to add a prefix use --prefix "MyAPI"
 
 # Generated files:
 # - types.ts (TypeScript interfaces)
@@ -1388,7 +1388,7 @@ npx schemantic generate \
   --output ./frontend/src/generated \
   --hooks \
   --naming camelCase \
-  --prefix "API"
+  # No prefix by default; to add a prefix use --prefix "MyAPI"
 
 echo "✅ Types updated successfully!"
 echo "🏗️ Building frontend to verify types..."

@@ -85,7 +85,11 @@ export class SchemanticCli {
         "Naming convention (camelCase|snake_case|PascalCase)",
         "camelCase"
       )
-      .option("--prefix <prefix>", "Type name prefix", "API")
+      .option(
+        "--prefix <prefix>",
+        "Type name prefix (leave blank for none)",
+        ""
+      )
       .option("--suffix <suffix>", "Type name suffix", "")
       .option("--exclude-paths <paths>", "Exclude paths (comma-separated)")
       .option("--include-paths <paths>", "Include paths (comma-separated)")
@@ -98,7 +102,13 @@ export class SchemanticCli {
         "Include schemas (comma-separated)"
       )
       .option("--plugins <plugins>", "Enable plugins (comma-separated)")
-      .option("-c, --config <file>", "Configuration file path")
+      // --config may be provided with an explicit path or used as a flag
+      // If used as a boolean flag (no value), commander will set it to true.
+      // Accept either a path or a boolean and handle in loadConfiguration.
+      .option(
+        "-c, --config [file]",
+        "Configuration file path (defaults to ./schemantic.config.json)"
+      )
       .option("--watch", "Watch for changes and regenerate")
       .action(async (source: string, options: CliOptions) => {
         await this.handleGenerateCommand(source, options);
@@ -327,7 +337,7 @@ export class SchemanticCli {
       console.log("  npx schemantic init");
       console.log("\n  # Use configuration file");
       console.log(
-        "  npx schemantic generate --config ./Schemantic.config.json"
+        "  npx schemantic generate --config ./schemantic.config.json"
       );
       console.log("\n✅ Validation:");
       console.log("  # Validate schema");
@@ -359,9 +369,14 @@ export class SchemanticCli {
   ): Promise<SchemanticConfig> {
     let config: Partial<SchemanticConfig> = { ...DEFAULT_CONFIG };
 
-    // Load from config file if specified
+    // Load from config file if specified. Commander may set options.config to
+    // a string (path) or boolean true when the flag is present without value.
     if (options.config) {
-      const configFile = await this.loadConfigFile(options.config as string);
+      const configPath =
+        typeof options.config === "string" && options.config.trim().length > 0
+          ? (options.config as string)
+          : "./schemantic.config.json";
+      const configFile = await this.loadConfigFile(configPath);
       config = { ...config, ...configFile };
     }
 
@@ -613,8 +628,11 @@ export class SchemanticCli {
       config.outputDir = outputDir || "./src/generated";
 
       // Get type prefix
-      const prefix = await this.askQuestion(rl, "Type prefix (default: API): ");
-      config.typePrefix = prefix || "API";
+      const prefix = await this.askQuestion(
+        rl,
+        "Type prefix (leave blank for none): "
+      );
+      config.typePrefix = prefix || "";
 
       // Get generation options
       const generateTypes = await this.askYesNo(rl, "Generate types? (Y/n): ");
@@ -687,8 +705,11 @@ export class SchemanticCli {
       config.outputDir = outputDir || "./src/generated";
 
       // Get type prefix
-      const prefix = await this.askQuestion(rl, "Type prefix (default: API): ");
-      config.typePrefix = prefix || "API";
+      const prefix = await this.askQuestion(
+        rl,
+        "Type prefix (leave blank for none): "
+      );
+      config.typePrefix = prefix || "";
 
       // Get naming convention
       const naming = await this.askChoice(
@@ -729,7 +750,7 @@ export class SchemanticCli {
 
       // Save configuration
       await this.saveConfig(directory, config as SchemanticConfig);
-      console.log("\n✅ Configuration saved to Schemantic.config.json");
+      console.log("\n✅ Configuration saved to schemantic.config.json");
     } finally {
       rl.close();
     }
@@ -742,7 +763,7 @@ export class SchemanticCli {
     const config: SchemanticConfig = {
       ...DEFAULT_CONFIG,
       outputDir: "./src/generated",
-      typePrefix: "API",
+      typePrefix: "",
       generateTypes: true,
       generateApiClient: true,
       generateHooks: false,
@@ -770,7 +791,7 @@ export class SchemanticCli {
     const fs = await import("fs/promises");
     const path = await import("path");
 
-    const configPath = path.join(directory, "Schemantic.config.json");
+    const configPath = path.join(directory, "schemantic.config.json");
     await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf-8");
   }
 

@@ -243,10 +243,10 @@ Examples:
 Prefix to add to generated type names.
 
 ```typescript
-typePrefix: "Api";
+typePrefix: ""; // empty by default (no prefix)
 ```
 
-Default prefix is `API`, producing names like `APIUser`, `APIProduct`. Customize if desired.
+By default no prefix is added. Set a value here to add one, e.g. `"MyAPI"` to produce `MyAPIUser`.
 
 #### `typeSuffix`
 
@@ -460,7 +460,7 @@ const advancedConfig: SchemanticConfig = {
   useNullishCoalescing: true,
 
   namingConvention: "camelCase",
-  typePrefix: "Api",
+  typePrefix: "",
   typeSuffix: "Type",
 
   customTypeMappings: {
