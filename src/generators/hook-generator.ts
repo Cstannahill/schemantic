@@ -296,9 +296,46 @@ export class HookGenerator {
       for (const p of ep.parameters)
         this.extractTypeNamesFromType(p.type).forEach((n) => typeNames.add(n));
     }
+    // Filter out TypeScript built-in/global type names that are not generated in ./types
+    const builtinNames = new Set([
+      "string",
+      "number",
+      "boolean",
+      "unknown",
+      "any",
+      "void",
+      "null",
+      "undefined",
+      "never",
+      "object",
+      "Record",
+      "Array",
+      "Promise",
+      "Partial",
+      "Readonly",
+      "Pick",
+      "Omit",
+      "Exclude",
+      "Extract",
+      "Required",
+      "NonNullable",
+      "ReturnType",
+      "Parameters",
+      "InstanceType",
+      "ConstructorParameters",
+      "ThisType",
+      "Set",
+      "Map",
+      "Date",
+      "RegExp",
+      "Error",
+    ]);
+    const filteredTypeNames = Array.from(typeNames).filter(
+      (n) => !builtinNames.has(n)
+    );
     const typesImport =
-      typeNames.size > 0
-        ? `import { ${Array.from(typeNames).join(", ")} } from './types';\n`
+      filteredTypeNames.length > 0
+        ? `import { ${filteredTypeNames.join(", ")} } from './types';\n`
         : "";
     const reactImport = `import { useCallback, useEffect, useMemo, useRef, useState } from 'react';\n`;
     const clientImport = `import { ${clientName}, ApiClientError } from './api-client';\n\n`;
