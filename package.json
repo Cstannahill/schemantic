@@ -1,6 +1,6 @@
 {
   "name": "schemantic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A fully typed, extensible TypeScript type generator for FastAPI OpenAPI schemas",
   "main": "dist/index.js",
   "module": "dist/index.js",
