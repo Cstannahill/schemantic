@@ -1,0 +1,283 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Image Manipulation API",
+    "description": "\n    A robust, modular image manipulation API supporting conversion between \n    multiple image formats with optional transformations.\n    \n    **Features:**\n    - Format conversion (PNG, JPEG, WEBP, AVIF, TIFF, SVG, and more)\n    - Image resizing with automatic aspect ratio\n    - Quality control for lossy formats\n    - Batch processing\n    - SVG support (vector ↔ raster)\n    ",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health Check",
+        "description": "Returns the health status of the API service",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/convert/": {
+      "post": {
+        "tags": ["Conversion"],
+        "summary": "Convert Image Format",
+        "description": "Convert an image from one format to another with optional transformations.\n    \n    **Supported Formats:**\n    - Raster: PNG, JPEG/JPG, WEBP, AVIF, TIFF/TIF, ICO, BMP, HEIC/HEIF\n    - Vector: SVG\n    \n    **Optional Transformations:**\n    - Resize (width/height with automatic aspect ratio)\n    - Quality adjustment (for lossy formats)\n    - DPI/scale settings (for SVG conversions)\n    \n    **Returns:** Converted image file with appropriate MIME type",
+        "operationId": "convert_image_convert__post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_convert_image_convert__post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully converted image",
+            "content": { "application/json": { "schema": {} }, "image/*": {} }
+          },
+          "400": { "description": "Invalid request or unsupported format" },
+          "413": { "description": "File size exceeds maximum limit" },
+          "422": { "description": "Conversion failed" }
+        }
+      }
+    },
+    "/convert/batch": {
+      "post": {
+        "tags": ["Conversion"],
+        "summary": "Batch Convert Images",
+        "description": "Convert multiple images to the same target format.\n    \n    All images will be converted using the same parameters. This is more\n    efficient than individual conversions when processing multiple files\n    with identical target specifications.\n    \n    **Returns:** ZIP archive containing all converted images",
+        "operationId": "batch_convert_images_convert_batch_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_batch_convert_images_convert_batch_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully converted images",
+            "content": {
+              "application/json": { "schema": {} },
+              "application/zip": {}
+            }
+          },
+          "400": { "description": "Invalid request" },
+          "413": { "description": "Total file size exceeds limit" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/convert/formats": {
+      "get": {
+        "tags": ["Conversion"],
+        "summary": "List Supported Formats",
+        "description": "Returns a list of all supported image formats",
+        "operationId": "list_formats_convert_formats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Formats Convert Formats Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": ["Root"],
+        "summary": "API Root",
+        "description": "Returns basic API information and links to documentation",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_batch_convert_images_convert_batch_post": {
+        "properties": {
+          "files": {
+            "items": { "type": "string", "format": "binary" },
+            "type": "array",
+            "title": "Files",
+            "description": "Image files to convert"
+          },
+          "target_format": {
+            "$ref": "#/components/schemas/ImageFormat",
+            "description": "Target format for all images"
+          },
+          "quality": {
+            "anyOf": [
+              { "type": "integer", "maximum": 100.0, "minimum": 1.0 },
+              { "type": "null" }
+            ],
+            "title": "Quality",
+            "description": "Quality (1-100) for lossy formats"
+          },
+          "preserve_names": {
+            "type": "boolean",
+            "title": "Preserve Names",
+            "description": "Preserve original filenames",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": ["files", "target_format"],
+        "title": "Body_batch_convert_images_convert_batch_post"
+      },
+      "Body_convert_image_convert__post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File",
+            "description": "Image file to convert"
+          },
+          "target_format": {
+            "$ref": "#/components/schemas/ImageFormat",
+            "description": "Target image format"
+          },
+          "quality": {
+            "anyOf": [
+              { "type": "integer", "maximum": 100.0, "minimum": 1.0 },
+              { "type": "null" }
+            ],
+            "title": "Quality",
+            "description": "Quality (1-100) for lossy formats"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Width",
+            "description": "Target width in pixels"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "exclusiveMinimum": 0.0
+              },
+              { "type": "null" }
+            ],
+            "title": "Height",
+            "description": "Target height in pixels"
+          },
+          "dpi": {
+            "anyOf": [
+              { "type": "integer", "maximum": 600.0, "exclusiveMinimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Dpi",
+            "description": "DPI for SVG-to-raster conversion"
+          },
+          "scale": {
+            "anyOf": [
+              { "type": "number", "maximum": 10.0, "exclusiveMinimum": 0.0 },
+              { "type": "null" }
+            ],
+            "title": "Scale",
+            "description": "Scale factor for SVG-to-raster"
+          }
+        },
+        "type": "object",
+        "required": ["file", "target_format"],
+        "title": "Body_convert_image_convert__post"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": { "type": "string", "title": "Status" },
+          "version": { "type": "string", "title": "Version" },
+          "environment": { "type": "string", "title": "Environment" }
+        },
+        "type": "object",
+        "required": ["status", "version", "environment"],
+        "title": "HealthResponse",
+        "description": "Health check response schema."
+      },
+      "ImageFormat": {
+        "type": "string",
+        "enum": [
+          "png",
+          "jpeg",
+          "jpg",
+          "webp",
+          "avif",
+          "tiff",
+          "tif",
+          "ico",
+          "heic",
+          "heif",
+          "bmp",
+          "svg"
+        ],
+        "title": "ImageFormat",
+        "description": "Supported image formats with their canonical extensions."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
