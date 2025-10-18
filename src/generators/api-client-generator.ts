@@ -708,7 +708,7 @@ export class ApiClientGenerator {
   private generateUtilityMethods(): string {
     return (
       "  private buildPath(template: string, params: Record<string, string | number>): string {\n" +
-      "    return template.replace(/\\{([^}]+)\\}/g, (match, key) => {\n" +
+      "    return template.replace(/\\{([^}]+)\\}/g, (_match, key) => {\n" +
       "      const value = params[key];\n" +
       "      if (value === undefined) {\n" +
       "        throw new Error('Missing required path parameter: ' + key);\n" +

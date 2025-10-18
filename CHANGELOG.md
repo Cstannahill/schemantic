@@ -9,6 +9,28 @@ Got it — here’s your updated, clean and complete **`CHANGELOG.md`** entry re
 
 ---
 
+## [0.2.1] — 2025-10-18
+
+### Fixed
+
+- CLI: Respect `outputDir` from `schemantic.config.json` when provided. The CLI no longer forces the generator to write to `./src/generated` when an output directory is specified in the configuration file or via the `--output` flag. This fixes cases where generation ignored a project's configured destination.
+
+- Zod validation generator: Updated generated validation helpers and client middleware to follow Zod v4 error shape. Generated code now uses `result.error?.issues` and types validation issues as `z.core.$ZodIssue` where appropriate. A typed `ValidationError` wrapper is emitted by the generator so consumers can rely on a stable `issues` shape.
+
+- Generator hygiene: Avoid emitting unused imports in generated outputs. The hooks generator now imports only the React hooks actually used by the generated hooks. The API client generator and plugins only import `z` when the generated client references `z.`. These changes reduce spurious TypeScript diagnostics in downstream projects.
+
+### Changed
+
+- Generation behavior: The generator was made more conservative about emitted imports and helper declarations so generated code compiles cleanly in a wider range of consuming projects.
+
+### Migration notes
+
+- If you previously relied on `ValidationError.errors` in generated code, switch to `ValidationError.issues`.
+
+- If your consuming project reported unused-import diagnostics for generated files (for example `z` or React hook imports), regenerate after updating to this version; the generator will emit only the imports that are actually used.
+
+---
+
 ## [0.2.0] — 2025-10-18
 
 ### Added

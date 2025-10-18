@@ -37,9 +37,21 @@ export class HookGenerator {
     const clientName = this.getClientName(schema);
     const endpoints = this.extractEndpoints(schema.paths);
 
-    const imports = this.generateImports(endpoints, clientName);
     const body = this.generateHooksBody(clientName, endpoints);
-    const content = imports + body;
+    // Determine React hooks used in the body to avoid unused imports
+    const reactHooks: string[] = [];
+    if (body.includes("useCallback(")) reactHooks.push("useCallback");
+    if (body.includes("useEffect(")) reactHooks.push("useEffect");
+    if (body.includes("useMemo(")) reactHooks.push("useMemo");
+    if (body.includes("useRef(")) reactHooks.push("useRef");
+    if (body.includes("useState(")) reactHooks.push("useState");
+
+    const imports = this.generateImports(endpoints, clientName);
+    const reactImport = reactHooks.length
+      ? `import { ${reactHooks.join(", ")} } from 'react';\n`
+      : "";
+
+    const content = imports.replace("\n\n", "\n") + reactImport + body;
 
     return {
       name: "ApiHooks",
@@ -337,9 +349,9 @@ export class HookGenerator {
       filteredTypeNames.length > 0
         ? `import { ${filteredTypeNames.join(", ")} } from './types';\n`
         : "";
-    const reactImport = `import { useCallback, useEffect, useMemo, useRef, useState } from 'react';\n`;
+    // We'll lazily build the react import after generating the body to avoid unused imports
     const clientImport = `import { ${clientName}, ApiClientError } from './api-client';\n\n`;
-    return typesImport + reactImport + clientImport;
+    return typesImport + clientImport;
   }
 
   private generateHooksBody(

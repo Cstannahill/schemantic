@@ -75,7 +75,7 @@ export class SchemanticCli {
       )
       .option("-u, --url <url>", "OpenAPI schema URL")
       .option("-f, --file <file>", "OpenAPI schema file path")
-      .option("-o, --output <dir>", "Output directory", "./src/generated")
+      .option("-o, --output <dir>", "Output directory")
       .option("--types", "Generate types only")
       .option("--client", "Generate API client only")
       .option("--hooks", "Generate React hooks")
@@ -463,8 +463,11 @@ export class SchemanticCli {
       );
     }
 
+    // Ensure outputDir falls back to DEFAULT_CONFIG if not provided
     if (!config.outputDir) {
-      throw new Error("Output directory must be specified");
+      // DEFAULT_CONFIG.outputDir may be optional in the type definition;
+      // ensure we set a concrete string fallback to satisfy strict types
+      config.outputDir = DEFAULT_CONFIG.outputDir || "./src/generated";
     }
 
     return config as SchemanticConfig;

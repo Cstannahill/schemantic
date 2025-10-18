@@ -246,6 +246,26 @@ export const zodValidationPlugin: SchemanticPlugin = {
         .filter(Boolean)
         .join("\n\n");
 
+      // Ensure zod import is present; include 'z' only if the content references it
+      if (!generatedClient.content.includes("from 'zod'")) {
+        const needsZ = generatedClient.content.includes("z.");
+        generatedClient.content =
+          `import { ${needsZ ? "z, " : ""}ZodType } from 'zod';\n` +
+          generatedClient.content;
+      } else if (!generatedClient.content.includes("ZodType")) {
+        generatedClient.content = generatedClient.content.replace(
+          /import\s*\{([^}]*)\}\s*from\s*['"]zod['"];?/,
+          (_m: string, p1: string) => {
+            const names = p1
+              .split(",")
+              .map((s: string) => s.trim())
+              .filter(Boolean);
+            if (!names.includes("ZodType")) names.push("ZodType");
+            return `import { ${names.join(", ")} } from 'zod';`;
+          }
+        );
+      }
+
       // Update dependencies
       if (!generatedClient.dependencies.includes("zod")) {
         generatedClient.dependencies.push("zod");
@@ -713,25 +733,25 @@ export function validate${typeName}(data: unknown): { success: true; data: ${typ
   const result = ${typeName}Schema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as ${typeName} };
 }
 
 /**
  * Parse ${typeName} data with exception on validation failure
  */
 export function parse${typeName}(data: unknown): ${typeName} {
-  return ${typeName}Schema.parse(data);
+  return ${typeName}Schema.parse(data) as ${typeName};
 }
 ${brandedType}${typeGuard}`;
 }
@@ -763,7 +783,7 @@ function generateValidationMiddleware(
     );
   }
   const strictModeCode = options.strictMode
-    ? "throw new ValidationError((result.error as any).issues || [], data);"
+    ? "throw new ValidationError(result.error?.issues ?? [], data);"
     : "// In non-strict mode, return data as-is";
 
   return `
@@ -771,12 +791,12 @@ function generateValidationMiddleware(
  * Validation middleware for API requests and responses
  */
 export class ValidationError extends Error {
-  public issues: Array<{ path: (string | number)[]; message: string; code?: string }>;
-  constructor(issues: Array<{ path: (string | number)[]; message: string; code?: string }>, public data: unknown) {
+  public issues: readonly z.core.$ZodIssue[];
+  constructor(issues: readonly z.core.$ZodIssue[], public data: unknown) {
     const message = issues
       .map((iss) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
       .join('; ');
-  super('Validation failed: ' + message);
+    super('Validation failed: ' + message);
     this.name = 'ValidationError';
     this.issues = issues;
     Object.setPrototypeOf(this, ValidationError.prototype);
@@ -790,8 +810,9 @@ export function validateRequest<T>(data: unknown, schema: ZodType<T>): T {
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
-    throw new ValidationError(issues, data);
+    const issues = result.error?.issues ?? [];
+    // Use Zod v4 core issue type
+    throw new ValidationError(issues as readonly z.core.$ZodIssue[], data);
   }
 
   return result.data;
@@ -804,7 +825,7 @@ export function validateResponse<T>(data: unknown, schema: ZodType<T>): T {
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     ${strictModeCode}
   }
