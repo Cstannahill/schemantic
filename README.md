@@ -10,7 +10,7 @@
 
 A fully typed, extensible, modular TypeScript type generator for OpenAPI schemas (great with FastAPI). Generate TypeScript types, API clients, and optional hooks with sensible defaults.
 
-> **Status**: Production Ready 🚀 | **Maintenance**: Actively Maintained ✅ | **Support**: Community & Issues 💬 | **Version**: v0.1.0
+> **Status**: Production Ready 🚀 | **Maintenance**: Actively Maintained ✅ | **Support**: Community & Issues 💬 | **Version**: v0.2.0
 
 ## Features
 
