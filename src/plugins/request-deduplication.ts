@@ -61,7 +61,7 @@ interface RequestDeduplicationOptions {
  */
 export const requestDeduplicationPlugin: SchemanticPlugin = {
   name: "request-deduplication",
-  version: "2.0.0",
+  version: "0.1.0",
   description:
     "Advanced request deduplication with intelligent caching and memory management",
 

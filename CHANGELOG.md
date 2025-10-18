@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make CLI `--config` flag usable without an explicit path and standardize the configuration filename to `schemantic.config.json`.
 - Prevent generator from importing TypeScript builtins (e.g. `Record`) from generated `./types`.
 
+- Zod plugin: adopt Zod v4 error shape. `ValidationError` now exposes `issues` (Zod issues) and `data` (the invalid input); `validateRequest`/`validateResponse` use `error.issues`.
+
 ### Added
 
 - Add a lightweight CI workflow to run the prefix integration test on push/PR.
