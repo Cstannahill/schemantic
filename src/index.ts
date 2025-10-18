@@ -1,5 +1,5 @@
 /**
- * Main entry point for the type-sync package
+ * Main entry point for the schemantic package
  * Exports all public APIs and utilities
  */
 
@@ -26,7 +26,7 @@ export { HookGenerator } from "./generators/hook-generator";
 export type { GeneratedHooksFile } from "./generators/hook-generator";
 
 // Re-export commonly used types and utilities
-export { TypeSync } from "./core/typesync";
-export { TypeSyncConfig, DEFAULT_CONFIG } from "./types/core";
+export { Schemantic } from "./core/schemantic";
+export { SchemanticConfig, DEFAULT_CONFIG } from "./types/core";
 export { OpenAPISchema } from "./types/openapi";
-export { TypeSyncPlugin } from "./types/core";
+export { SchemanticPlugin } from "./types/core";

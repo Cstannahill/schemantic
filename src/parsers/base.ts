@@ -1,12 +1,12 @@
 /**
  * Base parser interface and abstract implementation
- * Provides the foundation for all schema parsers in the type-sync system
+ * Provides the foundation for all schema parsers in the schemantic system
  */
 
 import { OpenAPISchema } from "../types/openapi";
 import { ResolvedSchema, SchemaResolver } from "../types/schema";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -94,9 +94,9 @@ export interface ParserMetadata {
 export abstract class BaseSchemaParser<T = OpenAPISchema>
   implements SchemaParser<T>
 {
-  protected config: TypeSyncConfig;
+  protected config: SchemanticConfig;
 
-  constructor(config: TypeSyncConfig) {
+  constructor(config: SchemanticConfig) {
     this.config = config;
   }
 

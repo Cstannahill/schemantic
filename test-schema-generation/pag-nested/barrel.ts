@@ -1,4 +1,4 @@
-// Barrel exports for type-sync generated code
-export * from './types';
-export * from './api-client';
-export * from './hooks';
+// Barrel exports for schemantic generated code
+export * from "./types";
+export * from "./api-client";
+export * from "./hooks";

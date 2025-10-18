@@ -19,7 +19,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -274,7 +274,7 @@ class PerformanceAnalyzer {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Type-Sync Performance Report</title>
+    <title>Schemantic Performance Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .metric { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 5px; }
@@ -283,7 +283,7 @@ class PerformanceAnalyzer {
     </style>
 </head>
 <body>
-    <h1>Type-Sync Performance Report</h1>
+    <h1>Schemantic Performance Report</h1>
     <p>Generated: ${data.timestamp}</p>
     <pre>${JSON.stringify(data, null, 2)}</pre>
 </body>
@@ -291,7 +291,7 @@ class PerformanceAnalyzer {
   }
 
   private generateMarkdownReport(data: ReportData): string {
-    let markdown = `# Type-Sync Performance Report\n\n`;
+    let markdown = `# Schemantic Performance Report\n\n`;
     markdown += `Generated: ${data.timestamp}\n\n`;
     markdown += `## Performance Metrics\n\n`;
 
@@ -354,7 +354,7 @@ const performanceAnalyzer = new PerformanceAnalyzer();
 /**
  * Advanced Performance Monitoring Plugin Implementation
  */
-export const performanceMonitoringPlugin: TypeSyncPlugin = {
+export const performanceMonitoringPlugin: SchemanticPlugin = {
   name: "performance-monitoring",
   version: "2.0.0",
   description:

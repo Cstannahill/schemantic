@@ -1,10 +1,10 @@
 # Configuration Guide
 
-This guide explains all configuration options available in Type-Sync.
+This guide explains all configuration options available in Schemantic.
 
 ## Configuration Sources
 
-Type-Sync can be configured through multiple sources:
+Schemantic can be configured through multiple sources:
 
 1. **Command Line Arguments** - Highest priority
 2. **Configuration Files** - Medium priority
@@ -14,7 +14,7 @@ Type-Sync can be configured through multiple sources:
 
 ### JSON Configuration
 
-Create a `type-sync.config.json` file:
+Create a `schemantic.config.json` file:
 
 ```json
 {
@@ -33,7 +33,7 @@ Create a `type-sync.config.json` file:
 
 ### JavaScript Configuration
 
-Create a `type-sync.config.js` file:
+Create a `schemantic.config.js` file:
 
 ```javascript
 module.exports = {
@@ -52,12 +52,12 @@ module.exports = {
 
 ### TypeScript Configuration
 
-Create a `type-sync.config.ts` file:
+Create a `schemantic.config.ts` file:
 
 ```typescript
-import { TypeSyncConfig } from "type-sync";
+import { SchemanticConfig } from "schemantic";
 
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   generateTypes: true,
@@ -100,7 +100,7 @@ curl -s http://localhost:8000/openapi.json -o ./openapi-schema.json
 curl -k -s https://localhost:5001/swagger/v1/swagger.json -o ./openapi-schema.json
 
 # Generate from file
-npx type-sync generate --file ./openapi-schema.json --output ./src/generated --client --types
+npx schemantic generate --file ./openapi-schema.json --output ./src/generated --client --types
 ```
 
 #### `schemaFile`
@@ -243,10 +243,10 @@ Examples:
 Prefix to add to generated type names.
 
 ```typescript
-typePrefix: "Api";
+typePrefix: ""; // empty by default (no prefix)
 ```
 
-Default prefix is `API`, producing names like `APIUser`, `APIProduct`. Customize if desired.
+By default no prefix is added. Set a value here to add one, e.g. `"MyAPI"` to produce `MyAPIUser`.
 
 #### `typeSuffix`
 
@@ -366,7 +366,7 @@ export TYPE_SYNC_NAMING_CONVENTION="camelCase"
 Access in configuration:
 
 ```typescript
-const config: TypeSyncConfig = {
+const config: SchemanticConfig = {
   schemaUrl: process.env.TYPE_SYNC_SCHEMA_URL,
   outputDir: process.env.TYPE_SYNC_OUTPUT_DIR || "./generated",
   namingConvention:
@@ -435,7 +435,7 @@ const config: TypeSyncConfig = {
 ### Basic Configuration
 
 ```typescript
-const basicConfig: TypeSyncConfig = {
+const basicConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
   generateTypes: true,
@@ -446,7 +446,7 @@ const basicConfig: TypeSyncConfig = {
 ### Advanced Configuration
 
 ```typescript
-const advancedConfig: TypeSyncConfig = {
+const advancedConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   outputFileName: "api-client.ts",
@@ -460,7 +460,7 @@ const advancedConfig: TypeSyncConfig = {
   useNullishCoalescing: true,
 
   namingConvention: "camelCase",
-  typePrefix: "Api",
+  typePrefix: "",
   typeSuffix: "Type",
 
   customTypeMappings: {
@@ -490,7 +490,7 @@ const advancedConfig: TypeSyncConfig = {
 ### FastAPI Specific Configuration
 
 ```typescript
-const fastApiConfig: TypeSyncConfig = {
+const fastApiConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
 
@@ -522,7 +522,7 @@ const fastApiConfig: TypeSyncConfig = {
 ### React Application Configuration
 
 ```typescript
-const reactConfig: TypeSyncConfig = {
+const reactConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/api",
 
@@ -546,7 +546,7 @@ const reactConfig: TypeSyncConfig = {
 ### Node.js Application Configuration
 
 ```typescript
-const nodeConfig: TypeSyncConfig = {
+const nodeConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./lib/api",
 
@@ -567,7 +567,7 @@ const nodeConfig: TypeSyncConfig = {
 
 ## Configuration Validation
 
-Type-Sync validates your configuration and will throw errors for:
+Schemantic validates your configuration and will throw errors for:
 
 - Missing required fields
 - Invalid values
@@ -604,7 +604,7 @@ const conflictingConfig = {
 You can extend configurations:
 
 ```typescript
-const baseConfig: TypeSyncConfig = {
+const baseConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./generated",
   generateTypes: true,
@@ -613,7 +613,7 @@ const baseConfig: TypeSyncConfig = {
   namingConvention: "camelCase",
 };
 
-const developmentConfig: TypeSyncConfig = {
+const developmentConfig: SchemanticConfig = {
   ...baseConfig,
   plugins: [
     { name: "jsdoc", enabled: true },
@@ -621,7 +621,7 @@ const developmentConfig: TypeSyncConfig = {
   ],
 };
 
-const productionConfig: TypeSyncConfig = {
+const productionConfig: SchemanticConfig = {
   ...baseConfig,
   outputDir: "./dist/api",
   plugins: [{ name: "jsdoc", enabled: true }],
@@ -636,10 +636,10 @@ For complex configurations, use configuration files instead of CLI arguments:
 
 ```bash
 # Instead of long CLI command
-npx type-sync generate --url http://localhost:8000/openapi.json --output ./generated --naming camelCase --plugins jsdoc,validation
+npx schemantic generate --url http://localhost:8000/openapi.json --output ./generated --naming camelCase --plugins jsdoc,validation
 
 # Use configuration file
-npx type-sync generate --config type-sync.config.json
+npx schemantic generate --config schemantic.config.json
 ```
 
 ### 2. Environment-Specific Configurations
@@ -648,7 +648,7 @@ Create different configurations for different environments:
 
 ```typescript
 // config/development.ts
-export const developmentConfig: TypeSyncConfig = {
+export const developmentConfig: SchemanticConfig = {
   schemaUrl: "http://localhost:8000/openapi.json",
   outputDir: "./src/generated",
   plugins: [
@@ -658,7 +658,7 @@ export const developmentConfig: TypeSyncConfig = {
 };
 
 // config/production.ts
-export const productionConfig: TypeSyncConfig = {
+export const productionConfig: SchemanticConfig = {
   schemaUrl: "https://api.example.com/openapi.json",
   outputDir: "./dist/api",
   plugins: [{ name: "jsdoc", enabled: true }],

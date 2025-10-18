@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents the development of advanced plugins for Type-Sync, implementing sophisticated optimization patterns, type system enhancements, and developer experience improvements based on strategic analysis of production-ready API code generation requirements.
+This guide documents the development of advanced plugins for Schemantic, implementing sophisticated optimization patterns, type system enhancements, and developer experience improvements based on strategic analysis of production-ready API code generation requirements.
 
 ## Strategic Architecture Goals
 
@@ -103,7 +103,7 @@ This guide documents the development of advanced plugins for Type-Sync, implemen
 ### Plugin Structure Template
 
 ```typescript
-export const advancedPlugin: TypeSyncPlugin = {
+export const advancedPlugin: SchemanticPlugin = {
   name: "advanced-feature",
   version: "1.0.0",
   description: "Advanced feature implementation with performance optimizations",
@@ -304,6 +304,6 @@ const pipeline = compose(
 
 ## Conclusion
 
-This advanced plugin development framework provides the foundation for sophisticated code generation capabilities that extend far beyond basic OpenAPI type generation. The focus on performance, type safety, and developer experience positions Type-Sync as a comprehensive development environment integration tool rather than just a code generator.
+This advanced plugin development framework provides the foundation for sophisticated code generation capabilities that extend far beyond basic OpenAPI type generation. The focus on performance, type safety, and developer experience positions Schemantic as a comprehensive development environment integration tool rather than just a code generator.
 
 The plugin architecture enables ecosystem partnerships and network effects that can drive adoption through developer tooling integrations and community contributions.

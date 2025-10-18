@@ -17,7 +17,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -91,7 +91,7 @@ function recordPerformanceMetric(operation: string, duration: number): void {
 /**
  * Advanced Zod Validation Plugin Implementation
  */
-export const zodValidationPlugin: TypeSyncPlugin = {
+export const zodValidationPlugin: SchemanticPlugin = {
   name: "zod-validation",
   version: "2.0.0",
   description:
@@ -389,7 +389,7 @@ function buildZodSchema(
       }
     }
     if (typeName) {
-      const formattedTypeName = formatTypeName(typeName);
+      const formattedTypeName = formatTypeNameWithContext(typeName, context);
       return `${formattedTypeName}Schema`;
     }
   }
@@ -432,15 +432,24 @@ function buildZodSchema(
 /**
  * Helper function to format type names consistently
  */
-function formatTypeName(name: string): string {
-  // Convert to PascalCase and add API prefix if not present.
-  // Preserve internal capitalization (e.g., UserRole -> UserRole).
+// (formatTypeName removed - use formatTypeNameWithContext instead)
+
+/**
+ * Format a type name using optional generation context to apply prefix/suffix.
+ */
+function formatTypeNameWithContext(
+  name: string,
+  context?: GenerationContext
+): string {
   const tokens = name.split(/[-_\s]+/).filter(Boolean);
   const pascalCase = tokens
     .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
     .join("");
 
-  return pascalCase.startsWith("API") ? pascalCase : `API${pascalCase}`;
+  const prefix = context?.config?.typePrefix ?? "";
+  const suffix = context?.config?.typeSuffix ?? "";
+
+  return `${prefix || ""}${pascalCase}${suffix || ""}`;
 }
 
 /**
@@ -613,7 +622,7 @@ function buildOneOfSchema(
     ) {
       const refPath = (variant as Record<string, unknown>)["$ref"] as string;
       const name = refPath.split("/").pop() || "Unknown";
-      return `${formatTypeName(name)}Schema`;
+      return `${formatTypeNameWithContext(name, context)}Schema`;
     }
     return buildZodSchema(variant as ResolvedSchema, options, 0, context);
   });

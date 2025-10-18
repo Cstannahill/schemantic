@@ -10,7 +10,7 @@
 
 import { requestDeduplicationPlugin } from "../../plugins/request-deduplication";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   PluginConfig,
   GenerationContext,
   GeneratedApiClient,
@@ -19,7 +19,7 @@ import { OpenAPISchema } from "../../types/openapi";
 import { createTestConfig, createTestSchema } from "../test-config";
 
 describe("RequestDeduplicationPlugin", () => {
-  let config: TypeSyncConfig;
+  let config: SchemanticConfig;
   let testSchema: OpenAPISchema;
   let mockContext: GenerationContext;
   let mockApiClient: GeneratedApiClient;

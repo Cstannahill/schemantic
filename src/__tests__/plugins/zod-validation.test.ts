@@ -11,7 +11,7 @@
 
 import { zodValidationPlugin } from "../../plugins/zod-validation";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   PluginConfig,
   GenerationContext,
   GeneratedType,
@@ -22,7 +22,7 @@ import { ResolvedSchema, ExtendedSchemaObject } from "../../types/schema";
 import { createTestConfig, createTestSchema } from "../test-config";
 
 describe("ZodValidationPlugin", () => {
-  let config: TypeSyncConfig;
+  let config: SchemanticConfig;
   let testSchema: OpenAPISchema;
   let mockContext: GenerationContext;
 

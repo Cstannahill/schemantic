@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
 /**
- * CLI interface for type-sync
+ * CLI interface for schemantic
  * Provides command-line interface for generating TypeScript types and API clients
  */
 
 import { Command } from "commander";
 import {
-  TypeSyncConfig,
+  SchemanticConfig,
   DEFAULT_CONFIG,
   GenerationResult,
   GenerationError,
   GenerationWarning,
 } from "../types/core";
-import { TypeSync } from "../core/typesync";
+import { Schemantic } from "../core/schemantic";
 import { PluginLoader } from "../plugins";
 import { getBuiltinPlugins } from "../plugins/builtin";
 import * as readline from "readline";
@@ -32,7 +32,7 @@ interface CliOptions {
 /**
  * Main CLI class
  */
-export class TypeSyncCli {
+export class SchemanticCli {
   private program: Command;
 
   constructor() {
@@ -45,7 +45,7 @@ export class TypeSyncCli {
    */
   private setupProgram(): void {
     this.program
-      .name("type-sync")
+      .name("schemantic")
       .description(
         "Generate TypeScript types and API clients from OpenAPI schemas"
       )
@@ -85,7 +85,11 @@ export class TypeSyncCli {
         "Naming convention (camelCase|snake_case|PascalCase)",
         "camelCase"
       )
-      .option("--prefix <prefix>", "Type name prefix", "API")
+      .option(
+        "--prefix <prefix>",
+        "Type name prefix (leave blank for none)",
+        ""
+      )
       .option("--suffix <suffix>", "Type name suffix", "")
       .option("--exclude-paths <paths>", "Exclude paths (comma-separated)")
       .option("--include-paths <paths>", "Include paths (comma-separated)")
@@ -98,7 +102,13 @@ export class TypeSyncCli {
         "Include schemas (comma-separated)"
       )
       .option("--plugins <plugins>", "Enable plugins (comma-separated)")
-      .option("-c, --config <file>", "Configuration file path")
+      // --config may be provided with an explicit path or used as a flag
+      // If used as a boolean flag (no value), commander will set it to true.
+      // Accept either a path or a boolean and handle in loadConfiguration.
+      .option(
+        "-c, --config [file]",
+        "Configuration file path (defaults to ./schemantic.config.json)"
+      )
       .option("--watch", "Watch for changes and regenerate")
       .action(async (source: string, options: CliOptions) => {
         await this.handleGenerateCommand(source, options);
@@ -152,7 +162,7 @@ export class TypeSyncCli {
   private addInitCommand(): void {
     this.program
       .command("init [directory]")
-      .description("Initialize a new type-sync configuration")
+      .description("Initialize a new schemantic configuration")
       .option("-t, --template <template>", "Configuration template", "default")
       .option("--yes", "Skip interactive prompts")
       .action(async (directory, options) => {
@@ -190,14 +200,14 @@ export class TypeSyncCli {
       // Load configuration
       const config = await this.loadConfiguration(source, options);
 
-      // Create TypeSync instance
-      const typeSync = new TypeSync(config);
+      // Create Schemantic instance
+      const schemanticInstance = new Schemantic(config);
 
       // Load plugins
-      await this.loadPlugins(config, typeSync);
+      await this.loadPlugins(config, schemanticInstance);
 
       // Generate types and client
-      const result = await typeSync.generate();
+      const result = await schemanticInstance.generate();
 
       // Output results
       this.outputResults(result, options);
@@ -217,11 +227,11 @@ export class TypeSyncCli {
       // Load configuration
       const config = await this.loadConfiguration(source, options);
 
-      // Create TypeSync instance
-      const typeSync = new TypeSync(config);
+      // Create Schemantic instance
+      const schemanticInstance = new Schemantic(config);
 
       // Validate schema
-      const result = await typeSync.validate();
+      const result = await schemanticInstance.validate();
 
       // Output validation results
       this.outputValidationResults(result, options);
@@ -303,48 +313,50 @@ export class TypeSyncCli {
       }
     } else {
       // Show general help with examples
-      console.log("📚 Type-Sync CLI Examples:");
+      console.log("📚 Schemantic CLI Examples:");
       console.log("\n� Basic Usage:");
       console.log("  # Generate from FastAPI server");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json"
       );
       console.log("\n  # Generate from local file");
-      console.log("  npx type-sync generate --file ./openapi-schema.json");
+      console.log("  npx schemantic generate --file ./openapi-schema.json");
       console.log("\n  # Custom output directory");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json --output ./src/api"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json --output ./src/api"
       );
       console.log("\n⚛️ React Integration:");
       console.log("  # Generate with React hooks");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json --hooks"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json --hooks"
       );
       console.log("\n🎛️ Interactive Mode:");
-      console.log("  npx type-sync generate --interactive");
+      console.log("  npx schemantic generate --interactive");
       console.log("\n⚙️ Configuration:");
       console.log("  # Initialize configuration");
-      console.log("  npx type-sync init");
+      console.log("  npx schemantic init");
       console.log("\n  # Use configuration file");
-      console.log("  npx type-sync generate --config ./typesync.config.json");
+      console.log(
+        "  npx schemantic generate --config ./schemantic.config.json"
+      );
       console.log("\n✅ Validation:");
       console.log("  # Validate schema");
       console.log(
-        "  npx type-sync validate --url http://localhost:8000/openapi.json"
+        "  npx schemantic validate --url http://localhost:8000/openapi.json"
       );
       console.log("\n� Advanced:");
       console.log("  # Custom naming and filtering");
       console.log(
-        "  npx type-sync generate --url http://localhost:8000/openapi.json \\"
+        "  npx schemantic generate --url http://localhost:8000/openapi.json \\"
       );
       console.log(
         "    --naming PascalCase --prefix MyAPI --exclude-paths '/health,/docs'"
       );
       console.log("\n📖 For complete documentation:");
-      console.log("  https://github.com/Cstannahill/type-sync#readme");
+      console.log("  https://github.com/Cstannahill/schemantic#readme");
       console.log("\n💡 Get help for specific commands:");
-      console.log("  npx type-sync help generate");
-      console.log("  npx type-sync generate --help");
+      console.log("  npx schemantic help generate");
+      console.log("  npx schemantic generate --help");
     }
   }
 
@@ -354,12 +366,17 @@ export class TypeSyncCli {
   private async loadConfiguration(
     source?: string,
     options: CliOptions = {}
-  ): Promise<TypeSyncConfig> {
-    let config: Partial<TypeSyncConfig> = { ...DEFAULT_CONFIG };
+  ): Promise<SchemanticConfig> {
+    let config: Partial<SchemanticConfig> = { ...DEFAULT_CONFIG };
 
-    // Load from config file if specified
+    // Load from config file if specified. Commander may set options.config to
+    // a string (path) or boolean true when the flag is present without value.
     if (options.config) {
-      const configFile = await this.loadConfigFile(options.config as string);
+      const configPath =
+        typeof options.config === "string" && options.config.trim().length > 0
+          ? (options.config as string)
+          : "./schemantic.config.json";
+      const configFile = await this.loadConfigFile(configPath);
       config = { ...config, ...configFile };
     }
 
@@ -450,7 +467,7 @@ export class TypeSyncCli {
       throw new Error("Output directory must be specified");
     }
 
-    return config as TypeSyncConfig;
+    return config as SchemanticConfig;
   }
 
   /**
@@ -458,7 +475,7 @@ export class TypeSyncCli {
    */
   private async loadConfigFile(
     filePath: string
-  ): Promise<Partial<TypeSyncConfig>> {
+  ): Promise<Partial<SchemanticConfig>> {
     try {
       const fs = await import("fs/promises");
       const content = await fs.readFile(filePath, "utf-8");
@@ -482,10 +499,10 @@ export class TypeSyncCli {
    * Load plugins
    */
   private async loadPlugins(
-    config: TypeSyncConfig,
-    typeSync: TypeSync
+    config: SchemanticConfig,
+    Schemantic: Schemantic
   ): Promise<void> {
-    const pluginManager = typeSync.getPluginManager();
+    const pluginManager = Schemantic.getPluginManager();
 
     // Load built-in plugins
     const builtinPlugins = getBuiltinPlugins();
@@ -582,7 +599,7 @@ export class TypeSyncCli {
    * Run interactive mode
    */
   private async runInteractiveMode(): Promise<void> {
-    console.log("🚀 Type-Sync Interactive Mode\n");
+    console.log("🚀 Schemantic Interactive Mode\n");
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -590,7 +607,7 @@ export class TypeSyncCli {
     });
 
     try {
-      const config: Partial<TypeSyncConfig> = { ...DEFAULT_CONFIG };
+      const config: Partial<SchemanticConfig> = { ...DEFAULT_CONFIG };
 
       // Get schema source
       const schemaSource = await this.askQuestion(
@@ -611,8 +628,11 @@ export class TypeSyncCli {
       config.outputDir = outputDir || "./src/generated";
 
       // Get type prefix
-      const prefix = await this.askQuestion(rl, "Type prefix (default: API): ");
-      config.typePrefix = prefix || "API";
+      const prefix = await this.askQuestion(
+        rl,
+        "Type prefix (leave blank for none): "
+      );
+      config.typePrefix = prefix || "";
 
       // Get generation options
       const generateTypes = await this.askYesNo(rl, "Generate types? (Y/n): ");
@@ -636,12 +656,12 @@ export class TypeSyncCli {
       );
       config.useStrictTypes = strictTypes !== false;
 
-      // Create TypeSync instance and generate
-      const typeSync = new TypeSync(config as TypeSyncConfig);
-      await this.loadPlugins(config as TypeSyncConfig, typeSync);
+      // Create Schemantic instance and generate
+      const schemanticInstance = new Schemantic(config as SchemanticConfig);
+      await this.loadPlugins(config as SchemanticConfig, schemanticInstance);
 
       console.log("\n⚙️ Generating types and API client...");
-      const result = await typeSync.generate();
+      const result = await schemanticInstance.generate();
 
       this.outputResults(result, {});
     } finally {
@@ -656,7 +676,7 @@ export class TypeSyncCli {
     directory: string,
     _options: CliOptions
   ): Promise<void> {
-    console.log("🚀 Type-Sync Configuration Initialization\n");
+    console.log("🚀 Schemantic Configuration Initialization\n");
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -664,7 +684,7 @@ export class TypeSyncCli {
     });
 
     try {
-      const config: Partial<TypeSyncConfig> = { ...DEFAULT_CONFIG };
+      const config: Partial<SchemanticConfig> = { ...DEFAULT_CONFIG };
 
       // Get schema source
       const schemaSource = await this.askQuestion(
@@ -685,8 +705,11 @@ export class TypeSyncCli {
       config.outputDir = outputDir || "./src/generated";
 
       // Get type prefix
-      const prefix = await this.askQuestion(rl, "Type prefix (default: API): ");
-      config.typePrefix = prefix || "API";
+      const prefix = await this.askQuestion(
+        rl,
+        "Type prefix (leave blank for none): "
+      );
+      config.typePrefix = prefix || "";
 
       // Get naming convention
       const naming = await this.askChoice(
@@ -726,8 +749,8 @@ export class TypeSyncCli {
       config.useStrictTypes = strictTypes !== false;
 
       // Save configuration
-      await this.saveConfig(directory, config as TypeSyncConfig);
-      console.log("\n✅ Configuration saved to typesync.config.json");
+      await this.saveConfig(directory, config as SchemanticConfig);
+      console.log("\n✅ Configuration saved to schemantic.config.json");
     } finally {
       rl.close();
     }
@@ -737,10 +760,10 @@ export class TypeSyncCli {
    * Create default configuration
    */
   private async createDefaultConfig(directory: string): Promise<void> {
-    const config: TypeSyncConfig = {
+    const config: SchemanticConfig = {
       ...DEFAULT_CONFIG,
       outputDir: "./src/generated",
-      typePrefix: "API",
+      typePrefix: "",
       generateTypes: true,
       generateApiClient: true,
       generateHooks: false,
@@ -763,12 +786,12 @@ export class TypeSyncCli {
    */
   private async saveConfig(
     directory: string,
-    config: TypeSyncConfig
+    config: SchemanticConfig
   ): Promise<void> {
     const fs = await import("fs/promises");
     const path = await import("path");
 
-    const configPath = path.join(directory, "typesync.config.json");
+    const configPath = path.join(directory, "schemantic.config.json");
     await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf-8");
   }
 
@@ -831,7 +854,7 @@ export class TypeSyncCli {
 }
 
 // Export CLI class and create instance
-export const cli = new TypeSyncCli();
+export const cli = new SchemanticCli();
 
 // Run CLI if this file is executed directly
 if (require.main === module) {

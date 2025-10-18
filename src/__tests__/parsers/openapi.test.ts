@@ -3,13 +3,13 @@
  */
 
 import { OpenAPIParser } from "../../parsers/openapi";
-import { TypeSyncConfig } from "../../types/core";
+import { SchemanticConfig } from "../../types/core";
 import { OpenAPISchema, OpenAPIInfo } from "../../types/openapi";
 import { isOpenAPISchemaObject } from "../../types/schema";
 import { createTestConfig } from "../test-config";
 
 describe("OpenAPIParser", () => {
-  const createConfig = (): TypeSyncConfig =>
+  const createConfig = (): SchemanticConfig =>
     createTestConfig({
       outputDir: "./test-output",
     });

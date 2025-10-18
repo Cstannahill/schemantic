@@ -1,6 +1,6 @@
-# FastAPI + Type-Sync: Complete Tutorial
+# FastAPI + Schemantic: Complete Tutorial
 
-This tutorial shows you how to build a complete, type-safe full-stack application using FastAPI, Type-Sync, and React with TypeScript.
+This tutorial shows you how to build a complete, type-safe full-stack application using FastAPI, Schemantic, and React with TypeScript.
 
 ## Prerequisites
 
@@ -24,8 +24,8 @@ We'll build an e-commerce API with the following features:
 
 ```bash
 # Create project directory
-mkdir fastapi-typesync-demo
-cd fastapi-typesync-demo
+mkdir fastapi-Schemantic-demo
+cd fastapi-Schemantic-demo
 
 # Create backend directory
 mkdir backend
@@ -294,7 +294,7 @@ Base.metadata.create_all(bind=engine)
 # FastAPI app configuration
 app = FastAPI(
     title="E-Commerce API",
-    description="A comprehensive e-commerce API built with FastAPI and Type-Sync",
+    description="A comprehensive e-commerce API built with FastAPI and Schemantic",
     version="1.0.0",
     contact={
         "name": "API Support",
@@ -724,16 +724,16 @@ uvicorn main:app --reload
 
 Your API will be available at http://localhost:8000, with interactive docs at http://localhost:8000/docs.
 
-## Part 2: Generate TypeScript Types with Type-Sync
+## Part 2: Generate TypeScript Types with Schemantic
 
-### 2.1 Install Type-Sync
+### 2.1 Install Schemantic
 
 ```bash
 # Go back to project root
 cd ..
 
-# Install Type-Sync
-npm install -g type-sync
+# Install Schemantic
+npm install -g schemantic
 ```
 
 ### 2.2 Generate Types and API Client
@@ -743,12 +743,12 @@ npm install -g type-sync
 mkdir frontend/src/generated
 
 # Generate types and API client with React hooks
-npx type-sync generate \
+npx schemantic generate \
   --url http://localhost:8000/openapi.json \
   --output ./frontend/src/generated \
   --hooks \
   --naming camelCase \
-  --prefix "API"
+  # No prefix by default; to add a prefix use --prefix "MyAPI"
 
 # Generated files:
 # - types.ts (TypeScript interfaces)
@@ -1383,12 +1383,12 @@ if ! curl -s http://localhost:8000/health > /dev/null; then
 fi
 
 # Generate new types
-npx type-sync generate \
+npx schemantic generate \
   --url http://localhost:8000/openapi.json \
   --output ./frontend/src/generated \
   --hooks \
   --naming camelCase \
-  --prefix "API"
+  # No prefix by default; to add a prefix use --prefix "MyAPI"
 
 echo "✅ Types updated successfully!"
 echo "🏗️ Building frontend to verify types..."
@@ -1494,4 +1494,4 @@ You now have a complete, type-safe full-stack application with:
 4. **Set up automated type generation** in your CI/CD pipeline
 5. **Add testing** with the generated types for both frontend and backend
 
-This tutorial demonstrates the power of Type-Sync in creating maintainable, type-safe full-stack applications where the frontend and backend always stay in sync!
+This tutorial demonstrates the power of Schemantic in creating maintainable, type-safe full-stack applications where the frontend and backend always stay in sync!

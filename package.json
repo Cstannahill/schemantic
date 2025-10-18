@@ -1,6 +1,6 @@
 {
-  "name": "@cstannahill/type-sync",
-  "version": "0.1.1",
+  "name": "schemantic",
+  "version": "0.1.0",
   "description": "A fully typed, extensible TypeScript type generator for FastAPI OpenAPI schemas",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -14,7 +14,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "type-sync": "dist/cli/index.js"
+    "schemantic": "dist/cli/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -31,10 +31,8 @@
     "typescript",
     "openapi",
     "fastapi",
-    "code-generation",
     "api-client",
     "type-generation",
-    "swagger",
     "api",
     "codegen",
     "client-generator",
@@ -49,15 +47,15 @@
     "developer-tools",
     "automation"
   ],
-  "author": "Chris Stannahill <cstannahill@gmail.com>",
+  "author": "Christian Tannahill <cstannahill@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cstannahill/type-sync.git"
+    "url": "git+https://github.com/Cstannahill/schemantic.git"
   },
-  "homepage": "https://github.com/Cstannahill/type-sync#readme",
+  "homepage": "https://github.com/Cstannahill/schemantic#readme",
   "bugs": {
-    "url": "https://github.com/Cstannahill/type-sync/issues"
+    "url": "https://github.com/Cstannahill/schemantic/issues"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",

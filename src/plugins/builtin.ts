@@ -4,7 +4,7 @@
  */
 
 import {
-  TypeSyncPlugin,
+  SchemanticPlugin,
   GenerationContext,
   GeneratedType,
   GeneratedApiClient,
@@ -25,7 +25,7 @@ import brandedTypesPlugin from "./branded-types";
 /**
  * Built-in plugin for adding JSDoc comments
  */
-export const jsdocPlugin: TypeSyncPlugin = {
+export const jsdocPlugin: SchemanticPlugin = {
   name: "jsdoc",
   version: "1.0.0",
   description: "Adds JSDoc comments to generated types and methods",
@@ -77,7 +77,7 @@ export const jsdocPlugin: TypeSyncPlugin = {
 /**
  * Built-in plugin for adding validation decorators
  */
-export const validationPlugin: TypeSyncPlugin = {
+export const validationPlugin: SchemanticPlugin = {
   name: "validation",
   version: "1.0.0",
   description: "Adds validation decorators to generated types",
@@ -231,7 +231,7 @@ function generateValidationDecorators(
 /**
  * Built-in plugin for adding React hooks generation
  */
-export const reactHooksPlugin: TypeSyncPlugin = {
+export const reactHooksPlugin: SchemanticPlugin = {
   name: "react-hooks",
   version: "1.0.0",
   description: "Generates React hooks for API endpoints",
@@ -279,7 +279,7 @@ function generateReactHooks(
 /**
  * Built-in plugin for adding TypeScript strict mode enhancements
  */
-export const strictModePlugin: TypeSyncPlugin = {
+export const strictModePlugin: SchemanticPlugin = {
   name: "strict-mode",
   version: "1.0.0",
   description: "Adds TypeScript strict mode enhancements",
@@ -337,7 +337,7 @@ export const strictModePlugin: TypeSyncPlugin = {
 /**
  * Get all built-in plugins (including advanced plugins)
  */
-export function getBuiltinPlugins(): TypeSyncPlugin[] {
+export function getBuiltinPlugins(): SchemanticPlugin[] {
   return [
     // Basic plugins
     jsdocPlugin,
@@ -356,14 +356,14 @@ export function getBuiltinPlugins(): TypeSyncPlugin[] {
 /**
  * Get basic built-in plugins only
  */
-export function getBasicBuiltinPlugins(): TypeSyncPlugin[] {
+export function getBasicBuiltinPlugins(): SchemanticPlugin[] {
   return [jsdocPlugin, validationPlugin, reactHooksPlugin, strictModePlugin];
 }
 
 /**
  * Get advanced built-in plugins only
  */
-export function getAdvancedBuiltinPlugins(): TypeSyncPlugin[] {
+export function getAdvancedBuiltinPlugins(): SchemanticPlugin[] {
   return [
     zodValidationPlugin,
     performanceMonitoringPlugin,
@@ -375,6 +375,6 @@ export function getAdvancedBuiltinPlugins(): TypeSyncPlugin[] {
 /**
  * Get built-in plugin by name
  */
-export function getBuiltinPlugin(name: string): TypeSyncPlugin | undefined {
+export function getBuiltinPlugin(name: string): SchemanticPlugin | undefined {
   return getBuiltinPlugins().find((plugin) => plugin.name === name);
 }

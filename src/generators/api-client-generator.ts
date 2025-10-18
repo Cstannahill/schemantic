@@ -834,9 +834,29 @@ export class ApiClientGenerator {
    * Extract type names from type string
    */
   private extractTypeNamesFromType(type: string): string[] {
-    // Capture PascalCase identifiers used as type names
-    const matches = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g);
-    return matches || [];
+    // Capture PascalCase identifiers used as type names, but exclude
+    // known TypeScript built-in/global generics (Record, Promise, Array, etc.)
+    const matches = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g) || [];
+    if (matches.length === 0) return [];
+    const builtin = new Set<string>([
+      // Common TS/global generics and types we should not import
+      "Record",
+      "Array",
+      "Promise",
+      "Readonly",
+      "Partial",
+      "Required",
+      "Pick",
+      "Omit",
+      "Date",
+      "Map",
+      "Set",
+      "BigInt",
+      "Uint8Array",
+      "Object",
+    ]);
+
+    return matches.filter((m) => !builtin.has(m));
   }
 
   /**
