@@ -316,7 +316,7 @@ Array of plugin configurations.
 plugins: [
   { name: "jsdoc", enabled: true },
   { name: "validation", enabled: true },
-  { name: "react-hooks", enabled: false },
+  // { name: "react-hooks", enabled: false }, // temporarily disabled project-wide
   { name: "custom-plugin", enabled: true, options: { debug: true } },
 ];
 ```

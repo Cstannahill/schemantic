@@ -1,0 +1,33 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Repro", "version": "1.0.0" },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "Outer": {
+        "type": "object",
+        "properties": {
+          "inner": { "$ref": "#/components/schemas/Inner" },
+          "inline": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }
+            }
+          }
+        }
+      },
+      "Inner": {
+        "type": "object",
+        "properties": {
+          "value": { "type": "string" },
+          "nestedInline": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

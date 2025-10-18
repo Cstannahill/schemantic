@@ -5,15 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+Got it — here’s your updated, clean and complete **`CHANGELOG.md`** entry reflecting that as well:
+
+---
+
+## [0.2.0] — 2025-10-18
+
+### Added
+
+- **Zod Plugin** — Adopted Zod v4 error shape.
+
+  - `ValidationError` now exposes `issues` (Zod issues) and `data` (the invalid input).
+  - `validateRequest` and `validateResponse` now consume `error.issues` rather than the deprecated `error.errors`.
+
+### Changed
+
+- `validate<Type>` now returns structured results — `{ success: true | false, data | errors }` — for more predictable downstream handling.
+- Improved internal transform typing (`transform((val: Record<string, unknown>) => ...)`) to ensure consistent inference during schema generation.
+- **React Hooks plugin temporarily disabled** while migration to the new generator pipeline is in progress. It will be re-enabled in a future minor release.
 
 ### Fixed
 
-- Respect empty `typePrefix` by default (no automatic `API` prefix). Added an integration test to prevent regressions.
-- Make CLI `--config` flag usable without an explicit path and standardize the configuration filename to `schemantic.config.json`.
-- Prevent generator from importing TypeScript builtins (e.g. `Record`) from generated `./types`.
+- Respected empty `typePrefix` by default — no automatic `"API"` prefix. Added integration test to prevent regressions.
+- Made CLI `--config` flag usable without an explicit path and standardized the configuration filename to `schemantic.config.json`.
+- Prevented the generator from importing TypeScript built-ins (e.g. `Record`, `Promise`) from generated `./types`.
+- Ensured `buildObjectSchema` always returns a base schema (no missing return paths).
+- Corrected a mismatched brace bug introduced in prior edits.
+- Filtered out TypeScript built-in names in `hook-generator.ts` to prevent invalid imports.
+- Emitted generated type declarations in dependency-resolved order so declarations appear before helper / validation code.
 
-- Zod plugin: adopt Zod v4 error shape. `ValidationError` now exposes `issues` (Zod issues) and `data` (the invalid input); `validateRequest`/`validateResponse` use `error.issues`.
+### Migration Notes
+
+- If you previously accessed `ValidationError.errors`, switch to `ValidationError.issues`.
+- React Hooks plugin is temporarily unavailable as of this release — no action required if unused.
+- No other breaking changes are expected for consumers.
+
+---
+
+**Release summary:**
+
+> ✨ Zod v4 error shape support, generator fixes, and CLI improvements. React Hooks plugin temporarily disabled pending refactor.
+
+---
 
 ### Added
 

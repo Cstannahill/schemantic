@@ -132,6 +132,10 @@ afterGeneration: async (context: GenerationContext, result: any) => {
 },
 ```
 
+---
+
+Note: The `react-hooks` built-in plugin is temporarily disabled in the default plugin lists due to known generation issues that can corrupt output for some schemas. To re-enable it for a specific project, add `{ name: 'react-hooks', enabled: true }` to your `plugins` array in `schemantic.config.*`, and run the generator on a small sample schema first to validate output.
+
 ### Type Generation Hooks
 
 #### `beforeTypeGeneration`

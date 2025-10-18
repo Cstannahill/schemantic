@@ -342,7 +342,10 @@ export function getBuiltinPlugins(): SchemanticPlugin[] {
     // Basic plugins
     jsdocPlugin,
     validationPlugin,
-    reactHooksPlugin,
+    // reactHooksPlugin is temporarily disabled due to known issues with
+    // generation corruption observed in some schemas. Re-enable after
+    // investigation and fixes are merged.
+    // reactHooksPlugin,
     strictModePlugin,
 
     // Advanced plugins
@@ -357,7 +360,11 @@ export function getBuiltinPlugins(): SchemanticPlugin[] {
  * Get basic built-in plugins only
  */
 export function getBasicBuiltinPlugins(): SchemanticPlugin[] {
-  return [jsdocPlugin, validationPlugin, reactHooksPlugin, strictModePlugin];
+  return [
+    jsdocPlugin,
+    validationPlugin,
+    /* reactHooksPlugin (temporarily disabled) */ strictModePlugin,
+  ];
 }
 
 /**

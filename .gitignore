@@ -8,5 +8,7 @@ yarn.lock
 .pnp.js
 *.log
 .tgz
-test-output/
 ex-prj
+workflows-in-progress/
+.npmrc
+

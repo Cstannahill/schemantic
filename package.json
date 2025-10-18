@@ -25,7 +25,10 @@
     "lint": "eslint -c eslint.config.mjs src/**/*.ts",
     "lint:fix": "eslint -c eslint.config.mjs src/**/*.ts --fix",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build && npm test"
+    "prepublishOnly": "npm run clean && npm run build && npm test",
+    "publish:npm": "npm publish --access public",
+    "publish:gh": "npm pkg set name=@Cstannahill/schemantic && npm publish && npm pkg set name=schemantic",
+    "publish:both": "npm run publish:npm && npm run publish:gh"
   },
   "keywords": [
     "typescript",
@@ -52,6 +55,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Cstannahill/schemantic.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "homepage": "https://github.com/Cstannahill/schemantic#readme",
   "bugs": {
