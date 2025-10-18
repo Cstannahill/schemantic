@@ -68,7 +68,7 @@ export class TestApiClient {
   }
 
   private buildPath(template: string, params: Record<string, string | number>): string {
-    return template.replace(/\{([^}]+)\}/g, (match, key) => {
+    return template.replace(/\{([^}]+)\}/g, (_match, key) => {
       const value = params[key];
       if (value === undefined) {
         throw new Error('Missing required path parameter: ' + key);

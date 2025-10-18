@@ -117,7 +117,7 @@ export class ImageManipulationApiClient {
   }
 
   private buildPath(template: string, params: Record<string, string | number>): string {
-    return template.replace(/\{([^}]+)\}/g, (match, key) => {
+    return template.replace(/\{([^}]+)\}/g, (_match, key) => {
       const value = params[key];
       if (value === undefined) {
         throw new Error('Missing required path parameter: ' + key);
@@ -200,12 +200,12 @@ export class ImageManipulationApiClient {
  * Validation middleware for API requests and responses
  */
 export class ValidationError extends Error {
-  public issues: Array<{ path: (string | number)[]; message: string; code?: string }>;
-  constructor(issues: Array<{ path: (string | number)[]; message: string; code?: string }>, public data: unknown) {
+  public issues: readonly z.core.$ZodIssue[];
+  constructor(issues: readonly z.core.$ZodIssue[], public data: unknown) {
     const message = issues
       .map((iss) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
       .join('; ');
-  super('Validation failed: ' + message);
+    super('Validation failed: ' + message);
     this.name = 'ValidationError';
     this.issues = issues;
     Object.setPrototypeOf(this, ValidationError.prototype);
@@ -219,8 +219,9 @@ export function validateRequest<T>(data: unknown, schema: ZodType<T>): T {
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
-    throw new ValidationError(issues, data);
+    const issues = result.error?.issues ?? [];
+    // Use Zod v4 core issue type
+    throw new ValidationError(issues as readonly z.core.$ZodIssue[], data);
   }
 
   return result.data;
@@ -233,9 +234,9 @@ export function validateResponse<T>(data: unknown, schema: ZodType<T>): T {
   const result = schema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
-    throw new ValidationError((result.error as any).issues || [], data);
+    throw new ValidationError(result.error?.issues ?? [], data);
   }
 
   return result.data;

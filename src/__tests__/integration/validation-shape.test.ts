@@ -56,6 +56,7 @@ describe("integration: zod validation shape", () => {
     expect(clientContent).toMatch(/class ValidationError/);
     expect(clientContent).toMatch(/public issues/);
     expect(clientContent).toMatch(/validateResponse/);
-    expect(clientContent).toMatch(/issues \|\| \[\]/);
+    // generator may emit either `issues || []` or `issues ?? []` depending on nullish-coalescing settings
+    expect(clientContent).toMatch(/issues *(?:\|\||\?\?) *\[\]/);
   });
 });

@@ -32,25 +32,25 @@ export function validateImageFormat(data: unknown): { success: true; data: Image
   const result = ImageFormatSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as ImageFormat };
 }
 
 /**
  * Parse ImageFormat data with exception on validation failure
  */
 export function parseImageFormat(data: unknown): ImageFormat {
-  return ImageFormatSchema.parse(data);
+  return ImageFormatSchema.parse(data) as ImageFormat;
 }
 
 /**
@@ -109,25 +109,25 @@ export function validateBodyBatchConvertImagesConvertBatchPost(data: unknown): {
   const result = BodyBatchConvertImagesConvertBatchPostSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as BodyBatchConvertImagesConvertBatchPost };
 }
 
 /**
  * Parse BodyBatchConvertImagesConvertBatchPost data with exception on validation failure
  */
 export function parseBodyBatchConvertImagesConvertBatchPost(data: unknown): BodyBatchConvertImagesConvertBatchPost {
-  return BodyBatchConvertImagesConvertBatchPostSchema.parse(data);
+  return BodyBatchConvertImagesConvertBatchPostSchema.parse(data) as BodyBatchConvertImagesConvertBatchPost;
 }
 
 /**
@@ -200,25 +200,25 @@ export function validateBodyConvertImageConvertPost(data: unknown): { success: t
   const result = BodyConvertImageConvertPostSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as BodyConvertImageConvertPost };
 }
 
 /**
  * Parse BodyConvertImageConvertPost data with exception on validation failure
  */
 export function parseBodyConvertImageConvertPost(data: unknown): BodyConvertImageConvertPost {
-  return BodyConvertImageConvertPostSchema.parse(data);
+  return BodyConvertImageConvertPostSchema.parse(data) as BodyConvertImageConvertPost;
 }
 
 /**
@@ -263,25 +263,25 @@ export function validateValidationError(data: unknown): { success: true; data: V
   const result = ValidationErrorSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as ValidationError };
 }
 
 /**
  * Parse ValidationError data with exception on validation failure
  */
 export function parseValidationError(data: unknown): ValidationError {
-  return ValidationErrorSchema.parse(data);
+  return ValidationErrorSchema.parse(data) as ValidationError;
 }
 
 /**
@@ -322,25 +322,25 @@ export function validateHTTPValidationError(data: unknown): { success: true; dat
   const result = HTTPValidationErrorSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as HTTPValidationError };
 }
 
 /**
  * Parse HTTPValidationError data with exception on validation failure
  */
 export function parseHTTPValidationError(data: unknown): HTTPValidationError {
-  return HTTPValidationErrorSchema.parse(data);
+  return HTTPValidationErrorSchema.parse(data) as HTTPValidationError;
 }
 
 /**
@@ -388,25 +388,25 @@ export function validateHealthResponse(data: unknown): { success: true; data: He
   const result = HealthResponseSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || [];
+    const issues = result.error?.issues ?? [];
     console.warn('Response validation failed:', issues);
     // Return a structured failure result so consumers can handle errors without requiring a runtime ValidationError class
     return {
       success: false,
       errors: issues.length > 0
-        ? issues.map((iss: any) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
+        ? issues.map((iss: z.core.$ZodIssue) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
         : []
     };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data as HealthResponse };
 }
 
 /**
  * Parse HealthResponse data with exception on validation failure
  */
 export function parseHealthResponse(data: unknown): HealthResponse {
-  return HealthResponseSchema.parse(data);
+  return HealthResponseSchema.parse(data) as HealthResponse;
 }
 
 /**
