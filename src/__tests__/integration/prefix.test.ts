@@ -9,7 +9,7 @@ describe("integration: prefix handling", () => {
   test("generated types have no API prefix when typePrefix is empty", async () => {
     const schemaPath = path.resolve(
       __dirname,
-      "../../../test-output/repro-openapi.json"
+      "../../../test-schemas/allof-inher-union.json"
     );
     const outDir = path.resolve(
       __dirname,
@@ -43,9 +43,8 @@ describe("integration: prefix handling", () => {
     const typesPath = path.join(outDir, "types.ts");
     const typesContent = await fs.readFile(typesPath, "utf-8");
 
-    // Expect the specific names from the repro fixture and no API-prefixed names
-    expect(typesContent).toMatch(/export interface Outer/);
-    expect(typesContent).toMatch(/export interface Inner/);
+    // Expect that the generated types include BasePet and no API-prefixed names
+    expect(typesContent).toMatch(/export interface BasePet/);
     expect(typesContent).not.toMatch(/export interface API/);
   });
 });
