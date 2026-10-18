@@ -33,7 +33,8 @@ function compile(directory, overrides = {}) {
   const ts = require('typescript');
   const files = fs.readdirSync(directory).filter(file => /\.(?:ts|mts|cts)$/.test(file)).map(file => path.join(directory, file));
   const options = { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, moduleResolution: ts.ModuleResolutionKind.Node10,
-    strict: true, exactOptionalPropertyTypes: true, noUncheckedIndexedAccess: true, skipLibCheck: true, types: [],
+    strict: true, exactOptionalPropertyTypes: true, noUncheckedIndexedAccess: true,
+    noUnusedLocals: true, noUnusedParameters: true, skipLibCheck: true, types: [],
     lib: ['lib.es2020.d.ts', 'lib.dom.d.ts'], noEmit: true,
     baseUrl: root, paths: { zod: ['node_modules/zod'], react: ['node_modules/@types/react'] }, ...overrides };
   const program = ts.createProgram(files, options);

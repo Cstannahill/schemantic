@@ -26,11 +26,23 @@ describe('plugin re-audit runtime contracts', () => {
     const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS } });
     const exports = {}; new Function('exports', 'require', compiled.outputText)(exports, require); return exports;
   }
-  async function compile() {
+  async function compile(extra: ts.CompilerOptions = {}) {
     const files = (await fs.readdir(outputDir)).filter(f => f.endsWith('.ts')).map(f => path.join(outputDir, f));
-    const program = ts.createProgram(files, { strict: true, exactOptionalPropertyTypes: true, noUncheckedIndexedAccess: true, target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, skipLibCheck: true, types: [], lib: ['lib.es2020.d.ts', 'lib.dom.d.ts'] });
+    const program = ts.createProgram(files, { strict: true, exactOptionalPropertyTypes: true, noUncheckedIndexedAccess: true, target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, skipLibCheck: true, types: [], lib: ['lib.es2020.d.ts', 'lib.dom.d.ts'], ...extra });
     expect(ts.getPreEmitDiagnostics(program).map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n'))).toEqual([]);
   }
+  it('emits erasable validation errors that preserve their issues and input data', async () => {
+    await generate('zod-validation');
+    await compile({ noUnusedLocals: true, noUnusedParameters: true, erasableSyntaxOnly: true });
+    const { ValidationError } = await load();
+    const issues = [{ code: 'custom', path: ['id'], message: 'Invalid identifier' }];
+    const data = { id: 'wrong' };
+    const error = new ValidationError(issues, data);
+    expect(error).toBeInstanceOf(Error);
+    expect(error.issues).toBe(issues);
+    expect(error.data).toBe(data);
+    expect(error.message).toContain('id: Invalid identifier');
+  });
   it('keeps colliding resources, custom headers and session contexts separate', async () => {
     await generate('request-deduplication'); const { RequestDeduplicator } = await load(); const d = new RequestDeduplicator();
     expect(await d.execute('GET', 'https://example.com/Aa', async () => 'Aa')).toBe('Aa');

@@ -76,7 +76,7 @@ void api.uploadFile('fixture-header', {fileData: new Blob(['bytes'])});
 `);
     // CJS output executes directly in Node, independent of workspace module settings.
     writeJson(path.join(outputDir, 'package.json'), { type: 'commonjs' });
-    const diagnostics = compile(outputDir, { module: ts.ModuleKind.CommonJS, noEmit: false, outDir: path.join(outputDir, 'compiled') });
+    const diagnostics = compile(outputDir, { module: ts.ModuleKind.CommonJS, erasableSyntaxOnly: true, noEmit: false, outDir: path.join(outputDir, 'compiled') });
     writeJson(path.join(directory, 'diagnostics.json'), diagnostics);
     assert.equal(diagnostics.length, 0, JSON.stringify(diagnostics));
     const generated = await import(pathToFileURL(path.join(outputDir, 'compiled/index.js')).href);

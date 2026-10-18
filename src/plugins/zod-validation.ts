@@ -810,13 +810,15 @@ function generateValidationMiddleware(
  */
 export class ${errorName} extends Error {
   public issues: readonly z.core.$ZodIssue[];
-  constructor(issues: readonly z.core.$ZodIssue[], public data: unknown) {
+  public data: unknown;
+  constructor(issues: readonly z.core.$ZodIssue[], data: unknown) {
     const message = issues
       .map((iss) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
       .join('; ');
     super('Validation failed: ' + message);
     this.name = '${errorName}';
     this.issues = issues;
+    this.data = data;
     Object.setPrototypeOf(this, ${errorName}.prototype);
   }
 }

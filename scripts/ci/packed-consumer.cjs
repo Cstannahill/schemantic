@@ -27,7 +27,7 @@ void client.getUser(user.userId); void client.saveUser(user); serializeApiUserDt
 const wrong: ApiUserDto = {user_id:'1',display_name:'Ada'}; void wrong;
 `);
   const base = { target: 'ES2020', strict: true, exactOptionalPropertyTypes: true, noUncheckedIndexedAccess: true,
-    noUnusedLocals: true, noUnusedParameters: true, lib: ['ES2020', 'DOM'], types: ['node'],
+    noUnusedLocals: true, noUnusedParameters: true, erasableSyntaxOnly: true, lib: ['ES2020', 'DOM'], types: ['node'],
     typeRoots: [process.env.SCHEMANTIC_NODE_TYPES], skipLibCheck: true, outDir: './compiled' };
   const modes = [
     ['commonjs', { module: 'CommonJS', moduleResolution: 'Node10', noEmit: true }],

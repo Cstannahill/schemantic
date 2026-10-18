@@ -366,7 +366,7 @@ export class ApiClientGenerator {
         }
         for (const [contentType, mediaType] of media) {
           const mode = this.mediaMode(contentType);
-          const type = contentType.includes('*') ? 'unknown' : mode === 'text' ? 'string' : mode === 'blob' ? 'globalThis.Blob' : mediaType.schema ? this.extractSchemaType(mediaType.schema, context, 'response') : 'unknown';
+          const type = contentType.includes('*') ? 'unknown' : mode === 'text' ? 'string' : mode === 'blob' ? 'globalThis.Blob' : mediaType.schema ? this.extractSchemaType(mediaType.schema, context, 'response', false, this.isReturnStatus(statusCode)) : 'unknown';
           responseList.push({
             statusCode,
             type,
@@ -390,12 +390,16 @@ export class ApiClientGenerator {
     return responseList;
   }
 
+  private isReturnStatus(statusCode: string): boolean {
+    return /^2(?:\d{2}|XX)$/i.test(statusCode) || statusCode === 'default';
+  }
+
   /**
    * Determine return type from responses
    */
   private determineReturnType(responses: GeneratedResponse[]): string {
     // Non-success responses are thrown as ApiClientError by the runtime.
-    responses = responses.filter(response => /^2(?:\d{2}|XX)$/i.test(response.statusCode) || response.statusCode === 'default');
+    responses = responses.filter(response => this.isReturnStatus(response.statusCode));
     if (responses.length === 0) {
       return "void";
     }
@@ -426,13 +430,14 @@ export class ApiClientGenerator {
   /**
    * Extract schema type
    */
-  private extractSchemaType(schema: OpenAPISchemaObject | OpenAPIRef, context: GenerationContext, direction?: 'request' | 'response', binary = false): string {
+  private extractSchemaType(schema: OpenAPISchemaObject | OpenAPIRef, context: GenerationContext, direction?: 'request' | 'response', binary = false, importReferences = true): string {
     return schemaType(schema, ref => {
       const original = referenceName(ref);
       const projection = context.projections?.[original];
       const target = binary ? projection?.binary || projection?.request || original : direction ? projection?.[direction] || original : original;
       const name = typeName(target, context.config.typePrefix, context.config.typeSuffix);
-      this.referencedTypes.add(name);
+      // Error response metadata is retained, but only emitted signatures need type imports.
+      if (importReferences) this.referencedTypes.add(name);
       const globals = new Set(['Blob', 'File', 'FormData', 'Headers', 'URL', 'URLSearchParams', 'Response', 'RequestInit', 'BodyInit', 'AbortController', 'Error', 'ApiClientConfig', 'ApiClientError', this.clientName]);
       let alias = this.typeAliases.get(name) || name;
       if (globals.has(name) && !this.typeAliases.has(name)) {
@@ -508,12 +513,17 @@ export class ApiClientGenerator {
    */
   private generateErrorClass(): string {
     return `export class ApiClientError extends globalThis.Error {
+  public status?: number | undefined;
+  public response?: Response | undefined;
+
   constructor(
     message: string,
-    public status?: number,
-    public response?: Response
+    status?: number,
+    response?: Response
   ) {
     super(message);
+    this.status = status;
+    this.response = response;
     this.name = 'ApiClientError';
   }
 }`;

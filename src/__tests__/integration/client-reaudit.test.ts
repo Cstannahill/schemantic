@@ -46,6 +46,40 @@ describe('re-audit generated client contracts', () => {
     finally { await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve())); }
   }
 
+  it.each(['camelCase', 'preserve'] as const)('compiles FastAPI error responses under Vite strict flags with %s properties', async propertyNaming => {
+    const data = schema();
+    data.components!.schemas = {
+      User: { type: 'object', required: ['user_id'], properties: { user_id: { type: 'string' } } },
+      HTTPValidationError: { type: 'object', properties: { detail: { type: 'string' } } },
+      Error: { type: 'object', properties: { message: { type: 'string' } } },
+    };
+    data.paths['/users'] = { get: { operationId: 'getUsers', responses: {
+      '200': response('application/json', { type: 'array', items: { $ref: '#/components/schemas/User' } }),
+      '422': response('application/json', { $ref: '#/components/schemas/HTTPValidationError' }),
+      '500': response('application/json', { $ref: '#/components/schemas/Error' }),
+    } } };
+    // Error-shaped schemas still need imports when used by actual request/default-response signatures.
+    data.paths['/validation'] = { post: { operationId: 'validate', requestBody: { required: true,
+      content: { 'application/json': { schema: { $ref: '#/components/schemas/Error' } } } },
+      responses: { default: response('application/json', { $ref: '#/components/schemas/Error' }) } } };
+    const result = await new Schemantic({ outputDir, schemaData: data, propertyNaming }).generate();
+    expect(result.errors).toEqual([]); expect(result.success).toBe(true);
+    const key = propertyNaming === 'camelCase' ? 'userId' : 'user_id';
+    await compile(`import { AuditApiClient, ApiClientError } from './index.js';
+import type { User, Error as ErrorPayload } from './types.js';
+declare const api: AuditApiClient;
+const users: Promise<User[]> = api.getUsers(); void users;
+const validation: Promise<ErrorPayload> = api.validate({message:'invalid'}); void validation;
+void api.getUsers().then(users => users[0]?.${key});
+const failure = new ApiClientError('failed', 422, new Response());
+const status: number | undefined = failure.status; void status;
+const response: Response | undefined = failure.response; void response;
+const optionalFields: Pick<ApiClientError, 'status' | 'response'> = {}; void optionalFields;
+`, { module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
+      verbatimModuleSyntax: true, isolatedModules: true, noUnusedLocals: true,
+      noUnusedParameters: true, erasableSyntaxOnly: true });
+  });
+
   it.each(['camelCase', 'preserve'] as const)('accepts modern FastAPI uploads with %s properties and keeps JSON/encoded strings intact', async propertyNaming => {
     const data = schema(); data.openapi = '3.1.0';
     data.components!.schemas = {

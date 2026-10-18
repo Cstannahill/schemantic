@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Generated API clients omit imports used only by thrown error-response metadata, avoiding `noUnusedLocals` failures in strict consumers while retaining types used by request and successful/default response signatures.
+- Generated `ApiClientError` and Zod `ValidationError` use explicit fields and assignments instead of constructor parameter properties, supporting `erasableSyntaxOnly` without changing their runtime error data.
+- CI now checks unused declarations throughout the fixture matrix and enables Vite's erasable-syntax restriction for installed-package and live FastAPI consumers, with regression coverage for both property naming modes and Zod validation.
+
 ## [0.4.0] — 2026-10-18
 
 ### Fixed
