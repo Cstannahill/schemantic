@@ -189,6 +189,9 @@ export interface OpenAPISchemaObject {
   enum?: unknown[];
   const?: unknown;
   format?: string;
+  /** JSON Schema content annotations; encoded strings are not raw upload parts. */
+  contentMediaType?: string;
+  contentEncoding?: string;
   minimum?: number;
   maximum?: number;
   exclusiveMinimum?: boolean | number;

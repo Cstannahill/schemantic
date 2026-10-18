@@ -1,6 +1,6 @@
 import { OpenAPISchema, OpenAPISchemaObject } from '../types/openapi';
 import { ResolvedSchema, SchemaResolver } from '../types/schema';
-import { projectSchema, referenceName } from './schema-type';
+import { isBinaryStringSchema, projectSchema, referenceName } from './schema-type';
 
 export type ProjectionNames = Record<string, { request?: string; response?: string; binary?: string }>;
 const reference = (name: string) => '#/components/schemas/' + name.replace(/~/g, '~0').replace(/\//g, '~1');
@@ -27,11 +27,11 @@ export function addSchemaProjections(document: OpenAPISchema, resolver: SchemaRe
   for (const [name, value] of originals) {
     if (selected && !selected.has(name)) continue;
     if (contains(value, node => node.readOnly === true || node.writeOnly === true)) names[name] = { request: name + 'Request', response: name + 'Response' };
-    if (contains(value, node => node.format === 'binary')) names[name] = { ...names[name], binary: name + 'Binary' };
+    if (contains(value, isBinaryStringSchema)) names[name] = { ...names[name], binary: name + 'Binary' };
   }
   const binary = (schema: ResolvedSchema): ResolvedSchema => {
     const node = schema as OpenAPISchemaObject;
-    if (node.format === 'binary') return { ...node, 'x-schemantic-binary': true };
+    if (isBinaryStringSchema(node)) return { ...node, 'x-schemantic-binary': true };
     return { ...node,
       ...(node.properties && { properties: Object.fromEntries(Object.entries(node.properties).map(([key, value]) => [key, binary(value)])) }),
       ...(node.items && { items: binary(node.items) }),

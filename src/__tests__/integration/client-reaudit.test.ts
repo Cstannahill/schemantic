@@ -46,6 +46,41 @@ describe('re-audit generated client contracts', () => {
     finally { await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve())); }
   }
 
+  it.each(['camelCase', 'preserve'] as const)('accepts modern FastAPI uploads with %s properties and keeps JSON/encoded strings intact', async propertyNaming => {
+    const data = schema(); data.openapi = '3.1.0';
+    data.components!.schemas = {
+      FilePart: { type: 'string', contentMediaType: 'application/octet-stream' },
+      Upload: { type: 'object', required: ['file_data', 'file_list', 'encoded_data'], properties: {
+        file_data: { $ref: '#/components/schemas/FilePart' },
+        file_list: { type: 'array', items: { $ref: '#/components/schemas/FilePart' } },
+        maybe_file: { anyOf: [{ $ref: '#/components/schemas/FilePart' }, { type: 'null' }] },
+        encoded_data: { type: 'string', contentMediaType: 'image/png', contentEncoding: 'base64' },
+      } },
+    };
+    for (const [operationId, media] of [['upload', 'multipart/form-data'], ['json', 'application/json']] as const) {
+      data.paths['/' + operationId] = { post: { operationId, requestBody: { required: true,
+        content: { [media]: { schema: { $ref: '#/components/schemas/Upload' } } } }, responses: { '200': response('application/json', { type: 'object' }) } } };
+    }
+    data.paths['/inline'] = { post: { operationId: 'inline', requestBody: { required: true,
+      content: { 'multipart/form-data': { schema: { type: 'object', required: ['file'], properties: {
+        file: { type: 'string', contentMediaType: 'application/octet-stream' },
+      } } } } }, responses: { '200': response('application/json', { type: 'object' }) } } };
+    const result = await new Schemantic({ outputDir, schemaData: data, propertyNaming }).generate();
+    expect(result.errors).toEqual([]); expect(result.success).toBe(true);
+    const [file, list, encoded, maybe] = propertyNaming === 'camelCase'
+      ? ['fileData', 'fileList', 'encodedData', 'maybeFile'] : ['file_data', 'file_list', 'encoded_data', 'maybe_file'];
+    await compile(`import { AuditApiClient } from './index.js'; declare const api: AuditApiClient;
+void api.upload({${file}: new Blob(['data']), ${list}: [new Blob(['data'])], ${encoded}: 'ZGF0YQ==', ${maybe}: null});
+void api.json({${file}: 'wire-string', ${list}: ['wire-string'], ${encoded}: 'ZGF0YQ=='});
+void api.inline({file: new Blob(['data'])});
+// @ts-expect-error upload references must resolve to binary projections
+void api.upload({${file}: 'data', ${list}: [], ${encoded}: 'ZGF0YQ=='});
+// @ts-expect-error contentEncoding must not turn an encoded string into a Blob
+void api.upload({${file}: new Blob(), ${list}: [], ${encoded}: new Blob()});
+// @ts-expect-error JSON representations remain strings
+void api.json({${file}: new Blob(), ${list}: [], ${encoded}: 'ZGF0YQ=='});`);
+  });
+
   it('replaces and clears authorization independent of original header spelling', async () => {
     const data = schema(); data.paths['/auth'] = { get: { operationId: 'auth', responses: { '200': response('application/json', { type: 'object' }) } } };
     await generate(data);

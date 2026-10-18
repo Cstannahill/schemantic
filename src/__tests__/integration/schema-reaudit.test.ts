@@ -166,4 +166,24 @@ const invalidResponse: UserResponse = { id: 1, password: 'x', friend: null };`);
     expect(JSON.stringify(composed)).toBe(before);
     expect(annotated.properties).toHaveProperty('secret_key');
   });
+
+  it.each(['application/octet-stream', 'image/png'])('recognizes unencoded %s content only in binary request contexts', async contentMediaType => {
+    const raw: OpenAPISchemaObject = { type: 'string', contentMediaType };
+    const encoded: OpenAPISchemaObject = { ...raw, contentEncoding: 'base64' };
+    const before = JSON.stringify(raw);
+    const render = (value: OpenAPISchemaObject, binary: boolean) => schemaType(value, () => 'Unused', {}, undefined, undefined, { binary });
+    expect(render(raw, true)).toBe('Blob');
+    expect(render(raw, false)).toBe('string');
+    expect(render(encoded, true)).toBe('string');
+    const projected = projectSchema(raw, { direction: 'request', binary: true });
+    expect(schemaType(projected, () => 'Unused')).toBe('globalThis.Blob');
+    expect(projectSchema(encoded, { direction: 'request', binary: true })).not.toHaveProperty('x-schemantic-binary');
+    expect(JSON.stringify(raw)).toBe(before);
+    await compile(`type Raw = ${render(raw, true)}; type Encoded = ${render(encoded, true)};
+const raw: Raw = new Blob(['data']); const encoded: Encoded = 'ZGF0YQ==';
+// @ts-expect-error raw upload fields require binary values
+const invalidRaw: Raw = 'data';
+// @ts-expect-error encoded strings remain strings
+const invalidEncoded: Encoded = new Blob(['data']);`);
+  });
 });

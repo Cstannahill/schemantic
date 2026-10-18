@@ -14,6 +14,14 @@ const verify = workflows['verify.yml'];
 const release = workflows['release.yml'];
 const gate = verify.jobs['required-checks'];
 
+test('live integration covers legacy and current FastAPI with distinct diagnostics', () => {
+  const live = verify.jobs['live-integration'];
+  assert.deepEqual(live.strategy?.matrix?.fastapi, ['0.116.1', 'latest']);
+  assert.equal(live.strategy['fail-fast'], false);
+  const upload = live.steps.find(step => step.uses?.startsWith('actions/upload-artifact@'));
+  assert(upload.with.name.includes('${{ matrix.fastapi }}'));
+});
+
 function commands(job) { return (job.steps || []).filter(step => step.run).map(step => step.run); }
 function uses(job, action) { return (job.steps || []).filter(step => step.uses?.startsWith(`${action}@`)); }
 

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Multipart uploads recognize both legacy `format: binary` and current FastAPI `contentMediaType` schemas. JSON representations and explicitly encoded content remain strings; live CI covers legacy and current FastAPI.
 - Fresh output supports composed schemas, aliases, arrays, dictionaries, nullable values, safe identifiers, literal enums and runtime exports.
 - Clients resolve inherited/component parameters, encode paths, merge headers, serialize array queries and URL-encoded forms, decode response media, and restrict retries to transient idempotent requests.
 - Generation validates references and output collisions, applies filters and plugins, isolates repeated runs and executes custom generators.

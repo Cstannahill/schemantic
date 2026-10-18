@@ -2,6 +2,7 @@
 import json
 import socket
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import uvicorn
@@ -60,7 +61,10 @@ if __name__ == "__main__":
     listener.listen(128)
     port_path = Path(sys.argv[1])
     pending = port_path.with_suffix(".tmp")
-    pending.write_text(json.dumps({"port": listener.getsockname()[1]}), encoding="utf-8")
+    pending.write_text(json.dumps({"port": listener.getsockname()[1], "versions": {
+        "python": sys.version.split()[0], "fastapi": version("fastapi"),
+        "pydantic": version("pydantic"), "uvicorn": version("uvicorn"),
+    }}), encoding="utf-8")
     pending.replace(port_path)
     server = uvicorn.Server(uvicorn.Config(app, log_level="info", access_log=True))
     server.run(sockets=[listener])

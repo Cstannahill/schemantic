@@ -54,6 +54,8 @@ async function main() {
     await delay(50);
     if (startupError) throw startupError;
     const baseUrl = await waitForHealth(child, portFile);
+    report.backend = JSON.parse(fs.readFileSync(portFile, 'utf8')).versions;
+    console.log(`Live backend: ${JSON.stringify(report.backend)}`);
     const response = await fetch(baseUrl + '/openapi.json', { signal: AbortSignal.timeout(5000) });
     assert.equal(response.status, 200);
     const schemaData = await response.json();

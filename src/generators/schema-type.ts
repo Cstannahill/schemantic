@@ -29,6 +29,13 @@ export interface SchemaTypeOptions {
   propertyName?: (wireName: string) => string;
 }
 
+/** Binary media can carry raw string content; explicitly encoded content stays a string. */
+export function isBinaryStringSchema(schema: OpenAPISchemaObject): boolean {
+  return schema.format === 'binary' || (schema.type === 'string'
+    && typeof schema.contentMediaType === 'string' && schema.contentMediaType.trim().length > 0
+    && !schema.contentEncoding);
+}
+
 function excludedProperty(schema: ResolvedSchema, options: SchemaTypeOptions,
   resolver?: (ref: string) => ResolvedSchema | undefined, seen = new Set<string>()): boolean {
   const annotation = options.direction === 'request' ? 'readOnly' : options.direction === 'response' ? 'writeOnly' : undefined;
@@ -72,7 +79,7 @@ export function projectSchema(schema: ResolvedSchema | boolean, options: SchemaT
   mapReference: (ref: string) => string = ref => ref): ResolvedSchema {
   const project = (value: ResolvedSchema, inheritedExcluded = new Set<string>()): ResolvedSchema => {
     const result = { ...value } as OpenAPISchemaObject & { $ref?: string };
-    if (options.binary && result.format === 'binary') result['x-schemantic-binary'] = true;
+    if (options.binary && isBinaryStringSchema(result)) result['x-schemantic-binary'] = true;
     const excluded = new Set([...inheritedExcluded, ...directionalKeys(value, options, resolver)]);
     if (isOpenAPIRef(value)) result.$ref = mapReference(value.$ref);
     if (result.properties) {
@@ -193,7 +200,7 @@ export function schemaType(
       } else {
         const basic: Record<string, string> = { string: 'string', integer: 'number', number: 'number', boolean: 'boolean', null: 'null' };
         parts.push((type !== 'null' && schema.format && customMappings[schema.format]) || customMappings[type]
-          || (type === 'string' && schema.format === 'binary' && options.binary ? 'Blob' : basic[type]) || 'unknown');
+          || (type === 'string' && isBinaryStringSchema(schema) && options.binary ? 'Blob' : basic[type]) || 'unknown');
       }
     }
     result = parts.length ? parts.map(part => parts.length > 1 && part.includes(' | ') ? `(${part})` : part).join(' & ') : 'unknown';

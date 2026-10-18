@@ -79,7 +79,7 @@ npm run verify:live
 npm audit --audit-level=moderate
 ```
 
-`npm test` builds first; `test:coverage` and the verification scripts expect a fresh build. For live tests, install the Python packages into your development virtual environment; `PYTHON` can select its executable. The live test starts and stops only its own loopback FastAPI process.
+`npm test` builds first; `test:coverage` and the verification scripts expect a fresh build. For live tests, install the Python packages into your development virtual environment; `PYTHON` can select its executable. The live test starts and stops only its own loopback FastAPI process and records backend versions in its report. CI tests FastAPI 0.116.1 and the current version to cover both legacy `format: binary` and modern unencoded `contentMediaType` upload schemas.
 
 Fixture checks cover all six schema fixtures in plain, Zod, and hooks modes with both camelCase and preserved properties. Package verification packs once with lifecycle scripts disabled, validates required files and forbidden content, enforces 10 MiB compressed/25 MiB unpacked limits, installs the archive, and checks exports, the CLI, generated runtime conversion, and strict TypeScript consumers. It writes the publishable `.release/package/package-info.json` marker only after successful validation. Diagnostics are retained under `.artifacts/`; workflows upload reports on failure or where configured.
 
