@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-10-18
+
 ### Fixed
 
 - Generated API clients omit imports used only by thrown error-response metadata, avoiding `noUnusedLocals` failures in strict consumers while retaining types used by request and successful/default response signatures.
