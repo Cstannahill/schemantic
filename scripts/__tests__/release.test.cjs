@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { execFileSync, spawnSync } = require('node:child_process');
-const { planRelease, validateRelease, registryState, verifyArchive, readProject, writePreparation, checkTag } = require('../release.cjs');
+const { planRelease, validateRelease, registryState, waitForPublished, verifyArchive, readProject, writePreparation, checkTag } = require('../release.cjs');
 
 function fixture() {
   return { manifest: { name: 'schemantic', version: '0.3.0', repository: { url: 'git+https://github.com/Cstannahill/schemantic.git' } },
@@ -103,3 +103,43 @@ test('tag checks reject detached identity changes and commits outside the defaul
   git('update-ref', 'refs/remotes/origin/main', sha); git('checkout', '--detach', parent);
   assert.throws(() => checkTag(directory, 'v0.4.0', 'main', sha), /checkout|match/i);
 }));
+
+test('verification waits through temporary npm registry propagation delays', async () => {
+  let versionReads = 0;
+  const waits = [];
+  const published = { name: 'schemantic', version: '0.5.0', dist: { integrity: 'sha512-expected' } };
+  const fetchImpl = async url => {
+    if (url.endsWith('/0.5.0')) {
+      versionReads++;
+      return versionReads < 3 ? response(404, {}) : response(200, published);
+    }
+    return response(200, { version: '0.4.1' });
+  };
+
+  const state = await waitForPublished({ name: 'schemantic', version: '0.5.0', integrity: 'sha512-expected', npmTag: 'latest',
+    fetchImpl, delays: [1000, 2000], sleep: async milliseconds => waits.push(milliseconds) });
+
+  assert.deepEqual(waits, [1000, 2000]);
+  assert.equal(state.alreadyPublished, true);
+  assert.equal(state.attempts, 3);
+});
+
+test('published verification fails after its configured propagation wait expires', async () => {
+  const waits = [];
+  const fetchImpl = async url => url.endsWith('/latest') ? response(200, { version: '0.4.1' }) : response(404, {});
+
+  await assert.rejects(waitForPublished({ name: 'schemantic', version: '0.5.0', integrity: 'sha512-expected', npmTag: 'latest',
+    fetchImpl, delays: [1000, 2000], sleep: async milliseconds => waits.push(milliseconds) }), /not visible with matching integrity before timeout/i);
+  assert.deepEqual(waits, [1000, 2000]);
+});
+
+test('default published verification allows several minutes for registry propagation', async () => {
+  const waits = [];
+  const fetchImpl = async url => url.endsWith('/latest') ? response(200, { version: '0.4.1' }) : response(404, {});
+
+  await assert.rejects(waitForPublished({ name: 'schemantic', version: '0.5.0', integrity: 'sha512-expected', npmTag: 'latest',
+    fetchImpl, sleep: async milliseconds => waits.push(milliseconds) }), /not visible with matching integrity before timeout/i);
+
+  const totalWait = waits.reduce((total, milliseconds) => total + milliseconds, 0);
+  assert.ok(totalWait >= 4 * 60_000 && totalWait <= 5 * 60_000);
+});
