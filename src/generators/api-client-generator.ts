@@ -500,7 +500,8 @@ export class ApiClientGenerator {
    */
   private generateConfigInterface(): string {
     return `export interface ApiClientConfig {
-  baseUrl: string;
+  /** Defaults to window.location.origin in browsers. Required in non-browser runtimes. */
+  baseUrl?: string;
   timeout?: number;
   headers?: RequestInit['headers'];
   retries?: number;
@@ -515,15 +516,20 @@ export class ApiClientGenerator {
     return `export class ApiClientError extends globalThis.Error {
   public status?: number | undefined;
   public response?: Response | undefined;
+  public body?: unknown;
+  public detail?: unknown;
 
   constructor(
     message: string,
     status?: number,
-    response?: Response
+    response?: Response,
+    body?: unknown
   ) {
     super(message);
     this.status = status;
     this.response = response;
+    this.body = body;
+    this.detail = body !== null && typeof body === 'object' && 'detail' in body ? (body as { detail?: unknown }).detail : undefined;
     this.name = 'ApiClientError';
   }
 }`;
@@ -533,12 +539,15 @@ export class ApiClientGenerator {
    * Generate constructor
    */
   private generateConstructor(): string {
-    return `  constructor(config: ApiClientConfig) {
-    this.baseUrl = config.baseUrl.replace(/\\/$/, '');
+    return `  constructor(config: ApiClientConfig = {}) {
+    const browserOrigin = (globalThis as typeof globalThis & { window?: { location?: { origin?: string } } }).window?.location?.origin;
+    const configuredBaseUrl = config.baseUrl ?? browserOrigin;
+    if (!configuredBaseUrl) throw new Error('ApiClientConfig.baseUrl is required outside a browser runtime');
+    this.baseUrl = new URL(configuredBaseUrl, browserOrigin).toString().replace(/\\/$/, '');
     this.config = {
-      timeout: 30000,
-      retries: 3,
-      retryDelay: 1000,
+      timeout: 15000,
+      retries: 1,
+      retryDelay: 250,
       ...config,
     };
   }`;
@@ -744,7 +753,19 @@ export class ApiClientGenerator {
       else options.signal?.addEventListener('abort', onAbort, { once: true });
       try {
         const response = await fetch(url, { ...options, signal: controller.signal });
-        if (!response.ok) throw new ApiClientError('Request failed: ' + response.status + ' ' + response.statusText, response.status, response);
+        if (!response.ok) {
+          let errorBody: unknown;
+          try {
+            const text = await response.clone().text();
+            if (text) {
+              const contentType = response.headers.get('Content-Type') || '';
+              if (/(?:\\/json|\\+json)(?:;|$)/i.test(contentType)) {
+                try { errorBody = JSON.parse(text); } catch { errorBody = text; }
+              } else errorBody = text;
+            }
+          } catch { /* Keep the HTTP error even when the body cannot be read. */ }
+          throw new ApiClientError('Request failed: ' + response.status + ' ' + response.statusText, response.status, response, errorBody);
+        }
         if (response.status === 204 || response.status === 205 || options.method === 'HEAD') return undefined as T;
         let candidates = responses.filter(item => item.status === String(response.status));
         if (!candidates.length) candidates = responses.filter(item => item.status.toUpperCase() === Math.floor(response.status / 100) + 'XX');

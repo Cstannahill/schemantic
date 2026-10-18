@@ -125,6 +125,44 @@ void api.json({${file}: new Blob(), ${list}: [], ${encoded}: 'ZGF0YQ=='});`);
     });
   });
 
+  it('exposes FastAPI error detail and parsed bodies while preserving the original response', async () => {
+    const data = schema();
+    data.paths['/failure'] = { get: { operationId: 'failure', responses: { '200': response('application/json', { type: 'object' }) } } };
+    await generate(data);
+    await serverRun((_req, res) => { res.statusCode = 422; res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify({ detail: [{ msg: 'field required' }] })); }, async url => {
+      try { await (await client(url)).failure!(); throw new Error('Expected request to reject'); }
+      catch (error) {
+        expect(error).toBeInstanceOf(Error);
+        expect((error as { status?: number }).status).toBe(422);
+        expect((error as { detail?: unknown }).detail).toEqual([{ msg: 'field required' }]);
+        expect((error as { body?: unknown }).body).toEqual({ detail: [{ msg: 'field required' }] });
+        expect(await (error as { response: Response }).response.json()).toEqual({ detail: [{ msg: 'field required' }] });
+      }
+    });
+  });
+
+  it('uses the browser origin when baseUrl is omitted and rejects missing non-browser baseUrl', async () => {
+    const data = schema(); data.paths['/ok'] = { get: { operationId: 'ok', responses: { '204': { description: 'ok' } } } };
+    const result = await new Schemantic({ outputDir, schemaData: data, propertyNaming: 'preserve' }).generate();
+    expect(result.success).toBe(true);
+    const source = await fs.readFile(path.join(outputDir, 'api-client.ts'), 'utf8');
+    const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS } });
+    const exports: Record<string, new (config?: unknown) => { baseUrl: string }> = {};
+    new Function('exports', 'require', compiled.outputText)(exports, require);
+    expect(() => new exports.AuditApiClient!()).toThrow(/baseUrl is required outside a browser/);
+    const previousWindow = Object.getOwnPropertyDescriptor(globalThis, 'window');
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: { location: { origin: 'https://app.example.test' } } });
+    try {
+      const browserClient = new exports.AuditApiClient!();
+      expect(browserClient.baseUrl).toBe('https://app.example.test');
+      expect((browserClient as unknown as { config: Record<string, unknown> }).config).toMatchObject({ timeout: 15000, retries: 1, retryDelay: 250 });
+      expect(new exports.AuditApiClient!({ baseUrl: '/api' }).baseUrl).toBe('https://app.example.test/api');
+    } finally {
+      if (previousWindow) Object.defineProperty(globalThis, 'window', previousWindow);
+      else delete (globalThis as typeof globalThis & { window?: unknown }).window;
+    }
+  });
+
   it.each(['binary', 'default'])('preserves %s response bodies without explicit 200 schema', async kind => {
     const data = schema(); data.paths['/body'] = { get: { operationId: 'body', responses: kind === 'binary' ? { '200': response('application/octet-stream') } : { default: response('application/json', { type: 'object' }) } } };
     await generate(data);

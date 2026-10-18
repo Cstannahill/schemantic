@@ -19,7 +19,9 @@ async function main() {
   fs.writeFileSync('consumer.ts', `import { Schemantic, defineConfig } from 'schemantic';
 import { ConsumerApiClient, serializeApiUserDto, deserializeApiUserDto } from './generated/index.js';
 import type { ApiUserDto } from './generated/index.js';
+import { ApiRoleDto } from './generated/types.js';
 const user: ApiUserDto = {userId:'1',displayName:'Ada'};
+const role: ApiRoleDto = ApiRoleDto.ADMIN; void role;
 const client = new ConsumerApiClient({baseUrl:'https://example.test',headers:new Headers()});
 void new Schemantic(defineConfig({schemaData: {openapi:'3.1.0',info:{title:'Consumer',version:'1'},paths:{}}, outputDir: './unused'}));
 void client.getUser(user.userId); void client.saveUser(user); serializeApiUserDto(user); deserializeApiUserDto({user_id:'1',display_name:'Ada'});
@@ -41,6 +43,18 @@ const wrong: ApiUserDto = {user_id:'1',display_name:'Ada'}; void wrong;
     fs.writeFileSync(`compile-${mode}.log`, (compile.stdout || '') + (compile.stderr || ''));
     assert.equal(compile.status, 0, `${mode}: ${compile.error || ''}\n${compile.stdout}\n${compile.stderr}`);
   }
+  fs.mkdirSync('vite-template');
+  fs.writeFileSync('vite-template/tsconfig.json', JSON.stringify({ files: [], references: [{ path: './tsconfig.app.json' }] }, null, 2));
+  fs.writeFileSync('vite-template/tsconfig.app.json', JSON.stringify({ compilerOptions: {
+    target: 'ES2022', useDefineForClassFields: true, lib: ['ES2022', 'DOM', 'DOM.Iterable'],
+    module: 'ESNext', skipLibCheck: true, moduleResolution: 'Bundler', allowImportingTsExtensions: true,
+    verbatimModuleSyntax: true, moduleDetection: 'force', noEmit: true, jsx: 'react-jsx',
+    strict: true, noUnusedLocals: true, noUnusedParameters: true, erasableSyntaxOnly: true,
+    composite: true, tsBuildInfoFile: './tsconfig.app.tsbuildinfo', types: [],
+  }, include: ['../consumer.ts', '../generated/*.ts'] }, null, 2));
+  const viteBuild = spawnSync(process.execPath, [process.env.SCHEMANTIC_TSC, '-b', 'vite-template/tsconfig.json'], { encoding: 'utf8', timeout: 60000 });
+  fs.writeFileSync('compile-vite-template.log', (viteBuild.stdout || '') + (viteBuild.stderr || ''));
+  assert.equal(viteBuild.status, 0, `Vite template tsc -b: ${viteBuild.error || ''}\n${viteBuild.stdout}\n${viteBuild.stderr}`);
   const generated = await import('./compiled/generated/index.js');
   let posted;
   const server = http.createServer((request, response) => {
@@ -59,7 +73,7 @@ const wrong: ApiUserDto = {user_id:'1',display_name:'Ada'}; void wrong;
   fs.writeFileSync('cli.log', (cli.stdout || '') + (cli.stderr || ''));
   assert.equal(cli.status, 0, `${cli.error || ''}\n${cli.stdout}\n${cli.stderr}`);
   assert(fs.statSync('cli-generated/conversion.ts').size > 0);
-  const report = { passed: true, commonJsImport: true, esmImport: true, compilerModes: modes.map(([mode]) => mode), camelCaseHttpRoundTrip: true, installedCli: true };
+  const report = { passed: true, commonJsImport: true, esmImport: true, compilerModes: modes.map(([mode]) => mode), viteTemplateBuild: true, camelCaseHttpRoundTrip: true, installedCli: true };
   fs.writeFileSync('verification.json', JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify(report));
 }

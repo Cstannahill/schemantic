@@ -33,6 +33,8 @@ export interface SchemanticConfig {
   // Naming conventions
   namingConvention: "camelCase" | "snake_case" | "PascalCase";
   propertyNaming?: "camelCase" | "preserve";
+  /** Emit erasable const-object enums by default; use `enum` for legacy TypeScript enum declarations. */
+  enumStyle?: "const" | "enum";
   typePrefix?: string;
   typeSuffix?: string;
 
@@ -291,6 +293,7 @@ export const DEFAULT_CONFIG: Partial<SchemanticConfig> = {
   useNullishCoalescing: true,
   namingConvention: "camelCase",
   propertyNaming: "camelCase",
+  enumStyle: "const",
   preserveComments: true,
   generateIndexFile: true,
 };

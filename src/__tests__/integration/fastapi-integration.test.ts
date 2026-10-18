@@ -407,12 +407,12 @@ describe("FastAPI Integration Tests", () => {
       expect(typesContent).toContain("export interface Order");
       expect(typesContent).toContain("export interface UserCreate");
       expect(typesContent).toContain("export interface OrderCreate");
-      expect(typesContent).toContain("export enum OrderStatus");
+      expect(typesContent).toContain("export const OrderStatus");
 
       // Verify enum values (double quotes in actual output)
-      expect(typesContent).toContain('PENDING = "pending"');
-      expect(typesContent).toContain('CONFIRMED = "confirmed"');
-      expect(typesContent).toContain('SHIPPED = "shipped"');
+      expect(typesContent).toContain('PENDING: "pending"');
+      expect(typesContent).toContain('CONFIRMED: "confirmed"');
+      expect(typesContent).toContain('SHIPPED: "shipped"');
 
       // Verify nullable types (anyOf with null) - preserved wire names
       expect(typesContent).toContain("description?: string | null");

@@ -59,6 +59,7 @@ Defaults are applied before config values, then explicit CLI values. An explicit
 | `useStrictTypes` | `true` |
 | `namingConvention` | `camelCase`; controls generated identifiers, not JSON wire values |
 | `propertyNaming` | `camelCase`; use `preserve` to retain wire properties in application types |
+| `enumStyle` | `const`; emits `as const` objects and erasable union types. Set to `enum` for legacy TypeScript enum declarations |
 | `typePrefix` / `typeSuffix` | Empty strings |
 | `includePaths` / `excludePaths` | Arrays of path patterns |
 | `includeSchemas` / `excludeSchemas` | Arrays of schema names/patterns |

@@ -35,6 +35,10 @@ export class EnumTypeGenerator extends BaseTypeGenerator {
       return { name: typeName, content: `export const ${typeName} = { ${entries.join(', ')} } as const;\nexport type ${typeName} = ${values};\nexport type ${typeName}Values = ${typeName};`,
         dependencies: [], exports: [typeName, `${typeName}Values`], isInterface: false, isEnum: true, isUnion: true, sourceSchema: schema };
     }
+    if (this.options.enumStyle !== "enum") {
+      return this.generateConstEnum(schema, typeName);
+    }
+
     const comment = this.generateComment(schema.description, schema.example);
 
     let content = "";
@@ -63,6 +67,28 @@ export class EnumTypeGenerator extends BaseTypeGenerator {
       isUnion: false,
       sourceSchema: schema,
     };
+  }
+
+  private generateConstEnum(schema: ResolvedSchema, typeName: string): GeneratedType {
+    if (!isOpenAPISchemaObject(schema) || !schema.enum) throw new Error("Cannot generate enum from non-enum schema");
+    const entries: string[] = [];
+    const usedKeys = new Set<string>();
+    const reverseEntries = new Map<number, string>();
+    for (let index = 0; index < schema.enum.length; index++) {
+      const value = schema.enum[index];
+      const base = this.generateEnumKey(value, index);
+      let key = base;
+      let suffix = 2;
+      while (usedKeys.has(key)) key = `${base}_${suffix++}`;
+      usedKeys.add(key);
+      entries.push(`  ${key}: ${JSON.stringify(value)}`);
+      if (typeof value === "number") reverseEntries.set(value, key);
+    }
+    for (const [value, key] of reverseEntries) entries.push(`  ${JSON.stringify(String(value))}: ${JSON.stringify(key)}`);
+    const union = [...new Set(schema.enum.map(value => JSON.stringify(value)))].join(" | ");
+    const comment = this.generateComment(schema.description, schema.example);
+    const content = `${comment ? comment + "\n" : ""}export const ${typeName} = {\n${entries.join(",\n")}\n} as const;\nexport type ${typeName} = ${union};\nexport type ${typeName}Values = ${typeName};`;
+    return { name: typeName, content, dependencies: [], exports: [typeName, `${typeName}Values`], isInterface: false, isEnum: true, isUnion: true, sourceSchema: schema };
   }
 
   canHandle(schema: ResolvedSchema): boolean {

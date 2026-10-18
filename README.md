@@ -51,7 +51,7 @@ OpenAPI `3.0.x` and `3.1.x` JSON documents are supported, including local JSON P
 
 Parameter serialization supports simple path/header values, flat form/deepObject queries and space/pipe-delimited arrays. Complex cookies, matrix/label styles, nested encodings and per-property form encodings are rejected explicitly. Cookie parameters depend on the fetch runtime's header policy; browsers manage cookies through credentials. JSON Schema conditionals, `contains` and unevaluated-property keywords are outside the validator subset. Validation checks document structure and references; it is not a complete OpenAPI/JSON Schema standards validator.
 
-Generated relative imports include `.js` extensions for TypeScript NodeNext and bundler resolution. Plain React hooks provide `loading`, `data`, `error`, and `refetch` or `mutate`/`reset`; they are not a TanStack Query adapter. `generateQueries`, automatic schema repair, TypeScript config loading, and automatic endpoint middleware are unavailable. Do not enable the removed `react-hooks` plugin: use `generateHooks`/`--hooks`.
+Generated relative imports include `.js` extensions for TypeScript NodeNext and bundler resolution. Schema enums default to erasable `as const` objects with matching union types, so they compile with Vite's `erasableSyntaxOnly`; set `enumStyle: "enum"` in config to keep legacy TypeScript enum declarations. Browser clients default `baseUrl` to the current origin; other runtimes require it. Plain React hooks provide `loading`, `data`, `error`, and `refetch` or `mutate`/`reset`; they do not cache or deduplicate across components and are not a TanStack Query adapter. `generateQueries`, automatic schema repair, TypeScript config loading, and automatic endpoint middleware are unavailable. Do not enable the removed `react-hooks` plugin: use `generateHooks`/`--hooks`.
 
 Validation, caching, branding, and timing plugins provide explicit helpers. Install Zod 4 in the consuming project when enabling validation or schema-backed branded helpers. Endpoints do not automatically call those helpers. See [plugins](docs/PLUGINS.md) for the integration contract and experimental boundaries; no benchmark percentage improvements are claimed.
 
@@ -76,7 +76,7 @@ npm run lint
 npm pack --dry-run --ignore-scripts --json
 ```
 
-Tests build the package first. CI is configured for Node 20/22/24 on Linux, Windows, and macOS, plus coverage, 36 generated fixture combinations, an installed-package consumer, live FastAPI requests, dependency auditing, and separate CodeQL analysis. Hosted results are available in GitHub Actions after the workflows run.
+Tests build the package first. CI is configured for Node 20/22/24 on Linux, Windows, and macOS, plus coverage, 36 generated fixture combinations, an installed-package consumer built with Vite's strict TypeScript settings via `tsc -b`, live FastAPI requests, dependency auditing, and separate CodeQL analysis. In consuming apps, add a regeneration check such as `npm run api && git diff --exit-code -- src/generated` to catch stale committed output. Hosted results are available in GitHub Actions after the workflows run.
 
 Prepare a release locally, review and merge the three changed files, then publish its matching GitHub Release:
 
