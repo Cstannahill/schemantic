@@ -141,7 +141,8 @@ describe('output writer filesystem re-audit', () => {
     await writeOutput(outputDir, [file('Client.ts', 'old client')]);
     await writeOutput(outputDir, [file('client.ts', 'new client')]);
     expect(await fs.readFile(path.join(outputDir, 'client.ts'), 'utf8')).toBe('new client');
-    expect((await fs.readdir(outputDir)).filter(name => name.toLowerCase() === 'client.ts')).toEqual(['client.ts']);
+    // Case-insensitive filesystems may retain the destination's original spelling.
+    expect((await fs.readdir(outputDir)).filter(name => name.toLowerCase() === 'client.ts').map(name => name.toLowerCase())).toEqual(['client.ts']);
   });
 
   it('retains ownership for prototype-looking generated names and removes their stale bytes', async () => {

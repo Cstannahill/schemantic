@@ -24,7 +24,8 @@ describe('CLI re-audit contracts', () => {
   const internals = () => new SchemanticCli() as unknown as CliInternals;
 
   beforeEach(async () => {
-    directory = await fs.mkdtemp(path.join(os.tmpdir(), 'schemantic-cli-'));
+    // macOS exposes its temporary directory through /var -> /private/var.
+    directory = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'schemantic-cli-')));
     originalCwd = process.cwd();
     originalExitCode = process.exitCode;
     process.chdir(directory);
