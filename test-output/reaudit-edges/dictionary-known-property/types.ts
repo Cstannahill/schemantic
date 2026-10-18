@@ -1,0 +1,1 @@
+export type MixedDictionary = { name: string; } & Record<string, number>;

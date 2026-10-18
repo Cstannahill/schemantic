@@ -24,7 +24,7 @@ import {
   GeneratedType,
   GeneratedApiClient,
 } from "../types/core";
-import { ResolvedSchema } from "../types/schema";
+import * as path from "path";
 
 /**
  * Configuration options for performance monitoring plugin
@@ -99,13 +99,27 @@ const memorySnapshots: MemoryStats[] = [];
  * Performance statistics calculator
  */
 class PerformanceAnalyzer {
-  private readonly maxSnapshots: number;
+  private maxSnapshots: number;
+  private metricsTTL = 24 * 60 * 60 * 1000;
 
   constructor(maxSnapshots = 1000) {
     this.maxSnapshots = maxSnapshots;
   }
 
+  configure(options: PerformanceMonitoringOptions): void {
+    this.clearMetrics();
+    this.maxSnapshots = options.maxMetricsStorage ?? 1000;
+    this.metricsTTL = options.metricsTTL ?? 86400000;
+  }
+  private expireMetrics(): void {
+    for (const [key, metrics] of performanceMetrics) {
+      const fresh = metrics.filter(metric => Date.now() - metric.timestamp < this.metricsTTL);
+      if (fresh.length) performanceMetrics.set(key, fresh); else performanceMetrics.delete(key);
+    }
+  }
   recordMetric(metric: PerformanceMetric): void {
+    this.expireMetrics();
+    if (this.maxSnapshots <= 0) return;
     const key = metric.operation;
     if (!performanceMetrics.has(key)) {
       performanceMetrics.set(key, []);
@@ -114,13 +128,15 @@ class PerformanceAnalyzer {
     const metrics = performanceMetrics.get(key)!;
     metrics.push(metric);
 
-    // Maintain memory bounds
-    if (metrics.length > this.maxSnapshots) {
-      metrics.splice(0, metrics.length - this.maxSnapshots);
+    while (Array.from(performanceMetrics.values()).reduce((total, entries) => total + entries.length, 0) > this.maxSnapshots) {
+      const oldest = Array.from(performanceMetrics).sort((a, b) => a[1][0]!.timestamp - b[1][0]!.timestamp)[0];
+      if (!oldest) break;
+      oldest[1].shift(); if (!oldest[1].length) performanceMetrics.delete(oldest[0]);
     }
   }
 
   getStatistics(operation: string): PerformanceStatistics | null {
+    this.expireMetrics();
     const metrics = performanceMetrics.get(operation);
     if (!metrics || metrics.length === 0) {
       return null;
@@ -180,11 +196,8 @@ class PerformanceAnalyzer {
     dependencies: string[]
   ): BundleAnalysis {
     const totalSize = Buffer.byteLength(generatedContent, "utf8");
-    const chunks = dependencies.map((dep) => ({
-      name: dep,
-      size: Math.floor(totalSize * 0.1), // Estimate
-      dependencies: [],
-    }));
+    // Source-byte measurement only. Dependency package/bundle sizes require a real bundler.
+    const chunks = [{ name: "generated-source", size: totalSize, dependencies }];
 
     const recommendations: string[] = [];
 
@@ -366,23 +379,14 @@ export const performanceMonitoringPlugin: SchemanticPlugin = {
   beforeGeneration: async (context: GenerationContext) => {
     const startTime = performance.now();
     const options = getPluginOptions(context);
+    performanceAnalyzer.configure(options);
 
     try {
       if (options.enableMemoryProfiling) {
         performanceAnalyzer.recordMemorySnapshot();
       }
 
-      // Initialize monitoring context
-      context.generatedTypes.set("__performance_context__", {
-        name: "__performance_context__",
-        content: "",
-        dependencies: [],
-        exports: [],
-        isInterface: false,
-        isEnum: false,
-        isUnion: false,
-        sourceSchema: {} as ResolvedSchema,
-      });
+
     } catch (error) {
       console.warn(
         "Performance monitoring plugin beforeGeneration failed:",
@@ -423,6 +427,7 @@ export const performanceMonitoringPlugin: SchemanticPlugin = {
       if (options.enableRequestTiming) {
         const monitoringCode = generateTypeMonitoringCode(typeName, options);
         generatedType.content += monitoringCode;
+        generatedType.exports.push(`${typeName}PerformanceMonitor`);
       }
 
       // Check for performance warnings
@@ -493,17 +498,7 @@ export const performanceMonitoringPlugin: SchemanticPlugin = {
         }
       }
 
-      // Update dependencies with monitoring tools
-      if (!generatedClient.dependencies.includes("performance-hooks")) {
-        generatedClient.dependencies.push("performance-hooks");
-      }
-
-      // Add performance exports
-      generatedClient.exports.push(
-        "PerformanceMonitor",
-        "getPerformanceStats",
-        "clearPerformanceStats"
-      );
+      if (options.enableRequestTiming) generatedClient.exports.push("PerformanceMonitor", "getPerformanceStats", "clearPerformanceStats", "performanceMonitored", "PerformanceStats");
     } catch (error) {
       console.warn(
         "Performance monitoring plugin afterClientGeneration failed:",
@@ -527,20 +522,14 @@ export const performanceMonitoringPlugin: SchemanticPlugin = {
   /**
    * Generate final performance report after generation
    */
-  afterGeneration: async (context: GenerationContext) => {
+  afterGeneration: async (context: GenerationContext, result) => {
     const options = getPluginOptions(context);
 
     try {
       if (options.generateReports) {
         const report = performanceAnalyzer.generateReport(options.reportFormat);
-        if (!report) {
-          // console.log("No performance data to generate report.");
-        }
-        // Output report (in a real implementation, this would write to file)
-        // console.log("Performance Report Generated:", {
-        //   format: options.reportFormat,
-        //   size: report.length,
-        // });
+        const extension = options.reportFormat === "markdown" ? "md" : options.reportFormat === "html" ? "html" : "json";
+        result.generatedFiles.push({ path: path.resolve(context.config.outputDir, `performance-report.${extension}`), content: report, type: "report", dependencies: [], size: Buffer.byteLength(report, "utf8") });
       }
 
       // Record final memory snapshot
@@ -631,136 +620,40 @@ function generateClientMonitoringCode(
   options: PerformanceMonitoringOptions
 ): string {
   return `
-
-/**
- * Performance monitoring middleware and utilities
- */
+export interface PerformanceStats { count: number; min: number; max: number; mean: number; median: number; p95: number; }
 export class PerformanceMonitor {
-  private static metrics = new Map<string, number[]>();
-  private static readonly maxMetrics = ${options.maxMetricsStorage || 1000};
-
-  /**
-   * Record request performance metric
-   */
+  private static metrics: { endpoint: string; duration: number; timestamp: number }[] = [];
+  private static expire(): void { this.metrics = this.metrics.filter(metric => Date.now() - metric.timestamp < ${options.metricsTTL ?? 86400000}); }
   static recordRequest(endpoint: string, duration: number): void {
-    if (!this.metrics.has(endpoint)) {
-      this.metrics.set(endpoint, []);
-    }
-
-    const metrics = this.metrics.get(endpoint)!;
-    metrics.push(duration);
-
-    // Maintain memory bounds
-    if (metrics.length > this.maxMetrics) {
-      metrics.splice(0, metrics.length - this.maxMetrics);
-    }
+    this.expire(); this.metrics.push({ endpoint, duration, timestamp: Date.now() });
+    this.metrics = this.metrics.slice(-${Math.max(options.maxMetricsStorage ?? 1000, 0)});
+    ${options.maxMetricsStorage === 0 ? 'this.metrics = [];' : ''}
   }
-
-  /**
-   * Wrap request function with performance monitoring
-   */
-  static wrapRequest<T>(
-    endpoint: string,
-    requestFn: () => Promise<T>
-  ): Promise<T> {
+  static async wrapRequest<T>(endpoint: string, factory: () => Promise<T>): Promise<T> {
     const start = performance.now();
-    
-    return requestFn()
-      .then(result => {
-        const end = performance.now();
-        this.recordRequest(endpoint, end - start);
-        
-        // Performance warning
-        const duration = end - start;
-        if (duration > ${options.warningThresholds?.requestTime || 1000}) {
-          console.warn(\`Slow request detected for \${endpoint}: \${duration}ms\`);
-        }
-        
-        return result;
-      })
-      .catch(error => {
-        const end = performance.now();
-        this.recordRequest(endpoint, end - start);
-        throw error;
-      });
+    try { return await factory(); } finally {
+      const duration = performance.now() - start; this.recordRequest(endpoint, duration);
+      if (duration > ${options.warningThresholds?.requestTime ?? 1000}) console.warn('Slow request detected for ' + endpoint + ': ' + duration + 'ms');
+    }
   }
-
-  /**
-   * Get performance statistics for an endpoint
-   */
   static getStats(endpoint: string): PerformanceStats | null {
-    const metrics = this.metrics.get(endpoint);
-    if (!metrics || metrics.length === 0) {
-      return null;
-    }
-
-    const sorted = [...metrics].sort((a, b) => a - b);
-    const count = sorted.length;
-    const sum = sorted.reduce((acc, val) => acc + val, 0);
-
-    return {
-      count,
-      min: sorted[0]!,
-      max: sorted[count - 1]!,
-      mean: sum / count,
-      median: sorted[Math.floor(count / 2)]!,
-      p95: sorted[Math.floor(count * 0.95)]!
-    };
+    this.expire(); const sorted = this.metrics.filter(metric => metric.endpoint === endpoint).map(metric => metric.duration).sort((a, b) => a - b); const count = sorted.length;
+    if (!count) return null;
+    const percentile = (p: number): number => { const index = p * (count - 1); const low = Math.floor(index); return sorted[low]! + (sorted[Math.ceil(index)]! - sorted[low]!) * (index - low); };
+    return { count, min: sorted[0]!, max: sorted[count - 1]!, mean: sorted.reduce((sum, value) => sum + value, 0) / count, median: percentile(0.5), p95: percentile(0.95) };
   }
-
-  /**
-   * Get all performance statistics
-   */
   static getAllStats(): Record<string, PerformanceStats> {
-    const stats: Record<string, PerformanceStats> = {};
-    for (const endpoint of this.metrics.keys()) {
-      const stat = this.getStats(endpoint);
-      if (stat) {
-        stats[endpoint] = stat;
-      }
-    }
-    return stats;
+    this.expire(); const result: Record<string, PerformanceStats> = {};
+    for (const endpoint of new Set(this.metrics.map(metric => metric.endpoint))) { const stats = this.getStats(endpoint); if (stats) result[endpoint] = stats; } return result;
   }
-
-  /**
-   * Clear all performance metrics
-   */
-  static clearStats(): void {
-    this.metrics.clear();
-  }
+  static clearStats(): void { this.metrics = []; }
 }
-
-interface PerformanceStats {
-  count: number;
-  min: number;
-  max: number;
-  mean: number;
-  median: number;
-  p95: number;
+export function getPerformanceStats(): Record<string, PerformanceStats> { return PerformanceMonitor.getAllStats(); }
+export function clearPerformanceStats(): void { PerformanceMonitor.clearStats(); }
+export function performanceMonitored<T extends (...args: any[]) => Promise<any>>(endpoint: string, fn: T): T {
+  return ((...args: Parameters<T>) => PerformanceMonitor.wrapRequest(endpoint, () => fn(...args))) as T;
 }
-
-/**
- * Global performance monitoring functions
- */
-export function getPerformanceStats(): Record<string, PerformanceStats> {
-  return PerformanceMonitor.getAllStats();
-}
-
-export function clearPerformanceStats(): void {
-  PerformanceMonitor.clearStats();
-}
-
-/**
- * Performance-aware request decorator
- */
-export function performanceMonitored<T extends (...args: any[]) => Promise<any>>(
-  endpoint: string,
-  fn: T
-): T {
-  return ((...args: any[]) => {
-    return PerformanceMonitor.wrapRequest(endpoint, () => fn(...args));
-  }) as T;
-}`;
+`;
 }
 
 /**

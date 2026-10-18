@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "types": [],
+    "skipLibCheck": true,
+    "outDir": "./compiled"
+  },
+  "include": [
+    "consumer.ts",
+    "generated/*.ts"
+  ]
+}

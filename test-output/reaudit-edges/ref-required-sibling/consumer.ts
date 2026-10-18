@@ -1,0 +1,1 @@
+import { Child } from './types'; const invalid: Child = {};

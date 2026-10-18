@@ -1,0 +1,138 @@
+name: Release to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing published GitHub Release tag, for example v0.4.0
+        required: true
+        type: string
+      dry-run:
+        description: Verify the release and archive without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-release-schemantic
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    name: Validate release identity
+    if: github.repository == 'Cstannahill/schemantic'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+      tag: ${{ steps.release.outputs.tag }}
+      version: ${{ steps.release.outputs.version }}
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - name: Read the published GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p .release
+          gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,isDraft,isPrerelease > .release/github-release.json
+      - name: Check version, notes, tag commit, and default branch ancestry
+        id: release
+        run: node scripts/release.cjs check --tag "$RELEASE_TAG" --check-git --github-release-json .release/github-release.json
+
+  verify:
+    name: Release verification
+    needs: resolve
+    uses: ./.github/workflows/verify.yml
+    with:
+      ref: ${{ needs.resolve.outputs.sha }}
+      release: true
+    permissions:
+      contents: read
+
+  publish:
+    name: Publish verified archive
+    needs: [resolve, verify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ needs.resolve.outputs.tag }}
+      RELEASE_SHA: ${{ needs.resolve.outputs.sha }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Use an OIDC-capable npm CLI
+        run: npm install --global npm@11.12.1 --ignore-scripts
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: ${{ needs.verify.outputs.artifact-name }}
+          path: .release/package
+      - name: Recheck immutable tag and GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch --no-tags origin "+refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG" "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH"
+          gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,isDraft,isPrerelease > .release/github-release.json
+          node scripts/release.cjs check --tag "$RELEASE_TAG" --check-git --expected-sha "$RELEASE_SHA" --github-release-json .release/github-release.json
+      - name: Verify archive and npm version availability
+        id: registry
+        run: node scripts/release.cjs registry --tag "$RELEASE_TAG" --package-dir .release/package
+      - name: Preview publication
+        if: github.event_name == 'workflow_dispatch' && inputs.dry-run
+        env:
+          ARCHIVE: ${{ steps.registry.outputs.archive-filename }}
+          NPM_TAG: ${{ steps.registry.outputs.npm-tag }}
+        run: npm publish ".release/package/$ARCHIVE" --dry-run --ignore-scripts --access public --tag "$NPM_TAG"
+      - name: Publish with npm trusted publishing
+        if: (github.event_name == 'release' || !inputs.dry-run) && steps.registry.outputs.already-published != 'true'
+        env:
+          ARCHIVE: ${{ steps.registry.outputs.archive-filename }}
+          NPM_TAG: ${{ steps.registry.outputs.npm-tag }}
+        run: npm publish ".release/package/$ARCHIVE" --ignore-scripts --access public --provenance --tag "$NPM_TAG"
+      - name: Verify registry integrity and attach the tested archive
+        if: github.event_name == 'release' || !inputs.dry-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARCHIVE: ${{ steps.registry.outputs.archive-filename }}
+        run: |
+          node scripts/release.cjs verify-published --tag "$RELEASE_TAG" --package-dir .release/package
+          node scripts/release-assets.cjs "$RELEASE_TAG" .release/package
+      - name: Summarize release
+        if: always()
+        env:
+          VERSION: ${{ needs.resolve.outputs.version }}
+          NPM_TAG: ${{ steps.registry.outputs.npm-tag }}
+          ALREADY_PUBLISHED: ${{ steps.registry.outputs.already-published }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          printf '## npm release\n\nVersion: `%s`\n\nCommit: `%s`\n\nChannel: `%s`\n\nDry run: `%s`\n\nAlready published with matching integrity: `%s`\n\nJob status: `%s`\n' "$VERSION" "$RELEASE_SHA" "$NPM_TAG" "$DRY_RUN" "$ALREADY_PUBLISHED" "$JOB_STATUS" >> "$GITHUB_STEP_SUMMARY"

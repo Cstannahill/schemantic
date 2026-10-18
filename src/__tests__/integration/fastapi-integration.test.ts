@@ -414,9 +414,9 @@ describe("FastAPI Integration Tests", () => {
       expect(typesContent).toContain('CONFIRMED = "confirmed"');
       expect(typesContent).toContain('SHIPPED = "shipped"');
 
-      // Verify nullable types (anyOf with null) - camelCase converted
+      // Verify nullable types (anyOf with null) - preserved wire names
       expect(typesContent).toContain("description?: string | null");
-      expect(typesContent).toContain("salePrice?: number | null");
+      expect(typesContent).toContain("sale_price?: number | null");
     });
 
     it("should generate complete API client for FastAPI schema", async () => {
@@ -450,7 +450,7 @@ describe("FastAPI Integration Tests", () => {
       expect(clientContent).toContain("async createOrderOrdersPost(");
 
       // Verify path parameters are handled
-      expect(clientContent).toContain("user_id: number");
+      expect(clientContent).toContain("userId: number");
 
       // Verify query parameters are handled (current implementation uses separate params)
       expect(clientContent).toContain("page?: number");
@@ -538,7 +538,7 @@ describe("FastAPI Integration Tests", () => {
       expect(typesContent).toContain("export interface HTTPValidationError");
       expect(typesContent).toContain("export interface ValidationError");
       expect(typesContent).toContain("detail?: ValidationError[]");
-      expect(typesContent).toContain("loc: string | number[]");
+      expect(typesContent).toContain("loc: (string | number)[]");
     });
   });
 
@@ -634,11 +634,11 @@ describe("FastAPI Integration Tests", () => {
       const typesFile = path.join(testOutputDir, "types.ts");
       const typesContent = fs.readFileSync(typesFile, "utf-8");
 
-      // Verify nullable vs optional handling (camelCase converted names)
-      expect(typesContent).toContain("requiredNullable: string | null");
-      expect(typesContent).toContain("optionalNullable?: string | null");
-      expect(typesContent).toContain("requiredNonNullable: string");
-      expect(typesContent).toContain("optionalNonNullable?: string");
+      // Verify nullable vs optional handling (preserved wire names)
+      expect(typesContent).toContain("required_nullable: string | null");
+      expect(typesContent).toContain("optional_nullable?: string | null");
+      expect(typesContent).toContain("required_non_nullable: string");
+      expect(typesContent).toContain("optional_non_nullable?: string");
     });
   });
 });

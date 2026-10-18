@@ -9,11 +9,15 @@ export interface OpenAPISchema {
   info: OpenAPIInfo;
   servers?: OpenAPIServer[];
   paths: OpenAPIPaths;
+  webhooks?: Record<string, OpenAPIPathItem | OpenAPIRef>;
   components?: OpenAPIComponents;
   security?: OpenAPISecurityRequirement[];
   tags?: OpenAPITag[];
   externalDocs?: OpenAPIExternalDocumentation;
 }
+
+/** Input may omit paths for OpenAPI 3.1 components-only documents; parsers normalize it. */
+export type OpenAPIInputDocument = Omit<OpenAPISchema, 'paths'> & { paths?: OpenAPIPaths };
 
 export interface OpenAPIInfo {
   title: string;
@@ -166,7 +170,12 @@ export interface OpenAPICallback {
 
 export interface OpenAPIRef {
   $ref: string;
+  /** OpenAPI 3.1 Schema Object siblings are evaluated; 3.0 ignores ref siblings. */
+  [key: string]: unknown;
 }
+
+/** Raw 3.1 document schemas can be booleans. The parser normalizes them before generation. */
+export type OpenAPISchemaValue = OpenAPISchemaObject | OpenAPIRef | boolean;
 
 /**
  * OpenAPI Schema Object - represents a JSON Schema
@@ -225,7 +234,7 @@ export interface OpenAPISchemaObject {
 }
 
 export interface OpenAPIComponents {
-  schemas?: Record<string, OpenAPISchemaObject | OpenAPIRef>;
+  schemas?: Record<string, OpenAPISchemaValue>;
   responses?: Record<string, OpenAPIResponse | OpenAPIRef>;
   parameters?: Record<string, OpenAPIParameter | OpenAPIRef>;
   examples?: Record<string, OpenAPIExample | OpenAPIRef>;
@@ -234,6 +243,7 @@ export interface OpenAPIComponents {
   securitySchemes?: Record<string, OpenAPISecurityScheme | OpenAPIRef>;
   links?: Record<string, OpenAPILink | OpenAPIRef>;
   callbacks?: Record<string, OpenAPICallback | OpenAPIRef>;
+  pathItems?: Record<string, OpenAPIPathItem | OpenAPIRef>;
 }
 
 export interface OpenAPISecurityRequirement {

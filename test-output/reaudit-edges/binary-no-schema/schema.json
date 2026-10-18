@@ -1,0 +1,25 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Edge API",
+    "version": "1"
+  },
+  "paths": {
+    "/bin": {
+      "get": {
+        "operationId": "getBinary",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/octet-stream": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

@@ -5,6 +5,7 @@
 
 import { ResolvedSchema } from "../types/schema";
 import { GenerationContext, GeneratedType } from "../types/core";
+import { typeName, referenceName } from './schema-type';
 
 /**
  * Base interface for all type generators
@@ -107,26 +108,7 @@ export abstract class BaseTypeGenerator implements TypeGenerator {
    * Add prefix and suffix to type name
    */
   protected formatTypeName(name: string): string {
-    // Sanitize to identifier-friendly tokens
-    let sanitized = name
-      .replace(/\[/g, "<")
-      .replace(/\]/g, ">")
-      .replace(/[^A-Za-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .replace(/_+/g, "_");
-
-    // For type names, prefer PascalCase regardless of namingConvention
-    let formattedName = this.toPascalCase(sanitized);
-
-    if (this.options.typePrefix) {
-      formattedName = this.options.typePrefix + formattedName;
-    }
-
-    if (this.options.typeSuffix) {
-      formattedName = formattedName + this.options.typeSuffix;
-    }
-
-    return formattedName;
+    return typeName(name, this.options.typePrefix, this.options.typeSuffix);
   }
 
   /**
@@ -222,6 +204,7 @@ export abstract class BaseTypeGenerator implements TypeGenerator {
    * Generate JSDoc comment from description
    */
   protected generateComment(description?: string, example?: unknown): string {
+    if (!this.options.preserveComments) return '';
     if (!description && !example) {
       return "";
     }
@@ -229,11 +212,11 @@ export abstract class BaseTypeGenerator implements TypeGenerator {
     const lines: string[] = ["/**"];
 
     if (description) {
-      lines.push(` * ${description}`);
+      lines.push(...description.replace(/\*\//g, '* /').split(/\r?\n/).map(line => ` * ${line}`));
     }
 
     if (example !== undefined) {
-      lines.push(` * @example ${JSON.stringify(example)}`);
+      lines.push(` * @example ${JSON.stringify(example).replace(/\*\//g, '* /')}`);
     }
 
     lines.push(" */");
@@ -306,13 +289,7 @@ export abstract class BaseTypeGenerator implements TypeGenerator {
    * Extract type name from schema reference
    */
   protected extractTypeNameFromRef(ref: string): string {
-    const parts = ref.split("/");
-    const last = parts[parts.length - 1] || "Unknown";
-    // Preserve existing capitals in token, but normalize separators
-    return last
-      .replace(/[^A-Za-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .replace(/_+/g, "_");
+    return referenceName(ref);
   }
 
   /**

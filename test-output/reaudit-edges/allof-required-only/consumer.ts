@@ -1,0 +1,1 @@
+import { RequiredByComposition } from './types'; const invalid: RequiredByComposition = {};

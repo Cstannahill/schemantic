@@ -1,0 +1,53 @@
+[
+  {
+    "name": "generated NodeNext ESM files",
+    "diagnostics": [
+      {
+        "file": "S:/Code/Node/Packages/schemantic/test-output/reaudit-dx/scratch/esm-generated/index.ts",
+        "line": 1,
+        "code": 2835,
+        "message": "Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './types.js'?"
+      },
+      {
+        "file": "S:/Code/Node/Packages/schemantic/test-output/reaudit-dx/scratch/esm-generated/index.ts",
+        "line": 2,
+        "code": 2835,
+        "message": "Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './api-client.js'?"
+      },
+      {
+        "file": "S:/Code/Node/Packages/schemantic/test-output/reaudit-dx/scratch/esm-generated/index.ts",
+        "line": 3,
+        "code": 2835,
+        "message": "Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './api-client.js'?"
+      }
+    ]
+  },
+  {
+    "name": "minimal programmatic defaults",
+    "diagnostics": [
+      {
+        "file": "S:/Code/Node/Packages/schemantic/test-output/reaudit-dx/scratch/minimal-programmatic.ts",
+        "line": 2,
+        "code": 2345,
+        "message": "Argument of type '{ schemaFile: string; outputDir: string; }' is not assignable to parameter of type 'SchemanticConfig'.\n  Type '{ schemaFile: string; outputDir: string; }' is missing the following properties from type 'SchemanticConfig': generateTypes, generateApiClient, useStrictTypes, useOptionalChaining, and 4 more."
+      }
+    ]
+  },
+  {
+    "name": "tutorial header helpers",
+    "diagnostics": [
+      {
+        "file": "S:/Code/Node/Packages/schemantic/test-output/reaudit-dx/scratch/auth-example.ts",
+        "line": 3,
+        "code": 2339,
+        "message": "Property 'setDefaultHeader' does not exist on type 'DXProbeApiClient'."
+      },
+      {
+        "file": "S:/Code/Node/Packages/schemantic/test-output/reaudit-dx/scratch/auth-example.ts",
+        "line": 4,
+        "code": 2339,
+        "message": "Property 'removeDefaultHeader' does not exist on type 'DXProbeApiClient'."
+      }
+    ]
+  }
+]

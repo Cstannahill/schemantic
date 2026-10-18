@@ -1,0 +1,203 @@
+[
+  {
+    "name": "init bogus template",
+    "args": [
+      "init",
+      "init-bogus",
+      "--yes",
+      "--template",
+      "does-not-exist"
+    ],
+    "status": 0,
+    "stdout": "✅ Default configuration created\n",
+    "stderr": ""
+  },
+  {
+    "name": "init overwrites existing",
+    "args": [
+      "init",
+      "init-bogus",
+      "--yes"
+    ],
+    "status": 0,
+    "stdout": "✅ Default configuration created\n",
+    "stderr": "",
+    "after": "{\n  \"generateTypes\": true,\n  \"generateApiClient\": true,\n  \"generateHooks\": false,\n  \"generateQueries\": false,\n  \"useStrictTypes\": true,\n  \"useOptionalChaining\": true,\n  \"useNullishCoalescing\": true,\n  \"namingConvention\": \"camelCase\",\n  \"preserveComments\": true,\n  \"generateIndexFile\": true,\n  \"outputDir\": \"./src/generated\",\n  \"typePrefix\": \"\",\n  \"typeSuffix\": \"\"\n}"
+  },
+  {
+    "name": "config autodiscovery",
+    "args": [
+      "generate"
+    ],
+    "status": 1,
+    "stdout": "",
+    "stderr": "❌ Error: Error: Either source parameter, --url, --file, or schema data must be provided\n    at SchemanticCli.loadConfiguration (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:436:19)\n    at SchemanticCli.handleGenerateCommand (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:183:39)\n    at Command.<anonymous> (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:107:24)\n    at Command.listener [as _actionHandler] (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:568:17)\n    at S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1604:14\n    at Command._chainOrCall (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1488:12)\n    at Command._parseCommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1603:27)\n    at S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1367:27\n    at Command._chainOrCall (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1488:12)\n    at Command._dispatchSubcommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1363:25)\n"
+  },
+  {
+    "name": "explicit config works",
+    "args": [
+      "generate",
+      "--config"
+    ],
+    "status": 0,
+    "stdout": "✅ Generation completed successfully!\n📁 Generated 3 files\n📊 Statistics: 1 types, 0 endpoints\n⏱️  Generation time: 6ms\n",
+    "stderr": ""
+  },
+  {
+    "name": "validate cannot reuse config",
+    "args": [
+      "validate",
+      "--config",
+      "./schemantic.config.json"
+    ],
+    "status": 1,
+    "stdout": "",
+    "stderr": "error: unknown option '--config'\n"
+  },
+  {
+    "name": "TS config",
+    "args": [
+      "generate",
+      "--config",
+      "./schemantic.config.ts"
+    ],
+    "status": 1,
+    "stdout": "",
+    "stderr": "❌ Error: Error: Failed to load configuration file ./schemantic.config.ts: Error: Unsupported configuration file format: ./schemantic.config.ts\n    at SchemanticCli.loadConfigFile (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:465:19)\n    at async SchemanticCli.loadConfiguration (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:359:32)\n    at async SchemanticCli.handleGenerateCommand (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:183:28)\n    at async Command.<anonymous> (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:107:13)\n"
+  },
+  {
+    "name": "fix advertised unsupported",
+    "args": [
+      "validate",
+      "schema.json",
+      "--fix"
+    ],
+    "status": 1,
+    "stdout": "",
+    "stderr": "❌ Error: Error: --fix is not implemented; edit the schema using the reported validation errors\n    at SchemanticCli.handleValidateCommand (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:232:23)\n    at Command.<anonymous> (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:122:24)\n    at Command.listener [as _actionHandler] (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:568:17)\n    at S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1604:14\n    at Command._chainOrCall (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1488:12)\n    at Command._parseCommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1603:27)\n    at S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1367:27\n    at Command._chainOrCall (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1488:12)\n    at Command._dispatchSubcommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1363:25)\n    at Command._parseCommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1559:19)\n"
+  },
+  {
+    "name": "types and hooks conflict",
+    "args": [
+      "generate",
+      "schema.json",
+      "--types",
+      "--hooks",
+      "--output",
+      "types-hooks"
+    ],
+    "status": 1,
+    "stdout": "",
+    "stderr": "❌ Error: Error: React hooks require API client generation\n    at SchemanticCli.loadConfiguration (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:434:19)\n    at SchemanticCli.handleGenerateCommand (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:183:39)\n    at Command.<anonymous> (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:107:24)\n    at Command.listener [as _actionHandler] (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:568:17)\n    at S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1604:14\n    at Command._chainOrCall (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1488:12)\n    at Command._parseCommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1603:27)\n    at S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1367:27\n    at Command._chainOrCall (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1488:12)\n    at Command._dispatchSubcommand (S:\\Code\\Node\\Packages\\schemantic\\node_modules\\commander\\lib\\command.js:1363:25)\n"
+  },
+  {
+    "name": "load local custom plugin",
+    "args": [
+      "plugin",
+      "load",
+      "./plugin.cjs"
+    ],
+    "status": 0,
+    "stdout": "Loaded plugin: dx-plugin (1)\nDescription: probe\n",
+    "stderr": ""
+  },
+  {
+    "name": "generate after plugin load",
+    "args": [
+      "generate",
+      "schema.json",
+      "--plugins",
+      "dx-plugin",
+      "--output",
+      "custom-plugin"
+    ],
+    "status": 1,
+    "stdout": "❌ Generation failed!\n🚨 Errors: 1\n  - Unknown plugin: dx-plugin\n",
+    "stderr": ""
+  },
+  {
+    "name": "plugin package advertised",
+    "args": [
+      "plugin",
+      "load",
+      "commander"
+    ],
+    "status": 1,
+    "stdout": "",
+    "stderr": "❌ Error: Error: Failed to load plugin from commander: Error: ENOENT: no such file or directory, access 'S:\\Code\\Node\\Packages\\schemantic\\test-output\\reaudit-dx\\scratch\\commander'\n    at PluginLoader.loadPluginFromFile (S:\\Code\\Node\\Packages\\schemantic\\dist\\plugins\\loader.js:74:19)\n    at async SchemanticCli.handlePluginLoadCommand (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:286:28)\n    at async Command.<anonymous> (S:\\Code\\Node\\Packages\\schemantic\\dist\\cli\\index.js:144:13)\n"
+  },
+  {
+    "name": "interactive missing source exit",
+    "args": [
+      "generate",
+      "--interactive"
+    ],
+    "status": 0,
+    "signal": null,
+    "stdout": "🚀 Schemantic Interactive Mode\n\nEnter OpenAPI schema URL or file path: Output directory (default: ./src/generated): Type prefix (leave blank for none): Generate types? (Y/n): Generate API client? (Y/n): Generate React hooks? (y/N): Use strict TypeScript types? (Y/n): \n⚙️ Generating types and API client...\n❌ Generation failed!\n🚨 Errors: 1\n  - ENOENT: no such file or directory, open 'S:\\Code\\Node\\Packages\\schemantic\\test-output\\reaudit-dx\\scratch\\missing.json'\n",
+    "stderr": "",
+    "answered": 7
+  },
+  {
+    "name": "init empty hook default",
+    "args": [
+      "init",
+      "interactive-init"
+    ],
+    "status": 0,
+    "signal": null,
+    "stdout": "🚀 Schemantic Configuration Initialization\n\nEnter default OpenAPI schema URL or file path: Default output directory (default: ./src/generated): Type prefix (leave blank for none): Naming convention (camelCase/snake_case/PascalCase): Generate types by default? (Y/n): Generate API client by default? (Y/n): Generate React hooks by default? (y/N): Use strict TypeScript types by default? (Y/n): \n✅ Configuration saved to schemantic.config.json\n",
+    "stderr": "",
+    "answered": 8
+  },
+  {
+    "name": "empty answers init config",
+    "config": {
+      "generateTypes": true,
+      "generateApiClient": true,
+      "generateHooks": true,
+      "generateQueries": false,
+      "useStrictTypes": true,
+      "useOptionalChaining": true,
+      "useNullishCoalescing": true,
+      "namingConvention": "camelCase",
+      "preserveComments": true,
+      "generateIndexFile": true,
+      "schemaFile": "./schema.json",
+      "outputDir": "./interactive-valid",
+      "typePrefix": ""
+    }
+  },
+  {
+    "name": "invalid config accepted",
+    "args": [
+      "generate",
+      "--config",
+      "invalid.config.json"
+    ],
+    "status": 0,
+    "stdout": "✅ Generation completed successfully!\n📁 Generated 3 files\n📊 Statistics: 1 types, 0 endpoints\n⏱️  Generation time: 7ms\n",
+    "stderr": "",
+    "files": [
+      "api-client.ts",
+      "index.ts",
+      "types.ts"
+    ]
+  },
+  {
+    "name": "unknown help command exit",
+    "args": [
+      "help",
+      "bogus"
+    ],
+    "status": 0,
+    "stdout": "Unknown command: bogus\nAvailable commands:\n  generate - Generate TypeScript types and API client from OpenAPI schema\n  validate - Validate OpenAPI schema\n  plugin - Manage plugins\n  init - Initialize a new schemantic configuration\n  help - Display help for a specific command\n",
+    "stderr": ""
+  },
+  {
+    "name": "ESM named package import",
+    "status": 0,
+    "stdout": "function camelCase\n",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "0.2",
+  "id": "provider_audit_provider_req_20260510054705_MYASDI",
+  "requestId": "provider_req_20260510054705_MYASDI",
+  "projectId": "schemantic",
+  "projectRootHash": "sha256:bb6f9fe6ab12ce5e5f13eec3750caab409335175852308fda7a05b1976d7c3e7",
+  "provider": {
+    "id": "openrouter-dev",
+    "kind": "openrouter",
+    "displayName": "OpenRouter Development Adapter",
+    "model": "openrouter/auto",
+    "version": "0.1.0",
+    "baseUrl": "https://openrouter.ai/api/v1/chat/completions"
+  },
+  "startedAt": "2026-05-10T05:47:05.375Z",
+  "completedAt": "2026-05-10T05:48:05.548Z",
+  "durationMs": 60173,
+  "live": false,
+  "dryRun": false,
+  "networkAllowed": true,
+  "status": "failed",
+  "evidence": {
+    "packetId": "evidence:schemantic:flow:54af1c2f16",
+    "purpose": "flow",
+    "snapshotId": "snap_20260510054640_YSWYKD",
+    "inputsHash": "sha256:094309c5765c3fd91241efd273794f23c344be87c10417fb5b1dd63f07a0aaf9",
+    "selectedFacts": 0,
+    "omittedFacts": 1900,
+    "sourceFiles": 3,
+    "estimatedInputTokens": 74403,
+    "truncated": true
+  },
+  "requestSummary": {
+    "riskCeiling": "medium",
+    "allowedTargets": [
+      ".ai/project.yaml",
+      ".ai/modules.yaml",
+      ".ai/flows/*.flow.yaml",
+      ".ai/notes/*"
+    ],
+    "promptRedacted": true,
+    "promptHash": "sha256:a3c2a689c40eed6585c512793d0e248e65881b34bde414d2c4294aa6950a51a3",
+    "promptBytes": 227010
+  },
+  "responseSummary": {
+    "title": "Provider request failed",
+    "risk": "low",
+    "targetFiles": [],
+    "changeCount": 0,
+    "warningCount": 1,
+    "rationaleHash": "sha256:a68b56fd9372c77e4d9cb0983dfbf2838f2a639cbb19dbbe2fb3fcec318c42c5",
+    "fullChangeValuesRedacted": true
+  },
+  "warnings": [
+    "PROVIDER_DEFAULT_EXTERNAL_OR_BUILTIN: Default provider mock was not found in config; built-ins may still satisfy it.",
+    "OpenRouter request timed out: This operation was aborted",
+    "Provider response failed policy validation. No proposal file was created."
+  ],
+  "evidenceWarnings": [
+    "Evidence packet exceeded requested maxTokens (73953/6000) and was truncated to 0 facts."
+  ],
+  "retry": {
+    "retryable": true,
+    "sourceRequestId": "provider_req_20260510054705_MYASDI",
+    "attempt": 0,
+    "recommendedMode": "repair",
+    "reasons": [
+      "OpenRouter request timed out: This operation was aborted",
+      "Provider response failed policy validation. No proposal file was created."
+    ],
+    "intent": {
+      "purpose": "flow",
+      "query": "primary API route, CLI command, data pipeline, or main application flow"
+    },
+    "suggestedArgs": [
+      "providers retry",
+      "provider_req_20260510054705_MYASDI",
+      "--include-source-snippets",
+      "--snippet-policy focused-symbols"
+    ]
+  },
+  "redaction": {
+    "level": "default",
+    "redactedFields": [
+      "request.evidence.prompt.messages[].content",
+      "request.evidence.prompt.text",
+      "response.changes[].value",
+      "rawProviderResponse",
+      "apiKeyEnv values"
+    ],
+    "notes": [
+      "Audit logs summarize provider behavior without storing full prompts or generated artifact payloads by default.",
+      "Use requestId, evidence packet ID, proposal ID, and hashes to correlate with local artifacts."
+    ]
+  }
+}

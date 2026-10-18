@@ -1,715 +1,81 @@
-# Configuration Guide
+# Configuration
 
-This guide explains all configuration options available in Schemantic.
+The constructor accepts `SchemanticOptions`, an input type with optional defaulted fields. `SchemanticConfig` describes the resolved configuration. A source is required for generation/validation; configuration initialization may omit it.
 
-## Configuration Sources
+```ts
+import { Schemantic } from 'schemantic';
+import type { SchemanticOptions } from 'schemantic';
 
-Schemantic can be configured through multiple sources:
+const options: SchemanticOptions = {
+  schemaFile: './openapi.json',
+  outputDir: './src/generated',
+  generateHooks: false,
+};
+const generator = new Schemantic(options);
+console.log(generator.getConfig().outputDir);
+```
 
-1. **Command Line Arguments** - Highest priority
-2. **Configuration Files** - Medium priority
-3. **Default Values** - Lowest priority
-
-## Configuration File Formats
-
-### JSON Configuration
-
-Create a `schemantic.config.json` file:
+The CLI supports JSON and CommonJS `.cjs`/`.js` configurations, not TypeScript or ESM configuration modules. Prefer `.cjs` when your project has `"type": "module"`.
 
 ```json
 {
-  "schemaUrl": "http://localhost:8000/openapi.json",
+  "schemaFile": "./openapi.json",
   "outputDir": "./src/generated",
   "generateTypes": true,
   "generateApiClient": true,
-  "useStrictTypes": true,
-  "namingConvention": "camelCase",
-  "plugins": [
-    { "name": "jsdoc", "enabled": true },
-    { "name": "validation", "enabled": true }
-  ]
+  "generateHooks": false,
+  "plugins": [{ "name": "jsdoc", "enabled": true }]
 }
 ```
 
-### JavaScript Configuration
-
-Create a `schemantic.config.js` file:
-
-```javascript
+```js
+// schemantic.config.cjs
 module.exports = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./src/generated",
-  generateTypes: true,
-  generateApiClient: true,
-  useStrictTypes: true,
-  namingConvention: "camelCase",
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-  ],
+  schemaFile: './openapi.json',
+  outputDir: './src/generated',
+  plugins: [{ name: './plugins/my-plugin.cjs', enabled: true }],
 };
 ```
 
-### TypeScript Configuration
+Discovery checks only the current directory, in order: `schemantic.config.json`, `schemantic.config.cjs`, then `schemantic.config.js`. Both `generate` and `validate` accept `--config [file]`; bare `--config` requires a discoverable configuration. Explicit paths override discovery. Schema/output/plugin file paths from a config are relative to its directory, while command-line paths are relative to the working directory. Package plugin names resolve from the consumer/config directory.
 
-Create a `schemantic.config.ts` file:
-
-```typescript
-import { SchemanticConfig } from "schemantic";
-
-const config: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./src/generated",
-  generateTypes: true,
-  generateApiClient: true,
-  useStrictTypes: true,
-  namingConvention: "camelCase",
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-  ],
-};
-
-export default config;
+```sh
+npx schemantic generate
+npx schemantic validate --config ./schemantic.config.cjs
+npx schemantic generate --config ./schemantic.config.json --file ./other.json --output ./other-output --verbose
 ```
 
-## Configuration Options
-
-### Input Configuration
-
-#### `schemaUrl`
-
-URL to the OpenAPI schema endpoint.
-
-```typescript
-schemaUrl: "http://localhost:8000/openapi.json";
-```
-
-Common framework endpoints:
-
-- FastAPI (default): `http://localhost:8000/openapi.json`
-- ASP.NET Core (.NET): `https://localhost:5001/swagger/v1/swagger.json`
-
-Examples to fetch a local snapshot:
-
-```bash
-# FastAPI
-curl -s http://localhost:8000/openapi.json -o ./openapi-schema.json
-
-# ASP.NET Core (.NET) — dev certs
-curl -k -s https://localhost:5001/swagger/v1/swagger.json -o ./openapi-schema.json
-
-# Generate from file
-npx schemantic generate --file ./openapi-schema.json --output ./src/generated --client --types
-```
-
-#### `schemaFile`
-
-Path to a local OpenAPI schema file.
-
-```typescript
-schemaFile: "./schema.json";
-```
-
-#### `schemaData`
-
-OpenAPI schema object (for programmatic usage).
-
-```typescript
-schemaData: {
-  openapi: '3.0.0',
-  info: { title: 'My API', version: '1.0.0' },
-  paths: { /* ... */ }
-}
-```
-
-### Output Configuration
-
-#### `outputDir`
-
-Directory where generated files will be saved.
-
-```typescript
-outputDir: "./src/generated";
-```
-
-#### `outputFileName`
-
-Custom filename for the generated API client.
-
-```typescript
-outputFileName: "api-client.ts";
-```
-
-### Generation Options
-
-#### `generateTypes`
-
-Whether to generate TypeScript types.
-
-```typescript
-generateTypes: true;
-```
-
-#### `generateApiClient`
-
-Whether to generate API client.
-
-```typescript
-generateApiClient: true;
-```
-
-#### `generateHooks`
-
-Whether to generate React hooks factory.
-
-```typescript
-generateHooks: false;
-```
-
-When enabled, generates `hooks.ts` with a `createApiHooks(client)` function that returns query and mutation hooks for each endpoint. The hooks follow React patterns:
-
-- Query hooks (GET methods): `useXxxQuery` with automatic fetching
-- Mutation hooks (POST/PUT/PATCH/DELETE): `useXxxMutation` with manual trigger
-
-Example usage:
-
-```typescript
-import { ECommerceApiClient, createApiHooks } from "./generated";
-
-const client = new ECommerceApiClient({ baseUrl: "http://localhost:8000" });
-const { useGetUsersUsersGetQuery, useCreateUserUsersPostMutation } =
-  createApiHooks(client);
-
-function UsersList() {
-  const { data, loading, error, refetch } = useGetUsersUsersGetQuery();
-  const { mutate: createUser } = useCreateUserUsersPostMutation();
-  // ... component logic
-}
-```
-
-#### `generateQueries`
-
-Whether to generate query builders.
-
-```typescript
-generateQueries: false;
-```
-
-### TypeScript Configuration
-
-#### `useStrictTypes`
-
-Whether to use strict TypeScript types.
-
-```typescript
-useStrictTypes: true;
-```
-
-#### `useOptionalChaining`
-
-Whether to use optional chaining (`?.`).
-
-```typescript
-useOptionalChaining: true;
-```
-
-#### `useNullishCoalescing`
-
-Whether to use nullish coalescing (`??`).
-
-```typescript
-useNullishCoalescing: true;
-```
-
-### Naming Conventions
-
-#### `namingConvention`
-
-Naming convention for generated types and methods.
-
-```typescript
-namingConvention: "camelCase"; // 'camelCase' | 'snake_case' | 'PascalCase'
-```
-
-Examples:
-
-- `camelCase`: `getUser`, `createUser`, `userId`
-- `snake_case`: `get_user`, `create_user`, `user_id`
-- `PascalCase`: `GetUser`, `CreateUser`, `UserId`
-
-#### `typePrefix`
-
-Prefix to add to generated type names.
-
-```typescript
-typePrefix: ""; // empty by default (no prefix)
-```
-
-By default no prefix is added. Set a value here to add one, e.g. `"MyAPI"` to produce `MyAPIUser`.
-
-#### `typeSuffix`
-
-Suffix to add to generated type names.
-
-```typescript
-typeSuffix: "Type";
-```
-
-This will generate types like `UserType`, `ProductType`, etc.
-
-### Customization
-
-#### `customTypeMappings`
-
-Custom mappings for OpenAPI schema types to TypeScript types.
-
-```typescript
-customTypeMappings: {
-  'uuid': 'string',
-  'datetime': 'Date',
-  'decimal': 'number',
-  'email': 'string',
-  'password': 'string'
-}
-```
-
-#### `excludePaths`
-
-Paths to exclude from API client generation.
-
-```typescript
-excludePaths: ["/health", "/docs", "/redoc"];
-```
-
-#### `includePaths`
-
-Paths to include in API client generation (all others will be excluded).
-
-```typescript
-includePaths: ["/api/v1/*"];
-```
-
-#### `excludeSchemas`
-
-Schema names to exclude from type generation.
-
-```typescript
-excludeSchemas: ["Error", "ValidationError", "InternalError"];
-```
-
-#### `includeSchemas`
-
-Schema names to include in type generation (all others will be excluded).
-
-```typescript
-includeSchemas: ["User", "Product", "Order"];
-```
-
-### Plugin Configuration
-
-#### `plugins`
-
-Array of plugin configurations.
-
-```typescript
-plugins: [
-  { name: "jsdoc", enabled: true },
-  { name: "validation", enabled: true },
-  // { name: "react-hooks", enabled: false }, // temporarily disabled project-wide
-  { name: "custom-plugin", enabled: true, options: { debug: true } },
-];
-```
-
-Plugin configuration options:
-
-- `name`: Plugin name (required)
-- `enabled`: Whether the plugin is enabled (required)
-- `options`: Plugin-specific options (optional)
-
-### Advanced Options
-
-#### `preserveComments`
-
-Whether to preserve comments from the OpenAPI schema.
-
-```typescript
-preserveComments: true;
-```
-
-#### `generateIndexFile`
-
-Whether to generate an index file that exports all generated types.
-
-```typescript
-generateIndexFile: true;
-```
-
-> Note: The `generateBarrelExports` option has been removed in v0.3.0. Exports are consolidated into `index.ts` and `barrel.ts` is no longer generated.
-
-## Environment Variables
-
-You can use environment variables for configuration:
-
-```bash
-export TYPE_SYNC_SCHEMA_URL="http://localhost:8000/openapi.json"
-export TYPE_SYNC_OUTPUT_DIR="./generated"
-export TYPE_SYNC_NAMING_CONVENTION="camelCase"
-```
-
-Access in configuration:
-
-```typescript
-const config: SchemanticConfig = {
-  schemaUrl: process.env.TYPE_SYNC_SCHEMA_URL,
-  outputDir: process.env.TYPE_SYNC_OUTPUT_DIR || "./generated",
-  namingConvention:
-    (process.env.TYPE_SYNC_NAMING_CONVENTION as any) || "camelCase",
-};
-```
-
-## CLI Configuration
-
-### Global Options
-
-```bash
---verbose, -v                # Verbose output
---quiet, -q                  # Quiet output
---no-color                   # Disable colored output
---config <file>              # Configuration file path
-```
-
-### Input Options
-
-```bash
---url, -u <url>              # OpenAPI schema URL
---file, -f <file>            # OpenAPI schema file path
-```
-
-### Output Options
-
-```bash
---output, -o <dir>           # Output directory
-```
-
-### Generation Options
-
-```bash
---types                      # Generate types only
---client                     # Generate API client only
---hooks                      # Generate React hooks factory
-```
-
-### TypeScript Options
-
-```bash
---strict                     # Use strict TypeScript types
---naming <convention>        # Naming convention
-```
-
-### Customization Options
-
-```bash
---prefix <prefix>            # Type name prefix
---suffix <suffix>            # Type name suffix
---exclude-paths <paths>      # Exclude paths (comma-separated)
---include-paths <paths>      # Include paths (comma-separated)
---exclude-schemas <schemas>  # Exclude schemas (comma-separated)
---include-schemas <schemas>  # Include schemas (comma-separated)
-```
-
-### Plugin Options
-
-```bash
---plugins <plugins>          # Enable plugins (comma-separated)
-```
-
-## Configuration Examples
-
-### Basic Configuration
-
-```typescript
-const basicConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./generated",
-  generateTypes: true,
-  generateApiClient: true,
-};
-```
-
-### Advanced Configuration
-
-```typescript
-const advancedConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./src/generated",
-  outputFileName: "api-client.ts",
-
-  generateTypes: true,
-  generateApiClient: true,
-  generateHooks: true,
-
-  useStrictTypes: true,
-  useOptionalChaining: true,
-  useNullishCoalescing: true,
-
-  namingConvention: "camelCase",
-  typePrefix: "",
-  typeSuffix: "Type",
-
-  customTypeMappings: {
-    uuid: "string",
-    datetime: "Date",
-    decimal: "number",
-  },
-
-  excludePaths: ["/health", "/docs", "/redoc"],
-  includePaths: ["/api/v1/*"],
-
-  excludeSchemas: ["Error", "ValidationError"],
-  includeSchemas: ["User", "Product", "Order"],
-
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-    { name: "react-hooks", enabled: true },
-  ],
-
-  preserveComments: true,
-  generateIndexFile: true,
-};
-```
-
-### FastAPI Specific Configuration
-
-```typescript
-const fastApiConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./generated",
-
-  generateTypes: true,
-  generateApiClient: true,
-
-  useStrictTypes: true,
-  namingConvention: "camelCase",
-
-  customTypeMappings: {
-    uuid: "string",
-    datetime: "string",
-    date: "string",
-    time: "string",
-    email: "string",
-    url: "string",
-    password: "string",
-  },
-
-  excludePaths: ["/docs", "/redoc", "/openapi.json"],
-
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-  ],
-};
-```
-
-### React Application Configuration
-
-```typescript
-const reactConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./src/api",
-
-  generateTypes: true,
-  generateApiClient: true,
-  generateHooks: true,
-
-  useStrictTypes: true,
-  namingConvention: "camelCase",
-
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "react-hooks", enabled: true },
-    { name: "validation", enabled: true },
-  ],
-
-  generateIndexFile: true,
-};
-```
-
-### Node.js Application Configuration
-
-```typescript
-const nodeConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./lib/api",
-
-  generateTypes: true,
-  generateApiClient: true,
-
-  useStrictTypes: true,
-  namingConvention: "camelCase",
-
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-  ],
-
-  generateIndexFile: true,
-};
-```
-
-## Configuration Validation
-
-Schemantic validates your configuration and will throw errors for:
-
-- Missing required fields
-- Invalid values
-- Conflicting options
-- Plugin configuration errors
-
-Example validation errors:
-
-```typescript
-// Error: Missing required field
-const invalidConfig = {
-  // Missing outputDir
-  schemaUrl: "http://localhost:8000/openapi.json",
-};
-
-// Error: Invalid naming convention
-const invalidNamingConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./generated",
-  namingConvention: "invalid", // Must be 'camelCase', 'snake_case', or 'PascalCase'
-};
-
-// Error: Conflicting options
-const conflictingConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./generated",
-  excludePaths: ["/api/*"],
-  includePaths: ["/api/v1/*"], // This conflicts with excludePaths
-};
-```
-
-## Configuration Inheritance
-
-You can extend configurations:
-
-```typescript
-const baseConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./generated",
-  generateTypes: true,
-  generateApiClient: true,
-  useStrictTypes: true,
-  namingConvention: "camelCase",
-};
-
-const developmentConfig: SchemanticConfig = {
-  ...baseConfig,
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-  ],
-};
-
-const productionConfig: SchemanticConfig = {
-  ...baseConfig,
-  outputDir: "./dist/api",
-  plugins: [{ name: "jsdoc", enabled: true }],
-};
-```
-
-## Configuration Tips
-
-### 1. Use Configuration Files
-
-For complex configurations, use configuration files instead of CLI arguments:
-
-```bash
-# Instead of long CLI command
-npx schemantic generate --url http://localhost:8000/openapi.json --output ./generated --naming camelCase --plugins jsdoc,validation
-
-# Use configuration file
-npx schemantic generate --config schemantic.config.json
-```
-
-### 2. Environment-Specific Configurations
-
-Create different configurations for different environments:
-
-```typescript
-// config/development.ts
-export const developmentConfig: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./src/generated",
-  plugins: [
-    { name: "jsdoc", enabled: true },
-    { name: "validation", enabled: true },
-  ],
-};
-
-// config/production.ts
-export const productionConfig: SchemanticConfig = {
-  schemaUrl: "https://api.example.com/openapi.json",
-  outputDir: "./dist/api",
-  plugins: [{ name: "jsdoc", enabled: true }],
-};
-```
-
-### 3. Plugin Configuration
-
-Configure plugins with options:
-
-```typescript
-plugins: [
-  {
-    name: "validation",
-    enabled: true,
-    options: {
-      strict: true,
-      addImports: true,
-    },
-  },
-  {
-    name: "react-hooks",
-    enabled: true,
-    options: {
-      useReactQuery: true,
-      generateMutations: true,
-    },
-  },
-];
-```
-
-### 4. Path Filtering
-
-Use path filtering to control what gets generated:
-
-```typescript
-// Only generate API v1 endpoints
-includePaths: ['/api/v1/*'],
-
-// Exclude documentation endpoints
-excludePaths: ['/docs', '/redoc', '/openapi.json'],
-
-// Only generate specific schemas
-includeSchemas: ['User', 'Product', 'Order'],
-```
-
-### 5. Custom Type Mappings
-
-Map OpenAPI types to your preferred TypeScript types:
-
-```typescript
-customTypeMappings: {
-  'uuid': 'string',           // UUID to string
-  'datetime': 'Date',         // DateTime to Date
-  'decimal': 'number',        // Decimal to number
-  'email': 'string',          // Email to string
-  'password': 'string',       // Password to string
-  'binary': 'Buffer',         // Binary to Buffer
-  'byte': 'string',           // Byte to string (base64)
-};
-```
+Defaults are applied before config values, then explicit CLI values. An explicit schema source replaces the configured source. `--url` and `--file` together fail. Unknown fields and wrong field types fail: booleans must be JSON booleans, not strings. Unsupported active settings fail instead of silently doing nothing.
+
+| Field | Default or contract |
+| --- | --- |
+| `schemaFile` / `schemaUrl` / `schemaData` | One source; file/URL input must be OpenAPI JSON |
+| `outputDir` | `./src/generated` |
+| `outputFileName` | `api-client.ts`; must be a safe output path |
+| `generateTypes` | `true`; required model output accompanies a generated client |
+| `generateApiClient` | `true` |
+| `generateHooks` | `false`; requires client generation and consumer React |
+| `generateIndexFile` | `true` |
+| `useStrictTypes` | `true` |
+| `namingConvention` | `camelCase`; controls generated identifiers, not JSON wire values |
+| `propertyNaming` | `camelCase`; use `preserve` to retain wire properties in application types |
+| `typePrefix` / `typeSuffix` | Empty strings |
+| `includePaths` / `excludePaths` | Arrays of path patterns |
+| `includeSchemas` / `excludeSchemas` | Arrays of schema names/patterns |
+| `customTypeMappings` | Map of OpenAPI formats/type mappings to TypeScript strings |
+| `plugins` | Array of `{ name, enabled, options? }`; name is builtin/file/package |
+| `preserveComments` | `true` |
+
+`generateQueries: true` is unavailable. Optional chaining and nullish coalescing syntax switches are retained for compatibility but disabling them is unsupported. The `strict-mode` plugin has been retired and fails with an actionable diagnostic; remove it from plugin configuration and use the core strict defaults. Plugin options are JSON objects; callable custom behavior belongs in programmatic plugin factories/runtime constructors.
+
+`init --yes --template default|types|react` writes a JSON configuration. Existing files are protected; `init --force` explicitly replaces one. `--yes` accepts defaults, including hooks off for the default template. Interactive Enter follows the displayed `(Y/n)` or `(y/N)` choice.
+
+Watch mode requires a local schema file. It watches that file, serializes regeneration, and reports failures with a nonzero process status. Remote polling and automatic schema repair are not provided.
+
+## Property names and wire conversion
+
+Schema-declared application properties use camelCase by default: `display_name` becomes `displayName`. The original wire schema is retained for serializers/deserializers. Generated JSON/form request bodies use wire names automatically; generated JSON responses use application names. Caller-supplied FormData is already a wire representation and retains its keys/boundaries. PascalCase type/class names remain separate from property naming. Dynamic dictionary keys and enum values are never globally renamed.
+
+Use `propertyNaming: "preserve"` to retain the old application property shape; this mode omits `conversion.ts`. In camelCase mode, `conversion.ts` exports generic `serializeValue(value, wireSchema)`/`deserializeValue(value, wireSchema)` and typed helpers such as `serializeUser`/`deserializeUser` for generated component models. Helpers use local references, recursive schemas, arrays, and composition metadata. They convert names without validating the payload; apply the emitted validation helpers separately when needed.
+
+Colliding names such as `user_id` and `userId` are rejected. Ambiguous unions whose matching variants rename values differently require a discriminator. Cyclic JavaScript payload objects are rejected; recursive schema references remain supported.

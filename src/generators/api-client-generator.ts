@@ -13,6 +13,7 @@ import {
   OpenAPIResponses,
   OpenAPIResponse,
   OpenAPISchemaObject,
+  OpenAPIPathItem,
 } from "../types/openapi";
 import {
   GenerationContext,
@@ -22,6 +23,8 @@ import {
   GeneratedRequestBody,
   GeneratedResponse,
 } from "../types/core";
+import { schemaType, typeName, referenceName, projectSchema } from './schema-type';
+import { ParserFactory } from '../parsers';
 // Removed unused TypeGeneratorFactory import
 
 /**
@@ -29,6 +32,11 @@ import {
  */
 export class ApiClientGenerator {
   private context: GenerationContext;
+  private referencedTypes = new Set<string>();
+  private typeAliases = new Map<string, string>();
+  private clientName = '';
+  private usesSerialization = false;
+  private usesDeserialization = false;
   constructor(context: GenerationContext) {
     // Store context for access to config (namingConvention, etc.)
     this.context = context;
@@ -38,8 +46,14 @@ export class ApiClientGenerator {
    * Generate API client from OpenAPI schema
    */
   generate(context: GenerationContext): GeneratedApiClient {
+    this.context = context;
+    this.referencedTypes.clear();
+    this.typeAliases.clear();
+    this.usesSerialization = false;
+    this.usesDeserialization = false;
     const schema = context.schema;
     const clientName = this.getClientName(schema);
+    this.clientName = clientName;
 
     // Extract endpoints from paths
     const endpoints = this.extractEndpoints(schema.paths, context);
@@ -65,16 +79,40 @@ export class ApiClientGenerator {
   /**
    * Extract endpoints from OpenAPI paths
    */
+  private resolveComponent<T>(value: T | OpenAPIRef): T {
+    const visited = new Set<string>();
+    while (value && typeof value === 'object' && '$ref' in value) {
+      const ref = (value as OpenAPIRef).$ref;
+      if (visited.has(ref)) throw new Error(`Circular component reference: ${ref}`);
+      visited.add(ref);
+      const resolved = this.context.schemaResolver(ref);
+      if (!resolved) throw new Error(`Unresolved component reference: ${ref}`);
+      value = resolved as T;
+    }
+    return value as T;
+  }
+
+  private mergeParameters(inherited: (OpenAPIParameter | OpenAPIRef)[], own: (OpenAPIParameter | OpenAPIRef)[]): OpenAPIParameter[] {
+    const parameters = new Map<string, OpenAPIParameter>();
+    for (const value of [...inherited, ...own]) {
+      const parameter = this.resolveComponent<OpenAPIParameter>(value);
+      parameters.set(`${parameter.in}:${parameter.name}`, parameter);
+    }
+    return [...parameters.values()];
+  }
+
   private extractEndpoints(
     paths: OpenAPIPaths,
     context: GenerationContext
   ): GeneratedEndpoint[] {
     const endpoints: GeneratedEndpoint[] = [];
+    const usedMethodNames = new Set(['request', 'buildPath', 'appendQuery', 'simpleHeader', 'toFormData', 'toUrlEncoded', 'setDefaultHeader', 'removeDefaultHeader', 'setAuthToken', 'clearAuthToken', 'baseUrl', 'config', 'constructor']);
 
-    for (const [path, pathItem] of Object.entries(paths)) {
-      if (!pathItem || typeof pathItem !== "object") {
+    for (const [path, rawPathItem] of Object.entries(paths)) {
+      if (!rawPathItem || typeof rawPathItem !== "object") {
         continue;
       }
+      const pathItem = this.resolveComponent<OpenAPIPathItem>(rawPathItem);
 
       // Extract operations from path item
       const operations = [
@@ -94,10 +132,14 @@ export class ApiClientGenerator {
           const endpoint = this.extractEndpoint(
             path,
             method.toUpperCase(),
-            operation,
+            { ...operation, parameters: this.mergeParameters(pathItem.parameters || [], operation.parameters || []) },
             context
           );
           if (endpoint) {
+            const baseName = endpoint.functionName;
+            let suffix = 2;
+            while (usedMethodNames.has(endpoint.functionName)) endpoint.functionName = `${baseName}${suffix++}`;
+            usedMethodNames.add(endpoint.functionName);
             endpoints.push(endpoint);
           }
         }
@@ -132,6 +174,42 @@ export class ApiClientGenerator {
 
     // Extract responses
     const responses = this.extractResponses(operation.responses, context);
+    // Keep original Schema Objects for boundary conversion; declarations use application names.
+    if (context.wireSchema) {
+      const wireResolver = ParserFactory.autoCreateParser({ data: context.wireSchema }, context.config).createResolver(context.wireSchema);
+      const directional = (value: OpenAPISchemaObject | OpenAPIRef, direction: 'request' | 'response', binary = false) => projectSchema(value, { direction, binary }, wireResolver, ref => {
+        if (!/^#\/components\/schemas\/[^/]+$/.test(ref)) return ref;
+        const projection = context.projections?.[referenceName(ref)];
+        const target = binary ? projection?.binary || projection?.request : projection?.[direction];
+        return target ? '#/components/schemas/' + encodeURIComponent(target.replace(/~/g, '~0').replace(/\//g, '~1')) : ref;
+      });
+      const resolve = <T>(input: T | OpenAPIRef): T => {
+        const seen = new Set<string>();
+        while (input && typeof input === 'object' && '$ref' in input) {
+          const ref = (input as OpenAPIRef).$ref;
+          if (seen.has(ref)) throw new Error(`Circular component reference: ${ref}`);
+          seen.add(ref); input = wireResolver(ref) as T;
+        }
+        return input as T;
+      };
+      const item = resolve<OpenAPIPathItem>(context.wireSchema.paths[path]!);
+      const wireOperation = item[method.toLowerCase() as 'get']!;
+      const wireParameters = [...(item.parameters || []), ...(wireOperation.parameters || [])].map(value => resolve<OpenAPIParameter>(value));
+      for (const parameter of parameters) {
+        const wire = wireParameters.filter(value => value.name === parameter.name && value.in === parameter.location).pop();
+        if (wire?.schema) parameter.schema = directional(wire.schema, 'request');
+      }
+      if (requestBody && wireOperation.requestBody) {
+        const body = resolve<OpenAPIRequestBody>(wireOperation.requestBody);
+        const bodySchema = body.content[requestBody.contentType!]?.schema;
+        if (bodySchema) requestBody.schema = directional(bodySchema, 'request', this.mediaMode(requestBody.contentType!) === 'blob');
+      }
+      for (const response of responses) {
+        const wire = resolve<OpenAPIResponse>(wireOperation.responses[response.statusCode]!);
+        const responseSchema = wire.content?.[response.contentType!]?.schema;
+        if (responseSchema) response.schema = directional(responseSchema, 'response');
+      }
+    }
 
     // Determine return type
     const returnType = this.determineReturnType(responses);
@@ -161,23 +239,43 @@ export class ApiClientGenerator {
     context: GenerationContext
   ): GeneratedParameter[] {
     const validParameters: GeneratedParameter[] = [];
+    const usedNames = new Set(['body', 'options', 'url', 'headers', 'requestOptions', 'cookies', 'queryValue', 'serializeValue', 'deserializeValue', 'URL', 'Headers', 'FormData', 'JSON', 'String', 'Array', 'Blob', 'File']);
 
-    for (const param of parameters) {
+    for (const parameter of parameters) {
+      const param = this.resolveComponent<OpenAPIParameter>(parameter);
       if (typeof param !== "object" || param === null) {
         continue;
       }
-
-      // Skip $ref parameters for now (would need to be resolved)
-      if ("$ref" in param) {
-        continue;
-      }
+      const supportedStyles: Record<string, string[]> = { query: ['form', 'deepObject', 'spaceDelimited', 'pipeDelimited'], path: ['simple'], header: ['simple'], cookie: ['form'] };
+      if (param.style && !supportedStyles[param.in]?.includes(param.style)) throw new Error(`Unsupported ${param.in} parameter style ${param.style}: ${param.name}`);
+      if (param.content) throw new Error(`Content-encoded parameter ${param.name} is unsupported; use schema/style/explode parameters`);
 
       const type = this.extractParameterType(param.schema, context);
-      const isRequired = param.required || false;
+      const complex = (value: OpenAPISchemaObject | OpenAPIRef, seen = new Set<string>()): boolean => {
+        if ('$ref' in value && typeof value.$ref === 'string') {
+          if (seen.has(value.$ref)) return false;
+          const target = context.schemaResolver(value.$ref);
+          return target ? complex(target, new Set([...seen, value.$ref])) : false;
+        }
+        const object = value as OpenAPISchemaObject;
+        return object.type === 'object' || object.type === 'array' || Array.isArray(object.type) && object.type.some(type => type === 'object' || type === 'array')
+          || !!object.properties || object.additionalProperties !== undefined || [...(object.oneOf || []), ...(object.anyOf || []), ...(object.allOf || [])].some(branch => complex(branch, seen));
+      };
+      if (param.in === 'cookie' && param.schema && complex(param.schema)) throw new Error(`Complex cookie parameter ${param.name} is unsupported; use scalar cookies or explicit request headers`);
+      const isRequired = param.in === 'path' || !!param.required;
+      const baseName = this.convertToFunctionName(param.name);
+      let variableName = baseName;
+      let suffix = 2;
+      while (usedNames.has(variableName)) variableName = `${baseName}${suffix++}`;
+      usedNames.add(variableName);
 
       validParameters.push({
         name: param.name,
+        variableName,
+        ...(param.style !== undefined && { style: param.style }),
+        ...(param.explode !== undefined && { explode: param.explode }),
         type,
+        ...(param.schema && { schema: param.schema }),
         isOptional: !isRequired,
         isRequired,
         location: param.in,
@@ -199,30 +297,28 @@ export class ApiClientGenerator {
       return undefined;
     }
 
-    // Handle reference
+    // Resolve the Request Body Object, then inspect its content and required flag.
     if ("$ref" in requestBody) {
-      const resolvedSchema = context.schemaResolver(requestBody.$ref);
-      if (resolvedSchema) {
-        const type = this.extractSchemaType(resolvedSchema, context);
-        return {
-          type,
-          isOptional: true, // Refs don't have required field directly
-        };
-      }
-      return undefined;
+      return this.extractRequestBody(this.resolveComponent<OpenAPIRequestBody>(requestBody), context);
     }
 
     // Handle inline request body
     if ("content" in requestBody && requestBody.content) {
-      const contentType = Object.keys(requestBody.content)[0];
+      const contentType = requestBody.content['application/json'] ? 'application/json' : Object.keys(requestBody.content)[0];
       if (!contentType) return undefined;
       const mediaType = requestBody.content[contentType];
+      if (mediaType?.encoding && Object.keys(mediaType.encoding).length) throw new Error(`Per-property request encoding is unsupported for ${contentType}; supply encoded request data through an explicit transport adapter`);
 
-      if (mediaType && mediaType.schema) {
-        let type = this.extractSchemaType(mediaType.schema, context);
+      if (mediaType) {
+        const binary = this.mediaMode(contentType) === 'blob';
+        if (contentType.includes('*')) throw new Error(`Wildcard request media ${contentType} is unsupported; declare a concrete request media type`);
+        const type = mediaType.schema ? this.extractSchemaType(mediaType.schema, context, 'request', binary)
+          : this.mediaMode(contentType) === 'json' ? 'unknown' : this.mediaMode(contentType) === 'text' && contentType !== 'application/x-www-form-urlencoded' ? 'string'
+            : /^(?:multipart\/form-data|application\/x-www-form-urlencoded)$/i.test(contentType) ? 'Record<string, unknown>' : "NonNullable<RequestInit['body']>";
         const body: GeneratedRequestBody = {
           type,
           isOptional: !requestBody.required,
+          ...(mediaType.schema && { schema: mediaType.schema }),
           ...(requestBody.description && {
             description: requestBody.description,
           }),
@@ -253,29 +349,12 @@ export class ApiClientGenerator {
         continue;
       }
 
-      const responseObj = response as OpenAPIResponse | OpenAPIRef;
-
-      // Handle reference
-      if ("$ref" in responseObj) {
-        const resolvedSchema = context.schemaResolver(responseObj.$ref);
-        if (resolvedSchema) {
-          const type = this.extractSchemaType(resolvedSchema, context);
-          responseList.push({
-            statusCode,
-            type,
-            isOptional: false,
-            description:
-              ("description" in resolvedSchema && resolvedSchema.description) ||
-              "",
-          });
-        }
-        continue;
-      }
+      const responseObj = this.resolveComponent<OpenAPIResponse>(response);
 
       // Handle inline response
       if ("content" in responseObj && responseObj.content) {
-        const contentType = Object.keys(responseObj.content)[0];
-        if (!contentType) {
+        const media = Object.entries(responseObj.content);
+        if (!media.length) {
           // Response without content type
           responseList.push({
             statusCode,
@@ -285,15 +364,16 @@ export class ApiClientGenerator {
           });
           continue;
         }
-        const mediaType = responseObj.content[contentType];
-
-        if (mediaType && mediaType.schema) {
-          const type = this.extractSchemaType(mediaType.schema, context);
+        for (const [contentType, mediaType] of media) {
+          const mode = this.mediaMode(contentType);
+          const type = contentType.includes('*') ? 'unknown' : mode === 'text' ? 'string' : mode === 'blob' ? 'globalThis.Blob' : mediaType.schema ? this.extractSchemaType(mediaType.schema, context, 'response') : 'unknown';
           responseList.push({
             statusCode,
             type,
+            contentType,
             isOptional: false,
             description: responseObj.description || "",
+            ...(mediaType.schema && { schema: mediaType.schema }),
           });
         }
       } else {
@@ -314,6 +394,8 @@ export class ApiClientGenerator {
    * Determine return type from responses
    */
   private determineReturnType(responses: GeneratedResponse[]): string {
+    // Non-success responses are thrown as ApiClientError by the runtime.
+    responses = responses.filter(response => /^2(?:\d{2}|XX)$/i.test(response.statusCode) || response.statusCode === 'default');
     if (responses.length === 0) {
       return "void";
     }
@@ -323,7 +405,7 @@ export class ApiClientGenerator {
     }
 
     // Multiple responses - create union type
-    const types = responses.map((r) => r.type);
+    const types = [...new Set(responses.map((r) => r.type))];
     return types.join(" | ");
   }
 
@@ -338,87 +420,34 @@ export class ApiClientGenerator {
       return "unknown";
     }
 
-    return this.extractSchemaType(schema, context);
+    return this.extractSchemaType(schema, context, 'request');
   }
 
   /**
    * Extract schema type
    */
-  private extractSchemaType(
-    schema: OpenAPISchemaObject | OpenAPIRef,
-    context: GenerationContext
-  ): string {
-    // Handle reference
-    if ("$ref" in schema) {
-      if (typeof schema.$ref === "string") {
-        const refType = this.extractTypeNameFromRef(schema.$ref);
-        // Normalize and apply prefix/suffix to match type generator output
-        return this.formatTypeName(refType, context);
+  private extractSchemaType(schema: OpenAPISchemaObject | OpenAPIRef, context: GenerationContext, direction?: 'request' | 'response', binary = false): string {
+    return schemaType(schema, ref => {
+      const original = referenceName(ref);
+      const projection = context.projections?.[original];
+      const target = binary ? projection?.binary || projection?.request || original : direction ? projection?.[direction] || original : original;
+      const name = typeName(target, context.config.typePrefix, context.config.typeSuffix);
+      this.referencedTypes.add(name);
+      const globals = new Set(['Blob', 'File', 'FormData', 'Headers', 'URL', 'URLSearchParams', 'Response', 'RequestInit', 'BodyInit', 'AbortController', 'Error', 'ApiClientConfig', 'ApiClientError', this.clientName]);
+      let alias = this.typeAliases.get(name) || name;
+      if (globals.has(name) && !this.typeAliases.has(name)) {
+        const occupied = new Set([...Object.keys(context.schema.components?.schemas || {}).map(value => typeName(value, context.config.typePrefix, context.config.typeSuffix)), ...this.typeAliases.values()]);
+        const base = 'Schema' + name; alias = base; let index = 2;
+        while (occupied.has(alias)) alias = base + index++;
       }
-      // $ref exists but isn't a string; cannot extract a type name
-      return "unknown";
-    }
+      this.typeAliases.set(name, alias);
+      return alias;
+    }, context.config.customTypeMappings, context.schemaResolver, undefined, { ...(direction && { direction }), binary });
+  }
 
-    // Handle arrays
-    if ("type" in schema && schema.type === "array") {
-      const items = schema.items as
-        | OpenAPISchemaObject
-        | OpenAPIRef
-        | undefined;
-      const itemType = items
-        ? this.extractSchemaType(items, context)
-        : "unknown";
-      return `${itemType}[]`;
-    }
-
-    // Handle objects with properties or additionalProperties
-    if ("type" in schema && schema.type === "object") {
-      const hasProps =
-        !!schema.properties && Object.keys(schema.properties!).length > 0;
-      if (hasProps) {
-        // Prefer named types if nested refs exist; otherwise inline object type
-        const lines: string[] = [];
-        for (const [propName, propSchema] of Object.entries(
-          schema.properties!
-        )) {
-          const t = this.extractSchemaType(
-            propSchema as OpenAPISchemaObject | OpenAPIRef,
-            context
-          );
-          lines.push(`${propName}: ${t}`);
-        }
-        return `{ ${lines.join("; ")} }`;
-      }
-      if (schema.additionalProperties !== undefined) {
-        if (schema.additionalProperties === true)
-          return "Record<string, unknown>";
-        if (typeof schema.additionalProperties === "object") {
-          const vt = this.extractSchemaType(
-            schema.additionalProperties as OpenAPISchemaObject | OpenAPIRef,
-            context
-          );
-          return `Record<string, ${vt}>`;
-        }
-      }
-      return "Record<string, unknown>";
-    }
-
-    // Handle basic types
-    if ("type" in schema && schema.type) {
-      return this.mapSchemaTypeToTypeScript(schema.type, schema.format);
-    }
-
-    // Handle enums
-    if ("enum" in schema && schema.enum) {
-      return schema.enum.map((val: unknown) => JSON.stringify(val)).join(" | ");
-    }
-
-    // Handle const
-    if ("const" in schema && schema.const !== undefined) {
-      return JSON.stringify(schema.const);
-    }
-
-    return "unknown";
+  private mediaMode(contentType: string): 'json' | 'text' | 'blob' {
+    const media = contentType.toLowerCase();
+    return /(?:\/json|\+json)(?:;|$)/.test(media) ? 'json' : media.startsWith('text/') || /(?:\/xml|\+xml)(?:;|$)/.test(media) || media === 'application/x-www-form-urlencoded' ? 'text' : 'blob';
   }
 
   /**
@@ -440,7 +469,7 @@ export class ApiClientGenerator {
 
     // Generate client class
     content += `export class ${clientName} {\n`;
-    content += `  private baseUrl: string;\n`;
+    content += `  public readonly baseUrl: string;\n`;
     content += `  private config: ApiClientConfig;\n\n`;
 
     // Generate constructor
@@ -454,7 +483,7 @@ export class ApiClientGenerator {
     }
 
     // Generate utility methods
-    content += this.generateUtilityMethods();
+    content += this.generateUtilityMethods(endpoints);
 
     content += "}\n";
 
@@ -468,7 +497,7 @@ export class ApiClientGenerator {
     return `export interface ApiClientConfig {
   baseUrl: string;
   timeout?: number;
-  headers?: Record<string, string>;
+  headers?: RequestInit['headers'];
   retries?: number;
   retryDelay?: number;
 }`;
@@ -478,7 +507,7 @@ export class ApiClientGenerator {
    * Generate error class
    */
   private generateErrorClass(): string {
-    return `export class ApiClientError extends Error {
+    return `export class ApiClientError extends globalThis.Error {
   constructor(
     message: string,
     public status?: number,
@@ -527,44 +556,17 @@ export class ApiClientGenerator {
    * Generate method parameters
    */
   private generateMethodParameters(endpoint: GeneratedEndpoint): string {
-    const params: string[] = [];
-
-    // Add path parameters
-    const pathParams = endpoint.parameters.filter((p) => p.location === "path");
-    if (pathParams.length > 0) {
-      const pathParamTypes = pathParams.map((p) => `${p.name}: ${p.type}`);
-      params.push(...pathParamTypes);
-    }
-
-    // Add query parameters
-    const queryParams = endpoint.parameters.filter(
-      (p) => p.location === "query"
-    );
-    if (queryParams.length > 0) {
-      const queryParamTypes = queryParams.map(
-        (p) => `${p.name}${p.isOptional ? "?" : ""}: ${p.type}`
-      );
-      params.push(...queryParamTypes);
-    }
-
-    // Add request body
+    const parameters = ['path', 'query', 'header', 'cookie'].flatMap(location => endpoint.parameters.filter(p => p.location === location))
+      .map(p => ({ name: p.variableName || p.name, type: p.type, optional: p.isOptional }));
     if (endpoint.requestBody) {
-      const isMultipart =
-        !!endpoint.requestBody.contentType &&
-        /^multipart\/form-data/i.test(endpoint.requestBody.contentType);
-      const bodyType = isMultipart
-        ? `${endpoint.requestBody.type} | FormData`
-        : endpoint.requestBody.type;
-      const bodyParam = `body${
-        endpoint.requestBody.isOptional ? "?" : ""
-      }: ${bodyType}`;
-      params.push(bodyParam);
+      const body = endpoint.requestBody;
+      parameters.push({ name: 'body', type: /^multipart\/form-data/i.test(body.contentType || '') ? body.type + ' | globalThis.FormData' : body.type, optional: body.isOptional });
     }
-
-    // Add options parameter
-    params.push("options?: RequestInit");
-
-    return params.join(", ");
+    const declarations = parameters.map((p, i) => {
+      const requiredFollows = parameters.slice(i + 1).some(next => !next.optional);
+      return p.name + (p.optional && !requiredFollows ? '?' : '') + ': ' + p.type + (p.optional && requiredFollows ? ' | undefined' : '');
+    });
+    return [...declarations, 'options?: RequestInit'].join(', ');
   }
 
   /**
@@ -595,92 +597,46 @@ export class ApiClientGenerator {
    * Generate URL construction
    */
   private generateUrlConstruction(endpoint: GeneratedEndpoint): string {
-    let urlConstruction =
-      "    const url = new URL(`${this.baseUrl}${this.buildPath(`";
-
-    // Replace path parameters
-    const pathParams = endpoint.parameters.filter((p) => p.location === "path");
-    let path = endpoint.path;
-
-    for (const param of pathParams) {
-      path = path.replace(`{${param.name}}`, `\${${param.name}}`);
+    const entries = endpoint.parameters.filter(p => p.location === 'path').map(p => JSON.stringify(p.name) + ': ' + this.serializeExpression(p.variableName || p.name, p.schema));
+    const metadata = Object.fromEntries(endpoint.parameters.filter(parameter => parameter.location === 'path').map(parameter => [parameter.name, { explode: parameter.explode ?? false }]));
+    let output = '    const url = new URL(this.baseUrl + this.buildPath(' + JSON.stringify(endpoint.path) + ', { ' + entries.join(', ') + ' }, ' + JSON.stringify(metadata) + '));\n';
+    for (const p of endpoint.parameters.filter(p => p.location === 'query')) {
+      const variable = p.variableName || p.name;
+      const key = JSON.stringify(p.name);
+      output += '    if (' + variable + ' !== undefined) {\n';
+      output += '      this.appendQuery(url.searchParams, ' + key + ', ' + this.serializeExpression(variable, p.schema) + ', ' + JSON.stringify(p.style || 'form') + ', ' + String(p.explode ?? (p.style === undefined || p.style === 'form' || p.style === 'deepObject')) + ');\n';
+      output += '    }\n';
     }
-
-    urlConstruction += path;
-    // Add path parameters
-    if (pathParams.length > 0) {
-      const pathParamEntries = pathParams.map((p) => `${p.name}`).join(", ");
-      // Close buildPath first argument backtick, add params object, close buildPath, close ${}, close template, then close new URL
-      urlConstruction += "`, { " + pathParamEntries + " })}`);\n";
-    } else {
-      // Close buildPath first argument backtick, add empty params, close buildPath, close ${}, close template, then close new URL
-      urlConstruction += "`, {})}`);\n";
-    }
-
-    // Add query parameters
-    const queryParams = endpoint.parameters.filter(
-      (p) => p.location === "query"
-    );
-    if (queryParams.length > 0) {
-      urlConstruction += "\n    // Add query parameters\n";
-      for (const param of queryParams) {
-        urlConstruction += "    if (" + param.name + " !== undefined) {\n";
-        urlConstruction +=
-          "      url.searchParams.set('" +
-          param.name +
-          "', String(" +
-          param.name +
-          "));\n";
-        urlConstruction += "    }\n";
-      }
-    }
-
-    return urlConstruction;
+    return output;
   }
 
   /**
    * Generate request options
    */
   private generateRequestOptions(endpoint: GeneratedEndpoint): string {
-    let options = "    const requestOptions: RequestInit = {\n";
-    options += "      method: '" + endpoint.method + "',\n";
-    options += "      headers: {\n";
-    options += "        ...this.config.headers,\n";
-    // Add content type for request body only for JSON payloads
-    if (
-      endpoint.requestBody &&
-      endpoint.requestBody.contentType &&
-      /application\/json/i.test(endpoint.requestBody.contentType)
-    ) {
-      options += "        'Content-Type': 'application/json',\n";
+    let output = '    const headers = new Headers(this.config.headers);\n';
+    const contentType = endpoint.requestBody?.contentType || '';
+    const json = /(?:application\/json|\+json)/i.test(contentType);
+    const multipart = /^multipart\/form-data/i.test(contentType);
+    if (endpoint.requestBody && !multipart && contentType) output += '    headers.set("Content-Type", ' + JSON.stringify(contentType) + ');\n';
+    for (const p of endpoint.parameters.filter(p => p.location === 'header')) {
+      const variable = p.variableName || p.name;
+      output += '    if (' + variable + ' !== undefined) headers.set(' + JSON.stringify(p.name) + ', this.simpleHeader(' + this.serializeExpression(variable, p.schema) + ', ' + String(p.explode ?? false) + '));\n';
     }
-
-    options += "        ...options?.headers,\n";
-    options += "      },\n";
-
-    // Add request body
+    const cookies = endpoint.parameters.filter(p => p.location === 'cookie');
+    if (cookies.length) {
+      output += '    const cookies: string[] = [];\n';
+      for (const p of cookies) { const variable=p.variableName||p.name; output += '    if ('+variable+' !== undefined) cookies.push('+JSON.stringify(p.name+'=')+' + encodeURIComponent(String('+variable+')));\n'; }
+      output += '    if (cookies.length) headers.set("Cookie", [headers.get("Cookie"), ...cookies].filter(Boolean).join("; "));\n';
+    }
+    output += '    new Headers(options?.headers).forEach((value, key) => headers.set(key, value));\n';
+    output += '    const requestOptions: RequestInit = {\n      ...options,\n      method: '+JSON.stringify(endpoint.method)+',\n      headers,\n';
     if (endpoint.requestBody) {
-      const isJson =
-        !!endpoint.requestBody.contentType &&
-        /application\/json/i.test(endpoint.requestBody.contentType);
-      const isMultipart =
-        !!endpoint.requestBody.contentType &&
-        /^multipart\/form-data/i.test(endpoint.requestBody.contentType);
-      if (isJson) {
-        options +=
-          "      body: body !== undefined ? JSON.stringify(body) : undefined,\n";
-      } else if (isMultipart) {
-        options +=
-          "      body: (body instanceof FormData ? body : (body !== undefined ? this.toFormData(body as any) : undefined)) as any,\n";
-      } else {
-        options += "      body: body as any,\n";
-      }
+      const value = json || multipart || contentType === 'application/x-www-form-urlencoded' ? this.serializeExpression('body', endpoint.requestBody.schema) : 'body';
+      const expression = json ? 'JSON.stringify(' + value + ')' : multipart ? '(body instanceof globalThis.FormData ? body : this.toFormData(' + value + '))' : contentType === 'application/x-www-form-urlencoded' ? 'this.toUrlEncoded(' + value + ')' : "body as NonNullable<RequestInit['body']>";
+      output += '      ...(body !== undefined ? { body: '+expression+' } : {}),\n';
     }
-
-    options += "      ...options,\n";
-    options += "    };\n";
-
-    return options;
+    return output + '    };\n';
   }
 
   /**
@@ -695,93 +651,125 @@ export class ApiClientGenerator {
    * Generate response handling
    */
   private generateResponseHandling(endpoint: GeneratedEndpoint): string {
-    // Use request helper for both void and typed responses
-    if (endpoint.returnType === "void") {
-      return "    await this.request<void>(url.toString(), requestOptions);\n    return;\n";
-    }
-    return `    return this.request<${endpoint.returnType}>(url.toString(), requestOptions);\n`;
+    const metadata = endpoint.responses.map(response => ({ status: response.statusCode,
+      ...(response.contentType && { contentType: response.contentType }), ...(response.schema && { schema: response.schema }), mode: response.type === 'void' ? 'empty' : this.mediaMode(response.contentType || 'application/json') }));
+    return `    return this.request<${endpoint.returnType}>(url.toString(), requestOptions, ${JSON.stringify(metadata)});\n`;
   }
 
   /**
    * Generate utility methods
    */
-  private generateUtilityMethods(): string {
-    return (
-      "  private buildPath(template: string, params: Record<string, string | number>): string {\n" +
-      "    return template.replace(/\\{([^}]+)\\}/g, (_match, key) => {\n" +
-      "      const value = params[key];\n" +
-      "      if (value === undefined) {\n" +
-      "        throw new Error('Missing required path parameter: ' + key);\n" +
-      "      }\n" +
-      "      return String(value);\n" +
-      "    });\n" +
-      "  }\n\n" +
-      "  private toFormData(input: any): FormData {\n" +
-      "    const form = new FormData();\n" +
-      "    if (input && typeof input === 'object') {\n" +
-      "      for (const [key, value] of Object.entries(input)) {\n" +
-      "        if (value === undefined || value === null) continue;\n" +
-      "        if (value instanceof Blob || (typeof File !== 'undefined' && value instanceof File)) {\n" +
-      "          form.append(key, value as any);\n" +
-      "        } else if (Array.isArray(value)) {\n" +
-      "          for (const v of value) {\n" +
-      "            if (v instanceof Blob || (typeof File !== 'undefined' && v instanceof File)) form.append(key, v as any);\n" +
-      "            else if (typeof v === 'object') form.append(key, new Blob([JSON.stringify(v)], { type: 'application/json' }));\n" +
-      "            else form.append(key, String(v));\n" +
-      "          }\n" +
-      "        } else if (typeof value === 'object') {\n" +
-      "          form.append(key, new Blob([JSON.stringify(value)], { type: 'application/json' }));\n" +
-      "        } else {\n" +
-      "          form.append(key, String(value));\n" +
-      "        }\n" +
-      "      }\n" +
-      "    }\n" +
-      "    return form;\n" +
-      "  }\n\n" +
-      "  private async request<T>(url: string, options: RequestInit): Promise<T> {\n" +
-      "    let lastError: unknown;\n" +
-      "    const retries = this.config.retries ?? 0;\n" +
-      "    const delayMs = this.config.retryDelay ?? 0;\n" +
-      "    for (let attempt = 0; attempt <= retries; attempt++) {\n" +
-      "      try {\n" +
-      "        const controller = new AbortController();\n" +
-      "        const timeout = this.config.timeout ?? 0;\n" +
-      "        const timer = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : undefined;\n" +
-      "        // Link external AbortSignal if provided\n" +
-      "        if (options.signal) {\n" +
-      "          const ext = options.signal;\n" +
-      "          if (ext.aborted) controller.abort();\n" +
-      "          else ext.addEventListener('abort', () => controller.abort(), { once: true });\n" +
-      "        }\n" +
-      "        const { signal: _omit, ...rest } = options as any;\n" +
-      "        const response = await fetch(url, { ...rest, signal: controller.signal });\n" +
-      "        if (timer) clearTimeout(timer);\n" +
-      "        if (!response.ok) {\n" +
-      "          throw new ApiClientError('Request failed: ' + response.status + ' ' + response.statusText, response.status, response);\n" +
-      "        }\n" +
-      "        if (response.status === 204 || options.method === 'HEAD') {\n" +
-      "          return undefined as unknown as T;\n" +
-      "        }\n" +
-      "        return (await response.json()) as T;\n" +
-      "      } catch (err) {\n" +
-      "        lastError = err;\n" +
-      "        if (attempt < retries && delayMs > 0) {\n" +
-      "          await new Promise((r) => setTimeout(r, delayMs));\n" +
-      "          continue;\n" +
-      "        }\n" +
-      "        throw lastError;\n" +
-      "      }\n" +
-      "    }\n" +
-      "    throw lastError as Error;\n" +
-      "  }\n\n" +
-      "  // Convenience helpers for bearer auth\n" +
-      "  public setAuthToken(token: string) {\n" +
-      "    this.config.headers = { ...(this.config.headers || {}), Authorization: `Bearer ${token}` };\n" +
-      "  }\n" +
-      "  public clearAuthToken() {\n" +
-      "    if (this.config.headers) delete (this.config.headers as any)['Authorization'];\n" +
-      "  }"
-    );
+  private generateUtilityMethods(endpoints: GeneratedEndpoint[]): string {
+    this.usesDeserialization = this.context.config.propertyNaming === 'camelCase' && endpoints.length > 0;
+    const headerHelper = endpoints.some(endpoint => endpoint.parameters.some(parameter => parameter.location === 'header')) ? `  private simpleHeader(value: unknown, explode: boolean): string {
+    const scalar = (item: unknown): string => {
+      if (item !== null && typeof item === 'object') throw new Error('Nested header parameter values are unsupported');
+      return String(item);
+    };
+    if (Array.isArray(value)) return value.map(scalar).join(',');
+    if (value !== null && typeof value === 'object') return Object.entries(value).filter(([, item]) => item !== undefined)
+      .map(([key, item]) => key + (explode ? '=' : ',') + scalar(item)).join(',');
+    return scalar(value);
+  }` : '';
+    const pathHelper = endpoints.length ? `  private buildPath(template: string, params: Record<string, unknown>, metadata: Record<string, { explode?: boolean }> = {}): string {
+    return template.replace(/\\{([^}]+)\\}/g, (_match, key: string) => {
+      const value = params[key];
+      if (value === undefined) throw new Error('Missing required path parameter: ' + key);
+      if (Array.isArray(value)) return value.map(item => encodeURIComponent(String(item))).join(',');
+      if (value !== null && typeof value === 'object') return Object.entries(value).map(([name, item]) =>
+        encodeURIComponent(name) + (metadata[key]?.explode ? '=' : ',') + encodeURIComponent(String(item))).join(',');
+      return encodeURIComponent(String(value));
+    });
+  }` : '';
+    const queryHelper = endpoints.some(endpoint => endpoint.parameters.some(parameter => parameter.location === 'query')) ? `  private appendQuery(params: URLSearchParams, name: string, value: unknown, style = 'form', explode = true): void {
+    const scalar = (item: unknown): string => {
+      if (item !== null && typeof item === 'object') throw new Error('Nested query values require an explicit supported encoding: ' + name);
+      return String(item);
+    };
+    if (Array.isArray(value)) {
+      if (style === 'deepObject') throw new Error('deepObject requires an object: ' + name);
+      if (style === 'spaceDelimited' || style === 'pipeDelimited' || !explode) params.append(name, value.map(scalar).join(style === 'spaceDelimited' ? ' ' : style === 'pipeDelimited' ? '|' : ','));
+      else for (const item of value) params.append(name, scalar(item));
+    } else if (value !== null && typeof value === 'object') {
+      const entries = Object.entries(value).filter(([, item]) => item !== undefined);
+      if (style === 'deepObject') for (const [key, item] of entries) params.append(name + '[' + key + ']', scalar(item));
+      else if (style !== 'form') throw new Error('Unsupported object query style: ' + style);
+      else if (explode) for (const [key, item] of entries) params.append(key, scalar(item));
+      else params.append(name, entries.flatMap(([key, item]) => [key, scalar(item)]).join(','));
+    } else params.append(name, scalar(value));
+  }` : '';
+    const encodedHelper = endpoints.some(endpoint => endpoint.requestBody?.contentType === 'application/x-www-form-urlencoded') ? `  private toUrlEncoded(input: unknown): URLSearchParams {
+    const form = new URLSearchParams();
+    if (input && typeof input === 'object') for (const [key, value] of Object.entries(input)) {
+      if (value === undefined || value === null) continue;
+      for (const item of Array.isArray(value) ? value : [value]) {
+        if (item !== null && typeof item === 'object') throw new Error('Nested URL-encoded form values are unsupported: ' + key);
+        form.append(key, String(item));
+      }
+    }
+    return form;
+  }` : '';
+    const multipartHelper = endpoints.some(endpoint => /^multipart\/form-data/i.test(endpoint.requestBody?.contentType || '')) ? `  private toFormData(input: unknown): globalThis.FormData {
+    const form = new globalThis.FormData();
+    if (input && typeof input === 'object') for (const [key, value] of Object.entries(input)) {
+      if (value === undefined || value === null) continue;
+      for (const item of Array.isArray(value) ? value : [value]) {
+        if (item instanceof globalThis.Blob) form.append(key, item);
+        else if (typeof item === 'object') form.append(key, new globalThis.Blob([JSON.stringify(item)], { type: 'application/json' }));
+        else form.append(key, String(item));
+      }
+    }
+    return form;
+  }` : '';
+    const requestHelper = endpoints.length ? `  private async request<T>(url: string, options: RequestInit, responses: Array<{ status: string; contentType?: string; schema?: unknown; mode: 'json' | 'text' | 'blob' | 'empty' }>): Promise<T> {
+    const retries = this.config.retries ?? 0;
+    const delayMs = this.config.retryDelay ?? 0;
+    const canRetry = ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'].includes(options.method || 'GET');
+    for (let attempt = 0; ; attempt++) {
+      const controller = new AbortController();
+      const timeout = this.config.timeout ?? 0;
+      const timer = timeout > 0 ? setTimeout(() => controller.abort(), timeout) : undefined;
+      const onAbort = () => controller.abort();
+      if (options.signal?.aborted) controller.abort();
+      else options.signal?.addEventListener('abort', onAbort, { once: true });
+      try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        if (!response.ok) throw new ApiClientError('Request failed: ' + response.status + ' ' + response.statusText, response.status, response);
+        if (response.status === 204 || response.status === 205 || options.method === 'HEAD') return undefined as T;
+        let candidates = responses.filter(item => item.status === String(response.status));
+        if (!candidates.length) candidates = responses.filter(item => item.status.toUpperCase() === Math.floor(response.status / 100) + 'XX');
+        if (!candidates.length) candidates = responses.filter(item => item.status === 'default');
+        const contentType = (response.headers.get('Content-Type') || '').split(';')[0]!.trim().toLowerCase();
+        const declared = candidates.find(item => item.contentType?.toLowerCase() === contentType) || candidates[0];
+        if (declared?.mode === 'empty') return undefined as T;
+        const mode = contentType ? /(?:\\/json|\\+json)$/.test(contentType) ? 'json' : contentType.startsWith('text/') || /(?:\\/xml|\\+xml)$/.test(contentType) || contentType === 'application/x-www-form-urlencoded' ? 'text' : 'blob' : declared?.mode || 'json';
+        if (mode === 'json') return ${this.usesDeserialization ? 'deserializeValue(await response.json(), declared?.schema)' : 'await response.json()'} as T;
+        if (mode === 'text') return await response.text() as T;
+        return await response.blob() as T;
+      } catch (error) {
+        const status = error instanceof ApiClientError ? error.status : undefined;
+        const transient = status === undefined || status === 408 || status === 429 || (status !== undefined && status >= 500);
+        if (!canRetry || !transient || attempt >= retries || options.signal?.aborted || controller.signal.aborted || error instanceof SyntaxError) throw error;
+      } finally {
+        if (timer !== undefined) clearTimeout(timer);
+        options.signal?.removeEventListener('abort', onAbort);
+      }
+      if (delayMs > 0) await new Promise<void>((resolve, reject) => {
+        const abort = () => { clearTimeout(timer); options.signal?.removeEventListener('abort', abort); reject(options.signal?.reason || new Error('Request aborted')); };
+        const timer = setTimeout(() => { options.signal?.removeEventListener('abort', abort); resolve(); }, delayMs);
+        if (options.signal?.aborted) abort(); else options.signal?.addEventListener('abort', abort, { once: true });
+      });
+    }
+  }` : '';
+    const authHelpers = `  public setDefaultHeader(name: string, value: string): void {
+    const headers = new globalThis.Headers(this.config.headers); headers.set(name, value); this.config.headers = headers;
+  }
+  public removeDefaultHeader(name: string): void {
+    const headers = new globalThis.Headers(this.config.headers); headers.delete(name); this.config.headers = headers;
+  }
+  public setAuthToken(token: string): void { this.setDefaultHeader('Authorization', 'Bearer ' + token); }
+  public clearAuthToken(): void { this.removeDefaultHeader('Authorization'); }`;
+    return [pathHelper, queryHelper, headerHelper, encodedHelper, multipartHelper, requestHelper, authHelpers].filter(Boolean).join('\n\n') + '\n';
   }
 
   /**
@@ -789,74 +777,29 @@ export class ApiClientGenerator {
    */
   private generateImports(endpoints: GeneratedEndpoint[]): string {
     const imports: string[] = [];
+    const converters = [...(this.usesSerialization ? ['serializeValue'] : []), ...(this.usesDeserialization ? ['deserializeValue'] : [])];
+    if (converters.length) imports.push(`import { ${converters.join(', ')} } from './conversion.js';`);
 
     // Add type imports. Endpoint types are already formatted; don't re-apply prefix/suffix.
     const typeNames = this.getTypeNamesFromEndpoints(endpoints);
     if (typeNames.length > 0) {
-      imports.push(`import { ${typeNames.join(", ")} } from './types';`);
+      imports.push(`import type { ${typeNames.map(name => this.typeAliases.get(name) && this.typeAliases.get(name) !== name ? name + ' as ' + this.typeAliases.get(name) : name).join(", ")} } from './types.js';`);
     }
 
     return imports.length > 0 ? imports.join("\n") + "\n\n" : "";
   }
 
-  /**
-   * Get type names from endpoints
-   */
-  private getTypeNamesFromEndpoints(endpoints: GeneratedEndpoint[]): string[] {
-    const typeNames = new Set<string>();
-
-    for (const endpoint of endpoints) {
-      // Extract type names from return type
-      const returnTypeNames = this.extractTypeNamesFromType(
-        endpoint.returnType
-      );
-      returnTypeNames.forEach((name) => typeNames.add(name));
-
-      // Extract type names from request body
-      if (endpoint.requestBody) {
-        const bodyTypeNames = this.extractTypeNamesFromType(
-          endpoint.requestBody.type
-        );
-        bodyTypeNames.forEach((name) => typeNames.add(name));
-      }
-
-      // Extract type names from parameters
-      for (const param of endpoint.parameters) {
-        const paramTypeNames = this.extractTypeNamesFromType(param.type);
-        paramTypeNames.forEach((name) => typeNames.add(name));
-      }
-    }
-
-    return Array.from(typeNames);
+  private serializeExpression(value: string, schema?: OpenAPISchemaObject | OpenAPIRef): string {
+    if (this.context.config.propertyNaming !== 'camelCase' || !schema) return value;
+    this.usesSerialization = true;
+    return `serializeValue(${value}, ${JSON.stringify(schema)})`;
   }
 
   /**
-   * Extract type names from type string
+   * Get type names from endpoints
    */
-  private extractTypeNamesFromType(type: string): string[] {
-    // Capture PascalCase identifiers used as type names, but exclude
-    // known TypeScript built-in/global generics (Record, Promise, Array, etc.)
-    const matches = type.match(/\b[A-Z][A-Za-z0-9_]*\b/g) || [];
-    if (matches.length === 0) return [];
-    const builtin = new Set<string>([
-      // Common TS/global generics and types we should not import
-      "Record",
-      "Array",
-      "Promise",
-      "Readonly",
-      "Partial",
-      "Required",
-      "Pick",
-      "Omit",
-      "Date",
-      "Map",
-      "Set",
-      "BigInt",
-      "Uint8Array",
-      "Object",
-    ]);
-
-    return matches.filter((m) => !builtin.has(m));
+  private getTypeNamesFromEndpoints(_endpoints: GeneratedEndpoint[]): string[] {
+    return [...this.referencedTypes];
   }
 
   /**
@@ -864,34 +807,6 @@ export class ApiClientGenerator {
    */
   private getDependencies(endpoints: GeneratedEndpoint[]): string[] {
     return this.getTypeNamesFromEndpoints(endpoints);
-  }
-
-  /**
-   * Apply configured prefix/suffix to a type name
-   */
-  /**
-   * Normalize a type name using the same rules as BaseTypeGenerator and apply prefix/suffix
-   */
-  private formatTypeName(name: string, context: GenerationContext): string {
-    // Sanitize and convert to PascalCase for type identifiers
-    const sanitized = name
-      .replace(/\[/g, "<")
-      .replace(/\]/g, ">")
-      .replace(/[^A-Za-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .replace(/_+/g, "_");
-    const converted = this.toPascalCase(sanitized);
-    const { typePrefix, typeSuffix } = context.config;
-    let result = converted;
-    if (typePrefix) result = `${typePrefix}${result}`;
-    if (typeSuffix) result = `${result}${typeSuffix}`;
-    return result;
-  }
-
-  private toPascalCase(str: string): string {
-    if (!str) return str;
-    const tokens = str.split(/_+/).filter(Boolean);
-    return tokens.map((t) => t.charAt(0).toUpperCase() + t.slice(1)).join("");
   }
 
   /**
@@ -913,7 +828,7 @@ export class ApiClientGenerator {
       const pascal = tokens
         .map((t) => t.charAt(0).toUpperCase() + t.slice(1))
         .join("");
-      return (pascal || "Api") + "ApiClient";
+      return typeName((pascal || "") + "ApiClient");
     }
 
     return "ApiClient";
@@ -1009,7 +924,8 @@ export class ApiClientGenerator {
       name = "op" + name;
     }
 
-    return name;
+    const reserved = new Set(['class', 'default', 'delete', 'new', 'function', 'var', 'let', 'const', 'return', 'switch', 'case', 'this', 'super', 'import', 'export', 'await', 'yield', 'constructor', 'break', 'catch', 'continue', 'debugger', 'do', 'else', 'enum', 'extends', 'finally', 'for', 'if', 'in', 'instanceof', 'throw', 'try', 'typeof', 'void', 'while', 'with', 'implements', 'interface', 'package', 'private', 'protected', 'public', 'static', 'true', 'false', 'null', 'eval', 'arguments']);
+    return reserved.has(name) ? `${name}Operation` : name;
   }
 
   /**
@@ -1019,70 +935,4 @@ export class ApiClientGenerator {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  /**
-   * Extract type name from reference
-   */
-  private extractTypeNameFromRef(ref: string): string {
-    const parts = ref.split("/");
-    return parts[parts.length - 1] || "Unknown";
-  }
-
-  /**
-   * Map schema type to TypeScript
-   */
-  private mapSchemaTypeToTypeScript(
-    type: string | string[],
-    format?: string
-  ): string {
-    const types = Array.isArray(type) ? type : [type];
-
-    // Handle format-specific mappings
-    if (format) {
-      const formatMappings: Record<string, string> = {
-        date: "string",
-        "date-time": "string",
-        time: "string",
-        email: "string",
-        hostname: "string",
-        ipv4: "string",
-        ipv6: "string",
-        uri: "string",
-        "uri-reference": "string",
-        "uri-template": "string",
-        url: "string",
-        uuid: "string",
-        password: "string",
-        byte: "string",
-        binary: "string",
-        int32: "number",
-        int64: "number",
-        float: "number",
-        double: "number",
-        decimal: "number",
-      };
-
-      if (formatMappings[format]) {
-        return formatMappings[format];
-      }
-    }
-
-    // Handle basic type mappings
-    const typeMappings: Record<string, string> = {
-      string: "string",
-      number: "number",
-      integer: "number",
-      boolean: "boolean",
-      array: "unknown[]",
-      object: "Record<string, unknown>",
-      null: "null",
-    };
-
-    const mappedTypes = types.map((t) => typeMappings[t] || "unknown");
-
-    if (mappedTypes.length === 1) {
-      return mappedTypes[0]!;
-    }
-
-    return mappedTypes.join(" | ");
-  }
 }

@@ -6,8 +6,11 @@ import { Schemantic } from "../core/schemantic";
 import { SchemanticConfig } from "../types/core";
 import { OpenAPISchema } from "../types/openapi";
 import { createTestConfig } from "./test-config";
+import * as fs from "fs/promises";
+import * as path from "path";
 
 describe("Schemantic", () => {
+  let outputDir: string;
   const mockSchema: OpenAPISchema = {
     openapi: "3.0.0",
     info: {
@@ -92,13 +95,19 @@ describe("Schemantic", () => {
   ): SchemanticConfig =>
     createTestConfig({
       schemaData: mockSchema,
-      outputDir: "./test-output",
+      outputDir,
       ...overrides,
     });
 
-  beforeEach(() => {
-    // Clean up test output directory
+  beforeEach(async () => {
+    const parent = path.resolve(__dirname, "../../.artifacts/jest");
+    await fs.mkdir(parent, { recursive: true });
+    outputDir = await fs.mkdtemp(path.join(parent, "typesync-"));
     jest.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    if (outputDir) await fs.rm(outputDir, { recursive: true, force: true, maxRetries: 3 });
   });
 
   describe("constructor", () => {
@@ -151,7 +160,7 @@ describe("Schemantic", () => {
       expect(result.statistics.totalEndpoints).toBe(0);
     });
 
-    it("should generate API client only when generateTypes is false", async () => {
+    it("should include required types when generateTypes is false but an API client is requested", async () => {
       const config = createConfig({
         generateTypes: false,
         generateApiClient: true,
@@ -161,8 +170,8 @@ describe("Schemantic", () => {
       const result = await schemanticInstance.generate();
 
       expect(result.success).toBe(true);
-      expect(result.generatedFiles).toHaveLength(2); // api-client.ts, index.ts
-      expect(result.statistics.totalTypes).toBe(0);
+      expect(result.generatedFiles).toHaveLength(3); // types.ts, api-client.ts, index.ts
+      expect(result.statistics.totalTypes).toBe(2);
       expect(result.statistics.totalEndpoints).toBe(2);
     });
 

@@ -1,0 +1,2570 @@
+{
+  "schemaVersion": "0.2",
+  "generatedAt": "2026-05-10T22:14:11.638Z",
+  "projectId": "schemantic",
+  "conflicts": [
+    {
+      "id": "conflict:7a32978d47aa",
+      "factId": "import:typescript:src/__tests__/integration/fastapi-integration.test.ts:../../core/schemantic",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00173",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00176"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9ee6bfe77fdf",
+      "factId": "import:typescript:src/__tests__/integration/fastapi-integration.test.ts:../../types/openapi",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00174",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00177"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:487117647a76",
+      "factId": "import:typescript:src/__tests__/integration/fastapi-integration.test.ts:../test-config",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00175",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00178"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:dd8ed411a4d2",
+      "factId": "import:typescript:src/plugins/zod-validation.ts:zod",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01135",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01136",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01137",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01138",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01139"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f93565a8377f",
+      "factId": "import:typescript:test-schema-generation/allof-inher-union/combined.ts:./types",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01550",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01551"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:faacc4d900bb",
+      "factId": "import:typescript:test-schema-generation/auth-file-uploads/combined.ts:zod",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01630",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01633"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:8a13fae0b847",
+      "factId": "import:typescript:test-schema-generation/edge-case/combined.ts:./types",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01749",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01750"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ed9e9a0dc52f",
+      "factId": "import:typescript:test-schema-generation/edge-case/combined.ts:zod",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01748",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01753"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:5f7c50646bb4",
+      "factId": "import:typescript:test-schema-generation/nested-dictmap-datetime/combined.ts:./types",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01916",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01917"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:999882ba9342",
+      "factId": "import:typescript:test-schema-generation/pag-nested/combined.ts:./types",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02025",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02026"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9473c7d768b1",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/api-client.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00051",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00054"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:be6b3b1329f9",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00050",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00053"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1fa1081fd1a2",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00033",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00034",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00035",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00036",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00037"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1c247c7cad77",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/hooks.ts:fetcher",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00062",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00074",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00078"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:fe8a764931e9",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/hooks.ts:mutate",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00066",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00070"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:8158fcb23a03",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/hooks.ts:refetch",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00064",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00076",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00080"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:06194f11fccd",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/hooks.ts:reset",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00068",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00072"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ee9a20930042",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/hooks.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00063",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00067",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00071",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00075",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00079"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f26868efeefd",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/types.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00086",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00095",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00104",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00113",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00122",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00131"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:26a2caea431e",
+      "factId": "symbol:typescript:local-test/react-app/src/lib/api/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00085",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00094",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00103",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00112",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00121",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00130"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:30dcb3e4e3b5",
+      "factId": "symbol:typescript:src/__tests__/generators/object-generator.test.ts:generator",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00150",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00162",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00165",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00168",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00170",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00171"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:50d4b6f33605",
+      "factId": "symbol:typescript:src/__tests__/generators/object-generator.test.ts:options",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00149",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00161",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00164",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00167"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4472cf01a3cb",
+      "factId": "symbol:typescript:src/__tests__/generators/object-generator.test.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00151",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00152",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00153",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00154",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00155",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00156",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00157",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00158",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00159",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00160",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00163",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00166",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00169"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:c571c5e7380f",
+      "factId": "symbol:typescript:src/__tests__/integration/fastapi-integration.test.ts:config",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00182",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00187",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00192",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00197",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00202",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00207",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00212"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b38dac923291",
+      "factId": "symbol:typescript:src/__tests__/integration/fastapi-integration.test.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00184",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00189",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00194",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00199",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00204",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00209",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00214"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:0ebb0c1d5d7d",
+      "factId": "symbol:typescript:src/__tests__/integration/fastapi-integration.test.ts:schemanticinstance",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00183",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00188",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00193",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00198",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00203",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00208",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00213"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:24e8ff9c4e74",
+      "factId": "symbol:typescript:src/__tests__/integration/fastapi-integration.test.ts:typescontent",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00186",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00201",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00206",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00211",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00216"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:203d57d33bca",
+      "factId": "symbol:typescript:src/__tests__/integration/fastapi-integration.test.ts:typesfile",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00185",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00200",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00205",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00210",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00215"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:6b5fac2b25e7",
+      "factId": "symbol:typescript:src/__tests__/parsers/openapi.test.ts:invalidschema",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00250",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00252",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00254",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00256",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00258",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00260",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00262",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00264"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:cea1694fbb82",
+      "factId": "symbol:typescript:src/__tests__/parsers/openapi.test.ts:resolver",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00266",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00267",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00269",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00271"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:24b71a5271bc",
+      "factId": "symbol:typescript:src/__tests__/parsers/openapi.test.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00247",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00249",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00251",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00253",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00255",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00257",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00259",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00261",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00263",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00265",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00270",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00272"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:cb7d744a6c9f",
+      "factId": "symbol:typescript:src/__tests__/plugins/branded-types.test.ts:endtime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00311",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00314"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e6415b7579ec",
+      "factId": "symbol:typescript:src/__tests__/plugins/branded-types.test.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00278",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00279",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00280",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00288",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00292",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00295",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00298",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00301",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00318",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00319"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:db1d3a40e7db",
+      "factId": "symbol:typescript:src/__tests__/plugins/branded-types.test.ts:starttime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00310",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00313"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:7c133e29ac76",
+      "factId": "symbol:typescript:src/__tests__/plugins/branded-types.test.ts:transformschema",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00303",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00306",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00308"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:3721993475d7",
+      "factId": "symbol:typescript:src/__tests__/plugins/performance-monitoring.test.ts:stats",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00323",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00324",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00325",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00326",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00328",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00330",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00331",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00332",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00334",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00335",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00336",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00346"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:871dc48689bd",
+      "factId": "symbol:typescript:src/__tests__/plugins/request-deduplication.test.ts:originalcontent",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00362",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00367"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:dec0b87551da",
+      "factId": "symbol:typescript:src/__tests__/plugins/request-deduplication.test.ts:originaldependencies",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00363",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00368"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:95b2ce907b7e",
+      "factId": "symbol:typescript:src/__tests__/plugins/request-deduplication.test.ts:originalexports",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00364",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00369"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b0aab816a3af",
+      "factId": "symbol:typescript:src/__tests__/plugins/request-deduplication.test.ts:response",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00360",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00361"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4df8c3225647",
+      "factId": "symbol:typescript:src/__tests__/plugins/request-deduplication.test.ts:stats",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00372",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00374"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2c6f9065bade",
+      "factId": "symbol:typescript:src/__tests__/plugins/request-deduplication.test.ts:testclient",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00388",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00392"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4d1910b3f4cd",
+      "factId": "symbol:typescript:src/__tests__/plugins/zod-validation.test.ts:endtime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00409",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00413"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:daddeaf4da52",
+      "factId": "symbol:typescript:src/__tests__/plugins/zod-validation.test.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00399",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00400",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00401",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00402",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00403",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00412",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00414",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00415",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00416",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00417"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:7ada0209d55e",
+      "factId": "symbol:typescript:src/__tests__/plugins/zod-validation.test.ts:starttime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00408",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00411"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:d28291d51e78",
+      "factId": "symbol:typescript:src/__tests__/typesync.test.ts:config",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00439",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00443",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00446",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00449",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00452",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00455",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00459",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00462",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00465"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:07cc10e9c898",
+      "factId": "symbol:typescript:src/__tests__/typesync.test.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00445",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00448",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00451",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00454",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00457",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00461"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2ee24dcfd3b8",
+      "factId": "symbol:typescript:src/__tests__/typesync.test.ts:schemanticinstance",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00440",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00442",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00444",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00447",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00450",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00453",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00456",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00460",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00463",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00466"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:33a75ecaf663",
+      "factId": "symbol:typescript:src/cli/index.ts:builtinplugins",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00485",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00495"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:d43832604cb1",
+      "factId": "symbol:typescript:src/cli/index.ts:config",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00478",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00481"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:7b55d0794d88",
+      "factId": "symbol:typescript:src/cli/index.ts:configpath",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00489",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00517"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:21dc86cec3ba",
+      "factId": "symbol:typescript:src/cli/index.ts:fs",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00491",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00515"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:650c9de70fd4",
+      "factId": "symbol:typescript:src/cli/index.ts:generateclient",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00501",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00512"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:32610bfa72cb",
+      "factId": "symbol:typescript:src/cli/index.ts:generatehooks",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00502",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00513"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:aa304791f05c",
+      "factId": "symbol:typescript:src/cli/index.ts:generatetypes",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00500",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00511"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:17df11edddff",
+      "factId": "symbol:typescript:src/cli/index.ts:normalized",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00518",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00519"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:fbf188c948c6",
+      "factId": "symbol:typescript:src/cli/index.ts:outputdir",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00498",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00508"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:fbf726fca547",
+      "factId": "symbol:typescript:src/cli/index.ts:prefix",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00499",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00509"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:5e15f348c7f2",
+      "factId": "symbol:typescript:src/cli/index.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00480",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00483",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00505"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1e79ebce065e",
+      "factId": "symbol:typescript:src/cli/index.ts:rl",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00496",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00506"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ad38a743393f",
+      "factId": "symbol:typescript:src/cli/index.ts:schemanticinstance",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00479",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00482",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00504"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:70be04391cf1",
+      "factId": "symbol:typescript:src/cli/index.ts:schemasource",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00497",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00507"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2debefbf7694",
+      "factId": "symbol:typescript:src/cli/index.ts:stricttypes",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00503",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00514"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:70e9d651b4a9",
+      "factId": "symbol:typescript:src/core/schemantic.ts:content",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00560",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00569"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:557db0f5a113",
+      "factId": "symbol:typescript:src/core/schemantic.ts:filepath",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00561",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00563",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00570",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00573"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:8a0feec0a7f2",
+      "factId": "symbol:typescript:src/core/schemantic.ts:parser",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00543",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00544"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:974c6d35911f",
+      "factId": "symbol:typescript:src/core/schemantic.ts:schema",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00539",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00542"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9b7a688c9669",
+      "factId": "symbol:typescript:src/core/schemantic.ts:type",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00577",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00580"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:25fdbbc0b9e8",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:contenttype",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00604",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00610"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1336e3ce1fce",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:ismultipart",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00629",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00640"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:841f17bd1203",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:mediatype",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00605",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00611"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f637bb66e525",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:parameters",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00596",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00622"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:97a5533f3034",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:parts",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00663",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00668"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ceac3916c9a3",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:pathparams",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00625",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00634"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f72dd17ba775",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:queryparams",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00627",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00637"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:c7df0412d9b0",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:resolvedschema",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00602",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00608"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2a1a9d42b3df",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:returntype",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00599",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00623"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:84c3d9da51a0",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:tokens",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00651",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00653",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00655"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:7e6060693610",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:type",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00600",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00603",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00606",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00609",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00612"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:31806e59aa8c",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:typenames",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00641",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00642"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1d45577d9846",
+      "factId": "symbol:typescript:src/generators/api-client-generator.ts:types",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00613",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00669"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:bb941321d4eb",
+      "factId": "symbol:typescript:src/generators/base.ts:tokens",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00682",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00686"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:d697775fc28b",
+      "factId": "symbol:typescript:src/generators/enum-generator.ts:enumvalue",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00701",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00704"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f3368e42efe3",
+      "factId": "symbol:typescript:src/generators/enum-generator.ts:key",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00700",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00703",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00706"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ccc06a97b657",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:code",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00770",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00781"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:87bc97eb20c6",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:ct",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00743",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00746"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:3613d1fb9da4",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:media",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00744",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00747"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:06bf118246e1",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:name",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00748",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00798"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2befb8b0c2a5",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:pascal",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00786",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00789"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:03e45e676594",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:pathparams",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00763",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00773"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:058f66fa0076",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:queryobjectoptional",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00765",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00768",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00777"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:034fc2ca7b91",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:queryparams",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00764",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00774"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f8058a558e50",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:resolved",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00742",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00745"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9e9441a3d00a",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:rettype",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00767",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00776"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4377e546b8c3",
+      "factId": "symbol:typescript:src/generators/hook-generator.ts:tokens",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00788",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00790",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00797"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:7506628da6b6",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:basename",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00816",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00840"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:d4c58e2c906a",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:comment",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00813",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00820"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:6469fa0f18ed",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:content",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00807",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00809",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00814"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:507cdcde45f9",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:imports",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00808",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00810"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:32bb840bd97d",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:property",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00818",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00821"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:a88bf493e35e",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:typename",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00804",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00812"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:907943595dda",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:unionschemas",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00805",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00828"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:a254c8049c7f",
+      "factId": "symbol:typescript:src/generators/object-generator.ts:uniontypes",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00806",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00829"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ee6e6fcfebb7",
+      "factId": "symbol:typescript:src/parsers/factory.ts:parserclass",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00872",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00873"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:dcdebe65284d",
+      "factId": "symbol:typescript:src/parsers/factory.ts:parsertype",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00870",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00877"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:72b510a6de50",
+      "factId": "symbol:typescript:src/plugins/branded-types.ts:assert",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00912",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00919"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:79391880fe44",
+      "factId": "symbol:typescript:src/plugins/branded-types.ts:branded",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00909",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00916"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4d8bf74b902a",
+      "factId": "symbol:typescript:src/plugins/branded-types.ts:brandname",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00908",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00914"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:69347aa08cba",
+      "factId": "symbol:typescript:src/plugins/branded-types.ts:create",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00910",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00917"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:bd0287d088d0",
+      "factId": "symbol:typescript:src/plugins/branded-types.ts:is",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00911",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00918",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00933"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:665dad7abd77",
+      "factId": "symbol:typescript:src/plugins/branded-types.ts:options",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00893",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00895",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00897"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:46d63bfe7603",
+      "factId": "symbol:typescript:src/plugins/builtin.ts:comment",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00952",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00953"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e437f203785b",
+      "factId": "symbol:typescript:src/plugins/builtin.ts:content",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00954",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00965",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00968"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:0519cdd5d134",
+      "factId": "symbol:typescript:src/plugins/builtin.ts:hooks",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00964",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00967"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2d608eb1e7c1",
+      "factId": "symbol:typescript:src/plugins/loader.ts:loader",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00989",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00991",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00993"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:c8baabb0feeb",
+      "factId": "symbol:typescript:src/plugins/loader.ts:plugin",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00979",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00981",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00984"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1c2874547633",
+      "factId": "symbol:typescript:src/plugins/loader.ts:pluginmodule",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00978",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00980"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9885e70bc23f",
+      "factId": "symbol:typescript:src/plugins/manager.ts:enabledplugins",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00996",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00997",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00998",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:00999",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01000",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01001",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01003",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01005",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01007"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:65aed405c77f",
+      "factId": "symbol:typescript:src/plugins/manager.ts:generators",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01004",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01006"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:27c725b32d92",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:analysis",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01048",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01055"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b1a38c30d671",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:count",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01021",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01075"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:0574151ebaff",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:end",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01065",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01070",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01072"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:6418d12e7a1f",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:endtime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01045",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01051",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01057"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:15561349f9a3",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:metrics",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01018",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01019",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01068",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01073"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:a149e00dc674",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:options",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01044",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01047",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01053",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01058"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:fd8850157add",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:performanceanalyzer",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01016",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01042"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ec96d1cff59c",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:start",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01063",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01069"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:44fe2c81a230",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:starttime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01043",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01046",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01052"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:eebc3b799d47",
+      "factId": "symbol:typescript:src/plugins/performance-monitoring.ts:stat",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01033",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01077"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:50eda9a33ed5",
+      "factId": "symbol:typescript:src/plugins/request-deduplication.ts:age",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01115",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01117"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:1d96d3949366",
+      "factId": "symbol:typescript:src/plugins/request-deduplication.ts:entry",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01095",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01113",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01116"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:878f0c849bc8",
+      "factId": "symbol:typescript:src/plugins/request-deduplication.ts:fingerprint",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01101",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01120",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01125"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4098a766a30b",
+      "factId": "symbol:typescript:src/plugins/request-deduplication.ts:now",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01094",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01096",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01098",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01114"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:eea71dd36602",
+      "factId": "symbol:typescript:src/plugins/request-deduplication.ts:params",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01103",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01134"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4a07dea0e2cc",
+      "factId": "symbol:typescript:src/plugins/request-deduplication.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01097",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01123"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:48c75e3fb65f",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:endtime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01151",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01160",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01167"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:976e17299240",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01224",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01233",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01236"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9af1fe5e05a2",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:names",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01166",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01227"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:ae410c24317a",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:now",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01242",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01243",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01246"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:007a3dc0fb40",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:obj",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01177",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01181"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:10d75856bc4c",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:options",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01148",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01153",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01162"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9227a8b2a7db",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:refpath",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01178",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01211"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:a6be6b036d2f",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01223",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01232",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01235",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01250"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:dc786a246c98",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:starttime",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01147",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01152",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01161"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:fb9b8e0f0c3f",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:transformedschema",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01150",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01172"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:62f8592123d0",
+      "factId": "symbol:typescript:src/plugins/zod-validation.ts:zodschema",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01155",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01175",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01190",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01194"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e173c03d535c",
+      "factId": "symbol:typescript:test-output/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01316",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01317"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:73ed127aa0d3",
+      "factId": "symbol:typescript:test-output/generated-zod/api-client.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01351",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01354"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:05dedebabcd0",
+      "factId": "symbol:typescript:test-output/generated-zod/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01350",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01353"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:30a5a3031d5c",
+      "factId": "symbol:typescript:test-output/generated-zod/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01333",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01334",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01335",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01336",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01337"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:19cc48a958a4",
+      "factId": "symbol:typescript:test-output/generated-zod/types.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01362",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01371",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01380",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01389",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01398",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01407"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:d4e7758ffac9",
+      "factId": "symbol:typescript:test-output/generated-zod/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01361",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01370",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01379",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01388",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01397",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01406"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4b1866cf288a",
+      "factId": "symbol:typescript:test-output/generated/api-client.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01435",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01438"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:5ed8cfc0a3a8",
+      "factId": "symbol:typescript:test-output/generated/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01434",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01437"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:6b3de991929e",
+      "factId": "symbol:typescript:test-output/generated/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01417",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01418",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01419",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01420",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01421"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f6f62be400c2",
+      "factId": "symbol:typescript:test-output/generated/hooks.ts:fetcher",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01446",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01458",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01462"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b1aa41d525ed",
+      "factId": "symbol:typescript:test-output/generated/hooks.ts:mutate",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01450",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01454"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:cd43d4d42d26",
+      "factId": "symbol:typescript:test-output/generated/hooks.ts:refetch",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01448",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01460",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01464"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:9e4d7c62c482",
+      "factId": "symbol:typescript:test-output/generated/hooks.ts:reset",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01452",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01456"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:574db73f3c5b",
+      "factId": "symbol:typescript:test-output/generated/hooks.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01447",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01451",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01455",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01459",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01463"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:483da1ebd7fd",
+      "factId": "symbol:typescript:test-output/generated/types.ts:issues",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01470",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01479",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01488",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01497",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01506",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01515"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2930da72f28d",
+      "factId": "symbol:typescript:test-output/generated/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01469",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01478",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01487",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01496",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01505",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01514"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:29f5ab50afa1",
+      "factId": "symbol:typescript:test-schema-generation/allof-inher-union/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01545",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01547"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:f08813109e6a",
+      "factId": "symbol:typescript:test-schema-generation/allof-inher-union/combined.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01570",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01572",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01579",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01584"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e3c940e827e9",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01625",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01627"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:752600a426d9",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01612",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01613"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b20b18a9e2fd",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/combined.ts:mutate",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01657",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01661"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:602752b5181a",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/combined.ts:reset",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01659",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01663"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:2229304d168a",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/combined.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01650",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01652",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01658",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01662",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01667",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01675",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01683"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:733e121531cf",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/combined.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01637",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01638"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:18e950c7c7ae",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/hooks.ts:mutate",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01693",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01697"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:bb1bffcda1c2",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/hooks.ts:reset",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01695",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01699"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:4e6fca9b56c6",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/hooks.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01694",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01698"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:fa1dc2d78f78",
+      "factId": "symbol:typescript:test-schema-generation/auth-file-uploads/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01704",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01712",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01720"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:764f4cdffd1c",
+      "factId": "symbol:typescript:test-schema-generation/edge-case/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01743",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01745"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:69237d41acec",
+      "factId": "symbol:typescript:test-schema-generation/edge-case/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01730",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01731"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:8ffe681a199b",
+      "factId": "symbol:typescript:test-schema-generation/edge-case/combined.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01770",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01772",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01779",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01783",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01788",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01796",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01804",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01812",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01820",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01828"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:32eaf701f457",
+      "factId": "symbol:typescript:test-schema-generation/edge-case/combined.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01757",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01758"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:aea585d5734e",
+      "factId": "symbol:typescript:test-schema-generation/edge-case/hooks.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01840",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01844"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:7afee8db934d",
+      "factId": "symbol:typescript:test-schema-generation/edge-case/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01850",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01858",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01866",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01874",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01882",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01890"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b428f6c3117c",
+      "factId": "symbol:typescript:test-schema-generation/nested-dictmap-datetime/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01911",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01913"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:994a45b66163",
+      "factId": "symbol:typescript:test-schema-generation/nested-dictmap-datetime/combined.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01936",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01938",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01944",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01949",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01957",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01965"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e7182d3685ad",
+      "factId": "symbol:typescript:test-schema-generation/nested-dictmap-datetime/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01982",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01990",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:01998"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:09a40fd288fc",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/api-client.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02020",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02022"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:18597a24d216",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/api-client.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02007",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02008"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:71ef2626ac5f",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/combined.ts:argsref",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02053",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02058"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e8392c934380",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/combined.ts:fetcher",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02054",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02059"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:b7203df40c41",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/combined.ts:refetch",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02056",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02061"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:8739821707c0",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/combined.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02046",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02048",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02055",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02060",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02065",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02073",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02081"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:be2fece10f92",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/combined.ts:url",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02033",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02034"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:70c5a5c91261",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/hooks.ts:argsref",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02091",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02096"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:eaad32624d8a",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/hooks.ts:fetcher",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02092",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02097"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:809f6b6020d7",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/hooks.ts:refetch",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02094",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02099"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:3eda73a375bd",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/hooks.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02093",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02098"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    },
+    {
+      "id": "conflict:e2661f11bdaa",
+      "factId": "symbol:typescript:test-schema-generation/pag-nested/types.ts:result",
+      "kind": "scanner-disagreement",
+      "observationIds": [
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02104",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02112",
+        "obs:codecurator.scanner.tree-sitter-structural:2026-05-10T22:14:11.638Z:02120"
+      ],
+      "severity": "medium",
+      "resolution": "unresolved",
+      "notes": "Multiple observations for the same fact ID produced different content hashes."
+    }
+  ]
+}

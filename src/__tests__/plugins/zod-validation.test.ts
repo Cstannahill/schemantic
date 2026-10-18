@@ -303,12 +303,10 @@ describe("ZodValidationPlugin", () => {
       } as ExtendedSchemaObject;
       circularSchema.properties!.self = circularSchema;
 
-      expect(() => {
-        zodValidationPlugin.transformSchema!(
-          circularSchema as ResolvedSchema,
-          mockContext
-        );
-      }).not.toThrow();
+      const transformed = zodValidationPlugin.transformSchema!(circularSchema as ResolvedSchema, mockContext) as ExtendedSchemaObject;
+      expect(transformed).not.toBe(circularSchema);
+      expect(transformed.properties!.self).toBe(transformed);
+      expect(circularSchema.properties!.self).toBe(circularSchema);
     });
   });
 

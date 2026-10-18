@@ -1,0 +1,29 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Edge API",
+    "version": "1"
+  },
+  "paths": {
+    "/xml": {
+      "get": {
+        "operationId": "getXml",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

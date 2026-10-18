@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "0.2",
+  "id": "provider_audit_provider_req_20260510204133_S0ONO1",
+  "requestId": "provider_req_20260510204133_S0ONO1",
+  "projectId": "schemantic",
+  "projectRootHash": "sha256:bb6f9fe6ab12ce5e5f13eec3750caab409335175852308fda7a05b1976d7c3e7",
+  "provider": {
+    "id": "openrouter-dev",
+    "kind": "openrouter",
+    "displayName": "OpenRouter Development Adapter",
+    "model": "inclusionai/ring-2.6-1t:free",
+    "version": "0.1.0",
+    "baseUrl": "https://openrouter.ai/api/v1/chat/completions"
+  },
+  "startedAt": "2026-05-10T20:41:33.258Z",
+  "completedAt": "2026-05-10T20:41:33.356Z",
+  "durationMs": 98,
+  "live": false,
+  "dryRun": true,
+  "networkAllowed": false,
+  "status": "refused",
+  "evidence": {
+    "packetId": "evidence:schemantic:flow:54af1c2f16",
+    "purpose": "flow",
+    "snapshotId": "snap_20260510204133_37LX1K",
+    "inputsHash": "sha256:73cf7f0cd53ccb1ad75a4850b7843e2945dd8b6ccd5d6a717bc6ca365c26739b",
+    "selectedFacts": 0,
+    "omittedFacts": 1900,
+    "sourceFiles": 3,
+    "estimatedInputTokens": 72863,
+    "truncated": true
+  },
+  "requestSummary": {
+    "riskCeiling": "medium",
+    "allowedTargets": [
+      ".ai/project.yaml",
+      ".ai/modules.yaml",
+      ".ai/flows/*.flow.yaml",
+      ".ai/notes/*"
+    ],
+    "promptRedacted": true,
+    "promptHash": "sha256:fef61b8a98a407a593d460570949092cbb5bd571bc53fd7872921093f730053a",
+    "promptBytes": 222390
+  },
+  "responseSummary": {
+    "title": "Dry-run provider request for openrouter:inclusionai/ring-2.6-1t:free",
+    "risk": "low",
+    "targetFiles": [],
+    "changeCount": 0,
+    "warningCount": 3,
+    "rationaleHash": "sha256:f9574c229177f762a3296c6ed8248845a2478cb56ec5b68030fdf379cfc86057",
+    "fullChangeValuesRedacted": true
+  },
+  "warnings": [
+    "PROVIDER_DEFAULT_EXTERNAL_OR_BUILTIN: Default provider mock was not found in config; built-ins may still satisfy it.",
+    "No network or subprocess provider call was sent.",
+    "Use the mock provider for deterministic proposal draft tests.",
+    "Live provider execution requires --allow-network and --provider-live. Phase 29 supports live OpenRouter and local Ollama adapters.",
+    "Provider refused to generate a proposal. No proposal file was created."
+  ],
+  "evidenceWarnings": [
+    "Evidence packet exceeded requested maxTokens (72471/6000) and was truncated to 0 facts."
+  ],
+  "retry": {
+    "retryable": true,
+    "sourceRequestId": "provider_req_20260510204133_S0ONO1",
+    "attempt": 0,
+    "recommendedMode": "rewrite",
+    "reasons": [
+      "No network or subprocess provider call was sent.",
+      "Use the mock provider for deterministic proposal draft tests.",
+      "Live provider execution requires --allow-network and --provider-live. Phase 29 supports live OpenRouter and local Ollama adapters.",
+      "Provider refused to generate a proposal. No proposal file was created."
+    ],
+    "intent": {
+      "purpose": "flow",
+      "query": "primary API route, CLI command, data pipeline, or main application flow"
+    },
+    "suggestedArgs": [
+      "providers retry",
+      "provider_req_20260510204133_S0ONO1",
+      "--include-source-snippets",
+      "--snippet-policy focused-symbols"
+    ]
+  },
+  "redaction": {
+    "level": "default",
+    "redactedFields": [
+      "request.evidence.prompt.messages[].content",
+      "request.evidence.prompt.text",
+      "response.changes[].value",
+      "rawProviderResponse",
+      "apiKeyEnv values"
+    ],
+    "notes": [
+      "Audit logs summarize provider behavior without storing full prompts or generated artifact payloads by default.",
+      "Use requestId, evidence packet ID, proposal ID, and hashes to correlate with local artifacts."
+    ]
+  }
+}

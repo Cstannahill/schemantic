@@ -1,0 +1,37 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Edge API",
+    "version": "1"
+  },
+  "paths": {
+    "/thing": {
+      "get": {
+        "operationId": "getThing",
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Blob"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Blob": {
+        "type": "string",
+        "enum": [
+          "small",
+          "big"
+        ]
+      }
+    }
+  }
+}

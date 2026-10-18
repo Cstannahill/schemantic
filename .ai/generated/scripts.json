@@ -1,0 +1,775 @@
+{
+  "schemaVersion": "0.2",
+  "generatedAt": "2026-05-10T22:14:11.638Z",
+  "projectId": "schemantic",
+  "facts": [
+    {
+      "id": "script:npm:build",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "build"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00182",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00182"
+      ],
+      "contentHash": "sha256:57f885951804a2ae60fe3b2c7d3958fa0248177956313a43b6fa745d515b9e3e",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00182",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:build:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00182"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:clean",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "clean"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00189",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00189"
+      ],
+      "contentHash": "sha256:bfa4bb7aed6ce9420b6d435c043ddf4dd842240bb714d52d775a26690fbdc7b1",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00189",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:clean:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00189"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:dev",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "dev"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00183",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00183"
+      ],
+      "contentHash": "sha256:a4d64f264f3785f5710bf4e5f3bc895a3a36a0fbab76458cd80823e2825af29f",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00183",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:dev:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00183"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:lint",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "lint"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00187",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00187"
+      ],
+      "contentHash": "sha256:eeba92197657e997246eea08834dd9f387180bb3207d686b9d5ac2960d5cdb3e",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00187",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:lint:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00187"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:lint:fix",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "lint:fix"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00188",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00188"
+      ],
+      "contentHash": "sha256:2fa484e7fcba585f6e7c2510a6b296c518b0477bec3a8f4da7a5ffeeaf4f322f",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00188",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:lint:fix:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00188"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:prepublishOnly",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "prepublishOnly"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00190",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00190"
+      ],
+      "contentHash": "sha256:31b14cef240c514b5f809a33b8a51991c4ebe16485a8641226cc4f0dd029631f",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00190",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:prepublishOnly:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00190"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:publish:both",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "publish:both"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00193",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00193"
+      ],
+      "contentHash": "sha256:89298551e1139a552583f27db2db96db1b5a7b9434a2aa18f2fd12594d692828",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00193",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:publish:both:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00193"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:publish:gh",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "publish:gh"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00192",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00192"
+      ],
+      "contentHash": "sha256:85839ff58d9abff7d2c41a85aba92c6e40ef24a2f54ce4109a461f14a73514eb",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00192",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:publish:gh:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00192"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:publish:npm",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "publish:npm"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00191",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00191"
+      ],
+      "contentHash": "sha256:0857116ee5b517b2b8d38c42971c4aa50ff708408e37404480c3ca6b93006d39",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00191",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:publish:npm:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00191"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:test",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "test"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00184",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00184"
+      ],
+      "contentHash": "sha256:a471c44c5cd6d2789f74bf973a62aa6978ba9ec5f2e658539c240f6c0fffbadd",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00184",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:test:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00184"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:test:coverage",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "test:coverage"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00186",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00186"
+      ],
+      "contentHash": "sha256:1ee59a058622847c5e66484399f216203a1038f216d8a75fe17342dd480e16dd",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00186",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:test:coverage:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00186"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "script:npm:test:watch",
+      "kind": "script",
+      "semanticKey": {
+        "ecosystem": "npm",
+        "name": "test:watch"
+      },
+      "status": "active",
+      "winningObservationId": "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00185",
+      "observationIds": [
+        "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00185"
+      ],
+      "contentHash": "sha256:050a79971a39783e0993bc947440ef068587fc7a63192e7e397aa2feb0aeb019",
+      "confidence": {
+        "reported": 0.98,
+        "ceiling": 0.98,
+        "computed": 0.98,
+        "reasons": [
+          "deterministic config/file scanner",
+          "selected observation merged by CodeCurator core"
+        ]
+      },
+      "provenance": {
+        "events": [
+          {
+            "id": "prov:codecurator.scanner.config:00185",
+            "kind": "config-parse",
+            "actor": "codecurator.scanner.config",
+            "scanner": "codecurator.scanner.config",
+            "pluginVersion": "0.1.0",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "sourceFiles": [
+              "package.json"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner"
+              ]
+            }
+          },
+          {
+            "id": "prov:merge:script:npm:test:watch:2026-05-10T22:14:11.638Z",
+            "kind": "merged",
+            "actor": "codecurator.core",
+            "generatedAt": "2026-05-10T22:14:11.638Z",
+            "parentRefs": [
+              "obs:codecurator.scanner.config:2026-05-10T22:14:11.638Z:00185"
+            ],
+            "confidence": {
+              "reported": 0.98,
+              "ceiling": 0.98,
+              "computed": 0.98,
+              "reasons": [
+                "deterministic config/file scanner",
+                "selected observation merged by CodeCurator core"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

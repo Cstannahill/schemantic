@@ -1,601 +1,80 @@
-# API Reference
+# API reference
 
-## Core Classes
+Import supported APIs from `schemantic`, not blocked repository/deep paths. The package exports core classes/types, parsers, generators, plugin management/loading, built-in plugin objects, and supported utility factories. Generated client APIs are exported from the generated `index.ts`, not the schemantic package.
 
-### Schemantic
+```ts
+import { Schemantic } from 'schemantic';
+import type { SchemanticOptions, SchemanticPlugin } from 'schemantic';
 
-The main class for generating TypeScript types and API clients from OpenAPI schemas.
-
-```typescript
-import { Schemantic, SchemanticConfig } from "schemantic";
-
-const config: SchemanticConfig = {
-  schemaUrl: "http://localhost:8000/openapi.json",
-  outputDir: "./src/generated",
-  generateTypes: true,
-  generateApiClient: true,
+const options: SchemanticOptions = { schemaFile: './openapi.json', outputDir: './generated' };
+const generator = new Schemantic(options);
+const plugin: SchemanticPlugin = {
+  name: 'example', version: '1.0.0', description: 'Example plugin',
+  beforeGeneration(context) { console.log(context.schema.info.title); },
 };
-
-const Schemantic = new Schemantic(config);
+generator.getPluginManager().registerPlugin(plugin);
+generator.getPluginManager().enablePlugin(plugin.name);
+const result = await generator.generate();
+if (!result.success) throw new Error(result.errors.map(error => error.message).join('\n'));
 ```
 
-#### Methods
+| Method | Result |
+| --- | --- |
+| `generate()` | `Promise<GenerationResult>` with success, generated files, errors, warnings, statistics |
+| `validate()` | Promise of `{ isValid, errors, warnings }`; no generated writes |
+| `getConfig()` | Current configuration |
+| `getPluginManager()` | Manager for registering, enabling, disabling, and inspecting plugins |
 
-##### `generate(): Promise<GenerationResult>`
+Generation results include file path/content/type/dependencies/size and statistics for type/endpoint/file counts, bytes and elapsed generation time. A successful result is not a claim of full OpenAPI coverage or server behavior; inspect warnings and compile the output with your consumer settings.
 
-Generates TypeScript types and API clients from the configured OpenAPI schema.
+## Generated client
 
-**Returns:** `Promise<GenerationResult>`
+Client class names derive from `info.title`; the following example assumes `Users API`.
 
-```typescript
-const result = await Schemantic.generate();
+```ts
+import { UsersApiClient as ApiClient, ApiClientError } from './generated/index.js';
 
-if (result.success) {
-  console.log(`Generated ${result.generatedFiles.length} files`);
-  console.log(`Types: ${result.statistics.totalTypes}`);
-  console.log(`Endpoints: ${result.statistics.totalEndpoints}`);
-}
+const client = new ApiClient({
+  baseUrl: 'http://localhost:8000',
+  headers: { 'X-Api-Key': 'example' },
+  timeout: 30000,
+  retries: 3,
+  retryDelay: 1000,
+});
+client.setAuthToken('token');
+client.clearAuthToken();
+// Catch ApiClientError for HTTP failures; status and response describe the failure.
+void ApiClientError;
 ```
 
-##### `validate(): Promise<ValidationResult>`
+`baseUrl` is required. `headers` accepts the fetch header forms: a string record, pairs, or `Headers`. Timeout and retry delay are milliseconds; retries apply only to supported idempotent methods/transient failures. Each generated operation takes its schema-derived positional parameters and an optional final `RequestInit`. Supply per-call headers there, or use `setDefaultHeader(name, value)` / `removeDefaultHeader(name)` to change case-insensitive defaults. `setAuthToken` and `clearAuthToken` manage bearer authorization. OAuth login orchestration and automatic plugin middleware are not implemented.
 
-Validates the OpenAPI schema without generating any files.
+Response bodies are decoded according to media/status metadata. JSON returns data, text-based media returns text, binary media returns Blob, and empty responses return undefined. XML is returned as text, not parsed into objects. Multiple declared response media may produce union types.
 
-**Returns:** `Promise<ValidationResult>`
+## Generated plain React hooks
 
-```typescript
-const validation = await Schemantic.validate();
+Generate with `--hooks` or `generateHooks: true`, install React in the consumer, then use `createApiHooks(client)` from generated output. GET operations generate `use<Operation>Query(args?, requestInit?)`; other operations generate `use<Operation>Mutation()`.
 
-if (validation.isValid) {
-  console.log("Schema is valid");
-} else {
-  console.log("Validation errors:", validation.errors);
-}
+Query results contain `{ data, error, loading, refetch }`. Query argument groups use schema wire parameter names under `path`, `query`, `header`, or `cookie`. Mutation results contain `{ mutate, data, error, loading, reset }`. Call `mutate({ path?, query?, header?, cookie?, body? }, requestInit?)` with the fields required by that operation. Payload groups are schema-derived; inspect the emitted signature.
+
+Mutation state tracks the latest call: an older completion cannot replace its result/error or clear its pending loading state. Each caller still receives its own promise result. Reset, unmount, and client changes invalidate pending shared-state publication; changing the client clears mutation state. These hooks use React state/effects. They do not implement TanStack Query options such as `enabled`, `onSuccess`, `onError`, invalidation/query keys, or `isLoading`. Each `mutate` returns its own promise result; errors reject that promise. Handle errors with try/catch in your caller.
+
+## Plugin loader
+
+`new PluginLoader().loadPlugin(specifier, directory?)` selects local file or consumer-resolved package loading. Supported JavaScript module files are `.js`, `.cjs`, and `.mjs`; compile TypeScript plugins first. Modules may export a plugin directly, as default, or as `plugin`. Duplicate exported names fail. `plugin load` in the CLI inspects a module; it does not persist registration for another process.
+
+See [configuration](CONFIGURATION.md), [plugins](PLUGINS.md), and the [current plugin interface](../src/types/core.ts) for the exact supported fields/hooks.
+
+## Generated naming helpers
+
+With default `propertyNaming: "camelCase"`, generated `conversion.ts` is exported by the generated index. Generated JSON/form requests serialize application properties to the schema wire names, and JSON responses deserialize declared properties to application names automatically. Caller-provided FormData retains its own keys and boundaries. For the tutorial User schema:
+
+```ts
+import { serializeUser, deserializeUser } from './generated/index.js';
+
+const wireValue = serializeUser({ id: 1, displayName: 'Example' });
+const applicationValue = deserializeUser({ id: 1, display_name: 'Example' });
+console.log(wireValue, applicationValue.displayName);
 ```
 
-##### `getPluginManager(): PluginManager`
-
-Returns the plugin manager instance for registering and managing plugins.
-
-**Returns:** `PluginManager`
-
-```typescript
-const pluginManager = Schemantic.getPluginManager();
-pluginManager.registerPlugin(customPlugin);
-```
-
-##### `getConfig(): SchemanticConfig`
-
-Returns the current configuration.
-
-**Returns:** `SchemanticConfig`
-
-### SchemanticConfig
-
-Configuration interface for the Schemantic class.
-
-```typescript
-interface SchemanticConfig {
-  // Input configuration
-  schemaUrl?: string;
-  schemaFile?: string;
-  schemaData?: OpenAPISchema;
-
-  // Output configuration
-  outputDir: string;
-  outputFileName?: string;
-
-  // Generation options
-  generateTypes: boolean;
-  generateApiClient: boolean;
-  generateHooks?: boolean;
-  generateQueries?: boolean;
-
-  // TypeScript configuration
-  useStrictTypes: boolean;
-  useOptionalChaining: boolean;
-  useNullishCoalescing: boolean;
-
-  // Naming conventions
-  namingConvention: "camelCase" | "snake_case" | "PascalCase";
-  typePrefix?: string;
-  typeSuffix?: string;
-
-  // Customization
-  customTypeMappings?: Record<string, string>;
-  excludePaths?: string[];
-  includePaths?: string[];
-  excludeSchemas?: string[];
-  includeSchemas?: string[];
-
-  // Plugin configuration
-  plugins?: PluginConfig[];
-
-  // Advanced options
-  preserveComments: boolean;
-  generateIndexFile: boolean;
-
-  // Note: `generateBarrelExports` was removed in v0.3.0 — exports are consolidated in `index.ts`.
-}
-```
-
-## Parser Classes
-
-### ParserFactory
-
-Factory class for creating schema parsers.
-
-```typescript
-import { ParserFactory } from "schemantic";
-
-// Create parser by type
-const parser = ParserFactory.createParser("openapi", config);
-
-// Auto-detect parser type
-const autoParser = ParserFactory.autoCreateParser(input, config);
-```
-
-#### Methods
-
-##### `createParser(type: ParserType, config: SchemanticConfig): SchemaParser`
-
-Creates a parser instance of the specified type.
-
-**Parameters:**
-
-- `type` - The parser type ('openapi', 'swagger', 'json-schema')
-- `config` - Schemantic configuration
-
-**Returns:** `SchemaParser`
-
-##### `autoCreateParser(input: SchemaInput, config: SchemanticConfig): SchemaParser`
-
-Automatically detects the parser type and creates an appropriate instance.
-
-**Parameters:**
-
-- `input` - Schema input source
-- `config` - Schemantic configuration
-
-**Returns:** `SchemaParser`
-
-##### `detectParserType(input: SchemaInput): ParserType`
-
-Detects the appropriate parser type from the input.
-
-**Parameters:**
-
-- `input` - Schema input source
-
-**Returns:** `ParserType`
-
-### OpenAPIParser
-
-Parser implementation for OpenAPI 3.0+ specifications.
-
-```typescript
-import { OpenAPIParser } from "schemantic";
-
-const parser = new OpenAPIParser(config);
-```
-
-#### Methods
-
-##### `parse(input: SchemaInput): Promise<OpenAPISchema>`
-
-Parses schema from various input sources.
-
-**Parameters:**
-
-- `input` - Schema input source
-
-**Returns:** `Promise<OpenAPISchema>`
-
-##### `validate(schema: OpenAPISchema): Promise<ValidationResult>`
-
-Validates the parsed schema.
-
-**Parameters:**
-
-- `schema` - OpenAPI schema to validate
-
-**Returns:** `Promise<ValidationResult>`
-
-##### `createResolver(schema: OpenAPISchema): SchemaResolver`
-
-Creates a schema resolver for the parsed schema.
-
-**Parameters:**
-
-- `schema` - OpenAPI schema
-
-**Returns:** `SchemaResolver`
-
-## Generator Classes
-
-### TypeGeneratorFactory
-
-Factory class for creating type generators.
-
-```typescript
-import { TypeGeneratorFactory } from "schemantic";
-
-// Create generators from config
-const generators = TypeGeneratorFactory.createFromConfig(config);
-
-// Generate type from schema
-const generatedType = TypeGeneratorFactory.generateType(
-  schema,
-  context,
-  generators
-);
-```
-
-#### Methods
-
-##### `createFromConfig(config: SchemanticConfig): TypeGenerator[]`
-
-Creates type generators based on configuration.
-
-**Parameters:**
-
-- `config` - Schemantic configuration
-
-**Returns:** `TypeGenerator[]`
-
-##### `generateType(schema: ResolvedSchema, context: GenerationContext, generators: TypeGenerator[]): GeneratedType | undefined`
-
-Generates a TypeScript type from a schema using available generators.
-
-**Parameters:**
-
-- `schema` - Resolved schema
-- `context` - Generation context
-- `generators` - Available generators
-
-**Returns:** `GeneratedType | undefined`
-
-##### `getBestGenerator(schema: ResolvedSchema, generators: TypeGenerator[]): TypeGenerator | undefined`
-
-Finds the best generator for a given schema.
-
-**Parameters:**
-
-- `schema` - Resolved schema
-- `generators` - Available generators
-
-**Returns:** `TypeGenerator | undefined`
-
-### ObjectTypeGenerator
-
-Generator for creating TypeScript interfaces from OpenAPI schema objects.
-
-```typescript
-import { ObjectTypeGenerator } from "schemantic";
-
-const generator = new ObjectTypeGenerator(options);
-```
-
-### EnumTypeGenerator
-
-Generator for creating TypeScript enums from OpenAPI schema enums.
-
-```typescript
-import { EnumTypeGenerator } from "schemantic";
-
-const generator = new EnumTypeGenerator(options);
-```
-
-### ApiClientGenerator
-
-Generator for creating TypeScript API client classes.
-
-```typescript
-import { ApiClientGenerator } from "schemantic";
-
-const generator = new ApiClientGenerator(context);
-const client = generator.generate(context);
-// The client is exported via the generated index file and can be imported from './generated'
-```
-
-## Plugin System
-
-### PluginManager
-
-Manages plugin registration and execution.
-
-```typescript
-import { PluginManager } from "schemantic";
-
-const pluginManager = new PluginManager();
-```
-
-#### Methods
-
-##### `registerPlugin(plugin: SchemanticPlugin): void`
-
-Registers a plugin with the manager.
-
-**Parameters:**
-
-- `plugin` - Plugin to register
-
-##### `enablePlugin(name: string): void`
-
-Enables a registered plugin.
-
-**Parameters:**
-
-- `name` - Plugin name
-
-##### `disablePlugin(name: string): void`
-
-Disables a registered plugin.
-
-**Parameters:**
-
-- `name` - Plugin name
-
-##### `executeBeforeGeneration(context: GenerationContext): Promise<void>`
-
-Executes before generation hooks for all enabled plugins.
-
-**Parameters:**
-
-- `context` - Generation context
-
-**Returns:** `Promise<void>`
-
-##### `executeAfterGeneration(context: GenerationContext, result: GenerationResult): Promise<void>`
-
-Executes after generation hooks for all enabled plugins.
-
-**Parameters:**
-
-- `context` - Generation context
-- `result` - Generation result
-
-**Returns:** `Promise<void>`
-
-### PluginLoader
-
-Loads plugins from various sources.
-
-```typescript
-import { PluginLoader } from "schemantic";
-
-const loader = new PluginLoader();
-```
-
-#### Methods
-
-##### `loadPluginFromFile(filePath: string): Promise<SchemanticPlugin>`
-
-Loads a plugin from a file.
-
-**Parameters:**
-
-- `filePath` - Path to plugin file
-
-**Returns:** `Promise<SchemanticPlugin>`
-
-##### `loadPluginFromPackage(packageName: string): Promise<SchemanticPlugin>`
-
-Loads a plugin from an npm package.
-
-**Parameters:**
-
-- `packageName` - Package name
-
-**Returns:** `Promise<SchemanticPlugin>`
-
-##### `loadPluginsFromDirectory(directoryPath: string): Promise<SchemanticPlugin[]>`
-
-Loads all plugins from a directory.
-
-**Parameters:**
-
-- `directoryPath` - Directory path
-
-**Returns:** `Promise<SchemanticPlugin[]>`
-
-### SchemanticPlugin
-
-Plugin interface for extending Schemantic functionality.
-
-```typescript
-interface SchemanticPlugin {
-  name: string;
-  version: string;
-  description: string;
-
-  // Lifecycle hooks
-  beforeGeneration?(context: GenerationContext): Promise<void> | void;
-  afterGeneration?(
-    context: GenerationContext,
-    result: GenerationResult
-  ): Promise<void> | void;
-
-  // Type generation hooks
-  beforeTypeGeneration?(
-    typeName: string,
-    schema: ResolvedSchema,
-    context: GenerationContext
-  ): Promise<void> | void;
-  afterTypeGeneration?(
-    typeName: string,
-    generatedType: GeneratedType,
-    context: GenerationContext
-  ): Promise<void> | void;
-
-  // Client generation hooks
-  beforeClientGeneration?(context: GenerationContext): Promise<void> | void;
-  afterClientGeneration?(
-    generatedClient: GeneratedApiClient,
-    context: GenerationContext
-  ): Promise<void> | void;
-
-  // Schema transformation hooks
-  transformSchema?(
-    schema: ResolvedSchema,
-    context: GenerationContext
-  ): ResolvedSchema;
-
-  // Custom generators
-  customTypeGenerators?: Record<
-    string,
-    (schema: ResolvedSchema, context: GenerationContext) => GeneratedType
-  >;
-  customClientGenerators?: Record<
-    string,
-    (context: GenerationContext) => GeneratedApiClient
-  >;
-}
-```
-
-## Type Definitions
-
-### GeneratedType
-
-Represents a generated TypeScript type.
-
-```typescript
-interface GeneratedType {
-  name: string;
-  content: string;
-  dependencies: string[];
-  exports: string[];
-  isInterface: boolean;
-  isEnum: boolean;
-  isUnion: boolean;
-  sourceSchema: ResolvedSchema;
-}
-```
-
-### GeneratedApiClient
-
-Represents a generated API client.
-
-```typescript
-interface GeneratedApiClient {
-  name: string;
-  content: string;
-  dependencies: string[];
-  exports: string[];
-  endpoints: GeneratedEndpoint[];
-}
-```
-
-### GeneratedEndpoint
-
-Represents a generated API endpoint.
-
-```typescript
-interface GeneratedEndpoint {
-  operationId: string;
-  method: string;
-  path: string;
-  parameters: GeneratedParameter[];
-  requestBody?: GeneratedRequestBody;
-  responses: GeneratedResponse[];
-  returnType: string;
-  functionName: string;
-}
-```
-
-### GenerationResult
-
-Result of the generation process.
-
-```typescript
-interface GenerationResult {
-  success: boolean;
-  generatedFiles: GeneratedFile[];
-  errors: GenerationError[];
-  warnings: GenerationWarning[];
-  statistics: GenerationStatistics;
-}
-```
-
-### GenerationContext
-
-Context passed to plugins and generators.
-
-```typescript
-interface GenerationContext {
-  config: SchemanticConfig;
-  schema: OpenAPISchema;
-  resolvedSchemas: Map<string, ResolvedSchema>;
-  generatedTypes: Map<string, GeneratedType>;
-  generatedClients: Map<string, GeneratedApiClient>;
-  typeRegistry: TypeRegistry;
-  schemaResolver: SchemaResolver;
-}
-```
-
-## Error Handling
-
-### GenerationError
-
-Represents an error during generation.
-
-```typescript
-interface GenerationError {
-  code: string;
-  message: string;
-  source?: string;
-  line?: number;
-  column?: number;
-  severity: "error" | "warning";
-}
-```
-
-### GenerationWarning
-
-Represents a warning during generation.
-
-```typescript
-interface GenerationWarning {
-  code: string;
-  message: string;
-  source?: string;
-  suggestion?: string;
-}
-```
-
-## Utility Functions
-
-### Built-in Plugins
-
-```typescript
-import { getBuiltinPlugins, getBuiltinPlugin } from "schemantic";
-
-// Get all built-in plugins
-const plugins = getBuiltinPlugins();
-
-// Get specific built-in plugin
-const jsdocPlugin = getBuiltinPlugin("jsdoc");
-```
-
-### Convenience Functions
-
-```typescript
-import {
-  createParser,
-  autoCreateParser,
-  createGenerators,
-  generateType,
-} from "schemantic";
-
-// Create parser
-const parser = createParser("openapi", config);
-
-// Auto-create parser
-const autoParser = autoCreateParser(input, config);
-
-// Create generators
-const generators = createGenerators(config);
-
-// Generate type
-const type = generateType(schema, context, generators);
-```
+Typed helper names derive from component type names, including configured type prefixes/suffixes. Generic `serializeValue(value, schema)` and `deserializeValue(value, schema)` accept a wire-schema object and return unknown. The schema registry used for local refs is embedded in the generated module. These functions convert declared names; `deserializeUser` does not assert that unknown input satisfies the User schema. Nullability, dictionary keys, enum values, and binary values are preserved. `propertyNaming: "preserve"` retains wire property names and omits the conversion module.

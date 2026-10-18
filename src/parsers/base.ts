@@ -13,6 +13,14 @@ import {
   TypeRegistry,
 } from "../types/core";
 
+/** JSON is the supported input serialization; fail with an actionable format diagnostic. */
+export function parseJsonSchemaText(text: string): unknown {
+  try { return JSON.parse(text); }
+  catch (error) {
+    throw new Error(`Invalid JSON schema input. YAML is not supported; convert the document to JSON. ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 /**
  * Base interface for all schema parsers
  */
@@ -116,7 +124,7 @@ export abstract class BaseSchemaParser<T = OpenAPISchema>
       return undefined;
     }
 
-    const path = ref.substring(2).split("/");
+    const path = ref.substring(2).split("/").map(segment => decodeURIComponent(segment).replace(/~1/g, '/').replace(/~0/g, '~'));
     return this.traverseSchema(schema, path);
   }
 
@@ -133,7 +141,7 @@ export abstract class BaseSchemaParser<T = OpenAPISchema>
       if (
         typeof current === "object" &&
         current !== null &&
-        segment in current
+        Object.prototype.hasOwnProperty.call(current, segment)
       ) {
         current = (current as Record<string, unknown>)[segment];
       } else {

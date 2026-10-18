@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "types.ts": "13e490cc9de3881745f8681b524709bdf86b6949bc8f0e556a5609030599c304",
+    "api-client.ts": "50958222523fc5b4fc7fcad8e895786d6e2ade9095bb3918b118165ef307b672",
+    "hooks.ts": "86263283aa87b788e9dc32ec67f5c0389154d212ad3bfedaedb7ffaa5b2191a4",
+    "index.ts": "9bfc6f527ad0543157503300c55537157f275dd0b3efcfba4e6aeb4489fb1f23"
+  }
+}

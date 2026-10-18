@@ -1,0 +1,29 @@
+[
+  {
+    "file": "Types.ts",
+    "success": true,
+    "errors": [],
+    "actualFiles": [
+      "index.ts",
+      "types.ts"
+    ],
+    "userInterfacePresent": false,
+    "clientWrittenToTypes": true
+  },
+  {
+    "file": "types.ts/client.ts",
+    "success": false,
+    "errors": [
+      {
+        "code": "GENERATION_ERROR",
+        "message": "EEXIST: file already exists, mkdir 'S:\\Code\\Node\\Packages\\schemantic\\test-output\\reaudit-core\\file-collisions\\ancestor\\types.ts'",
+        "severity": "error"
+      }
+    ],
+    "actualFiles": [
+      "types.ts"
+    ],
+    "userInterfacePresent": true,
+    "clientWrittenToTypes": false
+  }
+]

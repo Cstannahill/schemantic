@@ -24,19 +24,16 @@ import {
   ValidationError,
   ValidationWarning,
   ParserMetadata,
+  parseJsonSchemaText,
 } from "./base";
 
 /**
  * OpenAPI parser implementation
  */
 export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
-  private readonly SUPPORTED_VERSIONS = [
-    "3.0.0",
-    "3.0.1",
-    "3.0.2",
-    "3.0.3",
-    "3.1.0",
-  ];
+  private readonly SUPPORTED_VERSIONS = ['3.0.0', '3.0.1', '3.0.2', '3.0.3', '3.0.x', '3.1.0', '3.1.x'];
+
+  private supportsVersion(version: string): boolean { return /^3\.(0|1)\.\d+$/.test(version); }
 
   constructor(config: SchemanticConfig) {
     super(config);
@@ -48,17 +45,17 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
     if (input.data) {
       schemaData = input.data;
     } else if (input.string) {
-      schemaData = JSON.parse(input.string);
+      schemaData = parseJsonSchemaText(input.string);
     } else if (input.filePath) {
       const fileContent = await fs.readFile(input.filePath, "utf-8");
-      schemaData = JSON.parse(fileContent);
+      schemaData = parseJsonSchemaText(fileContent);
     } else if (input.url) {
       const response = await axios.get(input.url, {
         headers: {
           Accept: "application/json",
         },
       });
-      schemaData = response.data;
+      schemaData = typeof response.data === 'string' ? parseJsonSchemaText(response.data) : response.data;
     } else {
       throw new Error("No valid input source provided");
     }
@@ -71,7 +68,7 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
     const warnings: ValidationWarning[] = [];
 
     // Validate OpenAPI version
-    if (!this.SUPPORTED_VERSIONS.includes(schema.openapi)) {
+    if (!this.supportsVersion(schema.openapi)) {
       errors.push({
         code: "UNSUPPORTED_VERSION",
         message: `Unsupported OpenAPI version: ${schema.openapi}`,
@@ -90,7 +87,7 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
       });
     }
 
-    if (!schema.paths) {
+    if (!schema.paths && !(schema.openapi.startsWith('3.1.') && (schema.components || schema.webhooks))) {
       errors.push({
         code: "MISSING_REQUIRED_FIELD",
         message: "Missing required field: paths",
@@ -127,8 +124,10 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
 
     // Validate components
     if (schema.components) {
-      this.validateComponents(schema.components, errors, warnings);
+      this.validateComponents(schema.components, errors, warnings, schema.openapi.startsWith('3.1.'));
     }
+
+    this.validateReferencesAndApproximations(schema, errors, warnings);
 
     return {
       isValid: errors.length === 0,
@@ -149,7 +148,7 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
     return {
       name: "OpenAPI Parser",
       version: "1.0.0",
-      supportedFormats: ["json", "yaml"],
+      supportedFormats: ["json"],
       supportedVersions: this.SUPPORTED_VERSIONS,
       description:
         "Parser for OpenAPI 3.0+ specifications from FastAPI applications",
@@ -164,22 +163,93 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
       throw new Error("Invalid schema data: expected object");
     }
 
-    const schema = data as Record<string, unknown>;
+    const schema = structuredClone(data) as Record<string, unknown>;
 
     // Ensure required fields exist
     if (!schema.openapi || typeof schema.openapi !== "string") {
       throw new Error("Invalid schema: missing or invalid openapi field");
     }
 
-    if (!schema.info || typeof schema.info !== "object") {
+    if (!schema.info || typeof schema.info !== "object" || Array.isArray(schema.info)) {
       throw new Error("Invalid schema: missing or invalid info field");
     }
 
-    if (!schema.paths || typeof schema.paths !== "object") {
+    const dialect31 = schema.openapi.startsWith('3.1.');
+    if (schema.paths === undefined && dialect31 && (schema.components || schema.webhooks)) schema.paths = {};
+    if (!schema.paths || typeof schema.paths !== "object" || Array.isArray(schema.paths)) {
       throw new Error("Invalid schema: missing or invalid paths field");
     }
 
+    this.normalizeSchemaLocations(schema, dialect31);
     return schema as unknown as OpenAPISchema;
+  }
+
+  /** Normalize only Schema Object locations: booleans in examples/defaults are payload data. */
+  private normalizeSchemaLocations(document: Record<string, unknown>, dialect31: boolean): void {
+    const normalize = (value: unknown): unknown => {
+      if (typeof value === 'boolean') {
+        if (!dialect31) throw new Error('Boolean schemas require the OpenAPI 3.1 dialect');
+        return value ? {} : { not: {} };
+      }
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+      const schema = value as Record<string, unknown>;
+      if (typeof schema.$ref === 'string' && !dialect31) return { $ref: schema.$ref };
+      if (schema.properties && typeof schema.properties === 'object') {
+        schema.properties = Object.fromEntries(Object.entries(schema.properties).map(([key, child]) => [key, normalize(child)]));
+      }
+      for (const keyword of ['items', 'not', 'if', 'then', 'else', 'contains', 'propertyNames', 'unevaluatedProperties', 'unevaluatedItems']) {
+        if (schema[keyword] !== undefined) schema[keyword] = normalize(schema[keyword]);
+      }
+      // additionalProperties booleans have their own well-supported object semantics.
+      if (schema.additionalProperties && typeof schema.additionalProperties === 'object') schema.additionalProperties = normalize(schema.additionalProperties);
+      for (const keyword of ['allOf', 'anyOf', 'oneOf', 'prefixItems']) {
+        if (Array.isArray(schema[keyword])) schema[keyword] = (schema[keyword] as unknown[]).map(normalize);
+      }
+      for (const keyword of ['$defs', 'definitions', 'patternProperties', 'dependentSchemas']) {
+        if (schema[keyword] && typeof schema[keyword] === 'object') schema[keyword] = Object.fromEntries(
+          Object.entries(schema[keyword] as Record<string, unknown>).map(([key, child]) => [key, normalize(child)]));
+      }
+      return schema;
+    };
+    const visit = (value: unknown): void => {
+      if (!value || typeof value !== 'object') return;
+      const object = value as Record<string, unknown>;
+      for (const [key, child] of Object.entries(object)) {
+        if (key === 'schema') object[key] = normalize(child);
+        else if (key === 'schemas' && child && typeof child === 'object') object[key] = Object.fromEntries(
+          Object.entries(child).map(([name, schema]) => [name, normalize(schema)]));
+        else if (!['example', 'examples', 'default', 'enum', 'const'].includes(key)) visit(child);
+      }
+    };
+    visit(document);
+  }
+
+  private validateReferencesAndApproximations(schema: OpenAPISchema, errors: ValidationError[], warnings: ValidationWarning[]): void {
+    const resolver = this.createResolver(schema);
+    const visit = (value: unknown, path: string): void => {
+      if (!value || typeof value !== 'object') return;
+      const object = value as Record<string, unknown>;
+      if (typeof object.$ref === 'string') {
+        const unsupported = !object.$ref.startsWith('#/');
+        let resolved: ResolvedSchema | undefined;
+        try { resolved = resolver(object.$ref); } catch { resolved = undefined; }
+        if (unsupported || resolved === undefined) errors.push({
+          code: unsupported ? 'UNSUPPORTED_REFERENCE' : 'UNRESOLVED_REFERENCE',
+          message: `${unsupported ? 'External references are not supported' : 'Unresolved local reference'}: ${object.$ref}`,
+          path: `${path}.$ref`, severity: 'error',
+        });
+      }
+      if (object.properties && typeof object.properties === 'object' && Object.keys(object.properties).length
+        && object.additionalProperties && typeof object.additionalProperties === 'object') warnings.push({
+        code: 'DICTIONARY_TYPE_APPROXIMATION', path,
+        message: 'TypeScript string index signatures include declared property keys; additional property values are widened to include declared member types.',
+        suggestion: 'Validate dictionary payloads at runtime when exact additionalProperties constraints are required.',
+      });
+      for (const [key, child] of Object.entries(object)) {
+        if (!['example', 'examples', 'default', 'enum', 'const'].includes(key)) visit(child, path ? `${path}.${key}` : key);
+      }
+    };
+    visit(schema, '');
   }
 
   /**
@@ -354,7 +424,8 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
   private validateComponents(
     components: OpenAPIComponents,
     errors: ValidationError[],
-    _warnings: ValidationWarning[]
+    _warnings: ValidationWarning[],
+    allowBoolean: boolean
   ): void {
     // Validate schemas
     if (components.schemas) {
@@ -362,7 +433,8 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
         components.schemas,
         "components.schemas",
         errors,
-        _warnings
+        _warnings,
+        allowBoolean
       );
     }
 
@@ -376,6 +448,7 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
       "securitySchemes",
       "links",
       "callbacks",
+      "pathItems",
     ];
     for (const componentType of componentTypes) {
       const value = components[componentType];
@@ -394,12 +467,14 @@ export class OpenAPIParser extends BaseSchemaParser<OpenAPISchema> {
    * Validate schemas object
    */
   private validateSchemas(
-    schemas: Record<string, OpenAPISchemaObject | OpenAPIRef>,
+    schemas: Record<string, OpenAPISchemaObject | OpenAPIRef | boolean>,
     path: string,
     errors: ValidationError[],
-    _warnings: ValidationWarning[]
+    _warnings: ValidationWarning[],
+    allowBoolean: boolean
   ): void {
     for (const [schemaName, schema] of Object.entries(schemas)) {
+      if (typeof schema === 'boolean' && allowBoolean) continue; // Raw 3.1 inputs are normalized by parse().
       if (typeof schema !== "object" || schema === null) {
         errors.push({
           code: "INVALID_SCHEMA",

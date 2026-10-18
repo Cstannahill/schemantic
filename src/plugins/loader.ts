@@ -6,12 +6,35 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import { SchemanticPlugin } from "../types/core";
+import { createRequire } from 'module';
+import { pathToFileURL } from 'url';
 
 /**
  * Plugin loader class
  */
 export class PluginLoader {
   private loadedPlugins: Map<string, SchemanticPlugin> = new Map();
+
+  static isFileSpecifier(specifier: string): boolean {
+    return path.isAbsolute(specifier) || specifier.startsWith('.') || /\.(?:cjs|mjs|js)$/.test(specifier);
+  }
+
+  /** Resolve against the consumer's directory, rather than this package's installation. */
+  async loadPlugin(specifier: string, directory = process.cwd()): Promise<SchemanticPlugin> {
+    return PluginLoader.isFileSpecifier(specifier)
+      ? this.loadPluginFromFile(path.resolve(directory, specifier))
+      : this.loadPluginFromPackage(specifier, directory);
+  }
+
+  private async loadModule(resolvedPath: string): Promise<unknown> {
+    const requireModule = createRequire(path.resolve(resolvedPath));
+    try { return requireModule(resolvedPath); } catch (error) {
+      if (!['ERR_REQUIRE_ESM', 'ERR_REQUIRE_ASYNC_MODULE'].includes((error as NodeJS.ErrnoException).code || '')) throw error;
+      // Native import is necessary: TypeScript's CommonJS import rewrite cannot load ESM.
+      const nativeImport = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<unknown>;
+      return nativeImport(pathToFileURL(resolvedPath).href);
+    }
+  }
 
   /**
    * Load plugin from file path
@@ -22,7 +45,7 @@ export class PluginLoader {
       await fs.access(filePath);
 
       // Load the module
-      const pluginModule = await import(path.resolve(filePath));
+      const pluginModule = await this.loadModule(path.resolve(filePath));
 
       // Extract plugin from module
       const plugin = this.extractPluginFromModule(pluginModule);
@@ -46,10 +69,11 @@ export class PluginLoader {
   /**
    * Load plugin from package
    */
-  async loadPluginFromPackage(packageName: string): Promise<SchemanticPlugin> {
+  async loadPluginFromPackage(packageName: string, directory = process.cwd()): Promise<SchemanticPlugin> {
     try {
       // Load the package
-      const pluginModule = await import(packageName);
+      const consumerRequire = createRequire(path.resolve(directory, '__schemantic_plugin__.cjs'));
+      const pluginModule = await this.loadModule(consumerRequire.resolve(packageName));
 
       // Extract plugin from module
       const plugin = this.extractPluginFromModule(pluginModule);
@@ -87,7 +111,7 @@ export class PluginLoader {
       for (const entry of entries) {
         if (
           entry.isFile() &&
-          (entry.name.endsWith(".js") || entry.name.endsWith(".ts"))
+          /\.(?:js|cjs|mjs)$/.test(entry.name)
         ) {
           const filePath = path.join(directoryPath, entry.name);
 
@@ -181,7 +205,7 @@ export class PluginLoader {
    * Validate plugin
    */
   private validatePlugin(plugin: SchemanticPlugin): void {
-    if (!plugin.name || typeof plugin.name !== "string") {
+    if (typeof plugin.name !== "string" || !plugin.name.trim()) {
       throw new Error("Plugin must have a valid name");
     }
 
@@ -191,6 +215,17 @@ export class PluginLoader {
 
     if (!plugin.description || typeof plugin.description !== "string") {
       throw new Error("Plugin must have a valid description");
+    }
+
+    const hooks = ['beforeGeneration', 'afterGeneration', 'beforeTypeGeneration', 'afterTypeGeneration',
+      'beforeClientGeneration', 'afterClientGeneration', 'transformSchema'] as const;
+    for (const hook of hooks) {
+      if (plugin[hook] !== undefined && typeof plugin[hook] !== 'function') throw new Error(`Plugin ${plugin.name} ${hook} must be a function`);
+    }
+    for (const key of ['customTypeGenerators', 'customClientGenerators'] as const) {
+      const generators = plugin[key];
+      if (generators !== undefined && (typeof generators !== 'object' || generators === null || Array.isArray(generators)
+        || Object.values(generators).some(generator => typeof generator !== 'function'))) throw new Error(`Plugin ${plugin.name} ${key} must be a record of functions`);
     }
 
     // Check for duplicate names

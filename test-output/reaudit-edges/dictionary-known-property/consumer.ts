@@ -1,0 +1,1 @@
+import { MixedDictionary } from './types'; const value: MixedDictionary = { name: 'valid', score: 2 };

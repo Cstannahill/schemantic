@@ -1,0 +1,7 @@
+{
+  "commonJs": true,
+  "esm": true,
+  "strictNodeNextConsumer": true,
+  "camelCaseHttpRoundTrip": true,
+  "installedCli": true
+}

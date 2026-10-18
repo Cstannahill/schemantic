@@ -5,9 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Got it — here’s your updated, clean and complete **`CHANGELOG.md`** entry reflecting that as well:
+## [Unreleased]
 
----
+### Fixed
+
+- Fresh output supports composed schemas, aliases, arrays, dictionaries, nullable values, safe identifiers, literal enums and runtime exports.
+- Clients resolve inherited/component parameters, encode paths, merge headers, serialize array queries and URL-encoded forms, decode response media, and restrict retries to transient idempotent requests.
+- Generation validates references and output collisions, applies filters and plugins, isolates repeated runs and executes custom generators.
+- Hooks share client metadata, honor prefixes/custom filenames, stabilize equivalent query inputs and ignore stale query responses.
+- Zod validation preserves all payload fields, supports lazy references and validates numeric enums, unions, nullable values and dictionaries.
+- CLI failures return nonzero status; config overrides and types-only output work; local watch mode regenerates changes.
+- Release builds exclude test helpers; build/prepack clean and compile fresh output; CI targets Node 20, 22 and 24.
+- Release preparation updates versions and changelog locally; GitHub Releases trigger complete verification and publish the exact tested archive using npm trusted publishing, with integrity checks and safe retries.
+- CI includes cross-platform compatibility, generated fixture compilation, installed-package and live FastAPI consumers, dependency auditing, and separate CodeQL analysis. Tests no longer overwrite tracked output fixtures.
+
+### Compatibility
+
+- Node 20+ is required by Commander 14.
+- `validation` now aliases Zod validation; class-validator decorators cannot be emitted into interfaces. Consumers must install Zod 4.
+- Invalid references, duplicate exports and unsafe output filenames now fail explicitly. `--fix` reports that automatic repair is unimplemented.
+- Generated application properties now default to camelCase with schema-aware JSON/form request conversion and JSON response conversion. Set `propertyNaming: 'preserve'` to retain wire-shaped types. Types-only camelCase output includes public converters. See [naming migration](docs/NAMING_MIGRATION.md).
+- Client generation includes required types even when `generateTypes` is false. Unsupported query generation, strict-mode plugin output, content-encoded parameters and per-property request encodings fail explicitly.
+- Branded guards now use schema-backed Zod validation; branded output requires Zod 4. Optional plugin helpers remain explicit integrations.
 
 ## [0.3.0] — 2025-10-18
 

@@ -1,0 +1,1658 @@
+{
+  "schemaVersion": "0.2",
+  "generatedAt": "2026-05-10T22:14:11.638Z",
+  "projectId": "schemantic",
+  "files": [
+    {
+      "id": "file:.github/workflows/ci-cd.yml",
+      "path": ".github/workflows/ci-cd.yml",
+      "hash": "sha256:1c01632229b438bbe1ab16a40b26d534cc7b2970c0dfe53b23dafd3bb714850a",
+      "size": 8226,
+      "language": "yaml",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:.github/workflows/ci.yml",
+      "path": ".github/workflows/ci.yml",
+      "hash": "sha256:fb970ceddb1cc05e64a8edc4e79dcec7d89478b165adf893df9b86b3497190dd",
+      "size": 1053,
+      "language": "yaml",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:.github/workflows/performance.yml",
+      "path": ".github/workflows/performance.yml",
+      "hash": "sha256:c2b144bc449af45e2a64d92e6b1dd525e72494e18d4e47c0c0f26d4acbe913b4",
+      "size": 4297,
+      "language": "yaml",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:.github/workflows/test-prefix.yml",
+      "path": ".github/workflows/test-prefix.yml",
+      "hash": "sha256:0f97d5b5d93ccf57f1224d547f20e22fb03e05c4b2d0d66b083de5b28687ec84",
+      "size": 654,
+      "language": "yaml",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:.gitignore",
+      "path": ".gitignore",
+      "hash": "sha256:1b6c536fa871e6c0535a5ea9c4d3700bcb6a1f74bf808e701464f2c466aa764f",
+      "size": 147,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:.npmrc",
+      "path": ".npmrc",
+      "hash": "sha256:cde2d23a28ad448522b1126981bab72454b6c8c31260ffa654070298db1037aa",
+      "size": 136,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:.vscode/tasks.json",
+      "path": ".vscode/tasks.json",
+      "hash": "sha256:d1f8b65ab34546f14dd018f156ca307f8f440371d4c3f7f049af4060e7422fa2",
+      "size": 3014,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:CHANGELOG.md",
+      "path": "CHANGELOG.md",
+      "hash": "sha256:75c5fa21fed9a32e0c6257c5236eaf152b62a94978c46d5aa7ecd888250c87b5",
+      "size": 7578,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:combine.js",
+      "path": "combine.js",
+      "hash": "sha256:d20aa7e9265f039e696ff064604639f5e722c7f2385d5ea4e7726031b371cf5b",
+      "size": 3387,
+      "language": "javascript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:CONTRIBUTING.md",
+      "path": "CONTRIBUTING.md",
+      "hash": "sha256:2032259305852679e3f13945d34260cb8c13f9cb0bbf9693306c6f0b6919cedf",
+      "size": 7412,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/ADVANCED_PLUGIN_DEVELOPMENT.md",
+      "path": "docs/ADVANCED_PLUGIN_DEVELOPMENT.md",
+      "hash": "sha256:4417e9470c704a167b00378e14a21a960d9ac600ad2e66b75a372f4485c0fd99",
+      "size": 8186,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/ADVANCED_PLUGINS_IMPLEMENTATION.md",
+      "path": "docs/ADVANCED_PLUGINS_IMPLEMENTATION.md",
+      "hash": "sha256:0fa53e9d7a879a083c1d276d36534ae5e10e52a0699b66a2f31fc2fbb815c675",
+      "size": 12539,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/API.md",
+      "path": "docs/API.md",
+      "hash": "sha256:ab15c78430965d38b123b49008a0231dc1a5de5c162adb105052dffe88b36011",
+      "size": 12999,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/CONFIGURATION.md",
+      "path": "docs/CONFIGURATION.md",
+      "hash": "sha256:fa363d01262e5282bd1318749249cd5ed8c92ba0c9eed216972f8200ef1e3db5",
+      "size": 15832,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/FASTAPI_TUTORIAL.md",
+      "path": "docs/FASTAPI_TUTORIAL.md",
+      "hash": "sha256:11e2c44cf91cdbd6df1d53a18ad32c05c09108efcd2ad9c49750206b6cfe51dc",
+      "size": 44892,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/PLUGIN_DEVELOPMENT.md",
+      "path": "docs/PLUGIN_DEVELOPMENT.md",
+      "hash": "sha256:4caa11ec169deb4e59b1d49aa370e738e7a0e152c91b058dabd56faac5596086",
+      "size": 18416,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:docs/PLUGINS.md",
+      "path": "docs/PLUGINS.md",
+      "hash": "sha256:b4f2c609809ac348faf1226fb9504a9d80bef845791872c6a50137d5bfccfac4",
+      "size": 16519,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:eslint.config.js",
+      "path": "eslint.config.js",
+      "hash": "sha256:7d2c27015e7098ec8ba173d729bae32618b6cf79b58d5c6a12f971f1f4ca7a27",
+      "size": 1592,
+      "language": "javascript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:eslint.config.mjs",
+      "path": "eslint.config.mjs",
+      "hash": "sha256:6244db3e77f4cb074bcc8fd9c9e93b2c9c5a5c152f6552d072955d168f40d827",
+      "size": 1593,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/ai-campfire-chat.mdx",
+      "path": "ex-prj/ai-campfire-chat.mdx",
+      "hash": "sha256:a0ad76cc4b1f40b40c32a0e0d53205cfce408f8c96acb7c43032c57b12682a6b",
+      "size": 8653,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/carte.mdx",
+      "path": "ex-prj/carte.mdx",
+      "hash": "sha256:f3aa6fb2e8b88e1024a19ec038b8c627011fc0497743cb2316b2532d381697c4",
+      "size": 8159,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/code-evolution.mdx",
+      "path": "ex-prj/code-evolution.mdx",
+      "hash": "sha256:b6ed171ae2530e180ed7405f4ef0213894218c65b760410d8e07aa87cb033885",
+      "size": 6118,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/CodeShift.mdx",
+      "path": "ex-prj/CodeShift.mdx",
+      "hash": "sha256:55e670c731bd4be62454bdbd2a620be9fc1f998f08c95d3b9bd5c5051c6cb901",
+      "size": 12831,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/content-reference.md",
+      "path": "ex-prj/content-reference.md",
+      "hash": "sha256:6a6fffe467f5774e71a718a310f6300f7f541db560dbd0c0b2eb354352f885e9",
+      "size": 11616,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/ctgen.mdx",
+      "path": "ex-prj/ctgen.mdx",
+      "hash": "sha256:573a67959798bc01a833607565b19458270c420d56a358e63137715b4862ab7f",
+      "size": 7997,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/ecommerce.mdx",
+      "path": "ex-prj/ecommerce.mdx",
+      "hash": "sha256:f02f2ea62c0117afe4731d7c0d2f13142ab94b1385739cabb59056172e3820b9",
+      "size": 8589,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/hsk.mdx",
+      "path": "ex-prj/hsk.mdx",
+      "hash": "sha256:89f3289fbc3a058abc89bc044ed4d3906142bd553b06cf537e2389872b46b746",
+      "size": 8593,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/image-transformation-api.mdx",
+      "path": "ex-prj/image-transformation-api.mdx",
+      "hash": "sha256:855d02db38812b2ee92816ffd4108e1c9a0638127461060ba6feb8796e46eb7d",
+      "size": 8702,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/kanban-task-management.mdx",
+      "path": "ex-prj/kanban-task-management.mdx",
+      "hash": "sha256:0b870fcc6d1c5550a74b767f2cc3ef5bbfcade9580fac8c1fbebec9e7f3e0696",
+      "size": 9331,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/ororo-desktop-ai-integration.mdx",
+      "path": "ex-prj/ororo-desktop-ai-integration.mdx",
+      "hash": "sha256:d345e3242290f2ee03a7a5dba00fd103b7bdf8e2e1bbee3f4107cace436d6dbc",
+      "size": 9620,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/project-flow.mdx",
+      "path": "ex-prj/project-flow.mdx",
+      "hash": "sha256:8247bbe4c55e3c18ede5ee98a3c8d971b224f4d038548ded8f30f4f5d3ea7b1a",
+      "size": 9399,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/shadyt-ui-demo.mdx",
+      "path": "ex-prj/shadyt-ui-demo.mdx",
+      "hash": "sha256:7c467dbfab4095aec76e5869477ad45f68aba226f552e7069040ff747b44be02",
+      "size": 8712,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/synapse-blockchain.mdx",
+      "path": "ex-prj/synapse-blockchain.mdx",
+      "hash": "sha256:adf1fd533714d1ea6287d46442faae73950677dba2751a3f9e22b653a4604f13",
+      "size": 8634,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/tree-me.mdx",
+      "path": "ex-prj/tree-me.mdx",
+      "hash": "sha256:f0287fa9aedf9d705736b78648624001543c9a7c5c714435eafb7106a2ad9350",
+      "size": 8215,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/trivia-app.mdx",
+      "path": "ex-prj/trivia-app.mdx",
+      "hash": "sha256:4ccedcf662949cac2acd2f36b004be03fbed78d42d7e3e5cc2b65223ee8dda92",
+      "size": 8587,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync.mdx",
+      "path": "ex-prj/type-sync.mdx",
+      "hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/cli-command-flow.md",
+      "path": "ex-prj/type-sync/cli-command-flow.md",
+      "hash": "sha256:e270044d1fb194d1cc6055c53caf722715e43bba0766756ffe4a86ae9339273d",
+      "size": 2184,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/component-interaction.md",
+      "path": "ex-prj/type-sync/component-interaction.md",
+      "hash": "sha256:af64681f2ac571e2e324f7bcfe9d4e8190f2bf94a05cc0d11631a5ab2de8957e",
+      "size": 1388,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/data-flow.md",
+      "path": "ex-prj/type-sync/data-flow.md",
+      "hash": "sha256:82232503ce084153f3e32156bdd08af364ac972719b2f021bff3cbb03b0677f8",
+      "size": 1756,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/ecosystem-overview.md",
+      "path": "ex-prj/type-sync/ecosystem-overview.md",
+      "hash": "sha256:5143d80727df53767d96c48414d30b8e80983d2e8ad63521891675a9007bf434",
+      "size": 2528,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/generation-flow.md",
+      "path": "ex-prj/type-sync/generation-flow.md",
+      "hash": "sha256:857267f3338c9160d4953922ef9d41158db6321589f4006b91687c83c7f130b9",
+      "size": 1901,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/openapi_typescript_generator.png",
+      "path": "ex-prj/type-sync/openapi_typescript_generator.png",
+      "hash": "sha256:9011785bcff5dc6d1276b66b98617bc4ae25cc982f04bac175d436fa0a523ee7",
+      "size": 90972,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/performance-analysis.md",
+      "path": "ex-prj/type-sync/performance-analysis.md",
+      "hash": "sha256:cb5a18c172b41ee72d1ca9c3afc7f9ff9a710d5f2dda84f633ffcf90a5e88595",
+      "size": 2754,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/plugin_architecture.png",
+      "path": "ex-prj/type-sync/plugin_architecture.png",
+      "hash": "sha256:9984a280926eda2daab8eac6874b1151d3221196f319372d13e25b53390f8017",
+      "size": 66112,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/plugin-architecture.md",
+      "path": "ex-prj/type-sync/plugin-architecture.md",
+      "hash": "sha256:a67f49a9a27f5b7e7cacbcdd31455a2bb85364dce4a65c77fb259cdc8ac7597a",
+      "size": 2258,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/plugin-lifecycle.md",
+      "path": "ex-prj/type-sync/plugin-lifecycle.md",
+      "hash": "sha256:453dc26f7c8991340b57f611de6972d485cb8f8e2857cc53818f04de5fb2e65e",
+      "size": 1555,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/project-structure.md",
+      "path": "ex-prj/type-sync/project-structure.md",
+      "hash": "sha256:bbad76fc55cd5f4db40167b5af687240815d42372a2318af13b1679a10a56ff1",
+      "size": 2318,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/README.md",
+      "path": "ex-prj/type-sync/README.md",
+      "hash": "sha256:e7907d37bad435dce5c91f7a8749ddedfcd2d3696fa6aa10b0b990cfb61efc3b",
+      "size": 3497,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/schema_watch_process.png",
+      "path": "ex-prj/type-sync/schema_watch_process.png",
+      "hash": "sha256:1c7e556cc754f72a465373c3fde38366d36eab460d78bd610023b799c476ceb4",
+      "size": 79388,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/type_sync_structure.png",
+      "path": "ex-prj/type-sync/type_sync_structure.png",
+      "hash": "sha256:58f0eed24eccae8f54546401f819f1f74420c2a14d08292d5a713e39b6ecc37f",
+      "size": 68069,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/type_sync_toolchain.png",
+      "path": "ex-prj/type-sync/type_sync_toolchain.png",
+      "hash": "sha256:28988d1bb79f68e3e09aa5dda8acb39568378d064bab8fb90cc405f9c26372a3",
+      "size": 98578,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/typesync_cli_workflow.png",
+      "path": "ex-prj/type-sync/typesync_cli_workflow.png",
+      "hash": "sha256:df7179d161ed06ba170685ff9ca71e101aebd426d6ddd4bc1a518d1abb8cc590",
+      "size": 103755,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/typesync_generation.png",
+      "path": "ex-prj/type-sync/typesync_generation.png",
+      "hash": "sha256:414bd6a0a4cdb4eb437b03d4e197256a939b061d19394b72d639c9a27d5fecf1",
+      "size": 130110,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:ex-prj/type-sync/watch-mode-flow.md",
+      "path": "ex-prj/type-sync/watch-mode-flow.md",
+      "hash": "sha256:31b8ef50f9f16cab26ab5343b3d38278a212c41d500b9895fa964f12d302b2cc",
+      "size": 1944,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:examples/example-generated/react-app/openapi-schema.json",
+      "path": "examples/example-generated/react-app/openapi-schema.json",
+      "hash": "sha256:a398e8559c431d7aa9f38290dcfa8495cdc2869dc3968147da601f09a848824e",
+      "size": 62025,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:jest.config.js",
+      "path": "jest.config.js",
+      "hash": "sha256:42cb6025c1dfb4864baf73844b7de6ddf9e4aa20e4c93a28a684a86002b0ac46",
+      "size": 581,
+      "language": "javascript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:LICENSE",
+      "path": "LICENSE",
+      "hash": "sha256:eaa660af3f41aeb4bf453ea7c27c13f9a5c32bc5148f04554a3697f3576a69c3",
+      "size": 1088,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/package-lock.json",
+      "path": "local-test/react-app/package-lock.json",
+      "hash": "sha256:9dfcd0b07db5d79603eb46e99351d8d34dda9558cdfd76eacdb0ec84f0458d82",
+      "size": 1503,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/package.json",
+      "path": "local-test/react-app/package.json",
+      "hash": "sha256:dcce6ff49ecc80d5c9f63b6dc6a0d1280c9fbf78c034929023273cfe0fe6e216",
+      "size": 207,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/src/lib/api/api-client.ts",
+      "path": "local-test/react-app/src/lib/api/api-client.ts",
+      "hash": "sha256:2bc0236af5d36f899ff21ed641caaaa66d30459ae28c9f35661fb48f63dbee00",
+      "size": 8851,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/src/lib/api/hooks.ts",
+      "path": "local-test/react-app/src/lib/api/hooks.ts",
+      "hash": "sha256:f6056e0e099e7a23855cb5836817b05dba506401ad0689a124681ac2875e70f9",
+      "size": 4505,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/src/lib/api/index.ts",
+      "path": "local-test/react-app/src/lib/api/index.ts",
+      "hash": "sha256:b0f0a67be6921f1c0d41ae77face76374a446296d5dc8679e8f567512cf7cbc4",
+      "size": 1134,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/src/lib/api/types.ts",
+      "path": "local-test/react-app/src/lib/api/types.ts",
+      "hash": "sha256:81959dd9ef16507bb393585d8ae1d763e2d4840689fc0b8a6755b549e3f9246d",
+      "size": 13707,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:local-test/react-app/tsconfig.json",
+      "path": "local-test/react-app/tsconfig.json",
+      "hash": "sha256:1cef78ea067b758b0e1fc48b734ce22e819872009e38e4b97e076de371d19ee1",
+      "size": 351,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:package-lock.json",
+      "path": "package-lock.json",
+      "hash": "sha256:479d9d87e08e6881d1c6d936b801d546dafeacb7c857ef078d4f0c6a6537daa4",
+      "size": 232044,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:package.json",
+      "path": "package.json",
+      "hash": "sha256:13210aaba49c62fcbabb19bc78381ae20c71ba2c9d3933fb1446d69b54456246",
+      "size": 2459,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:PUBLISH.md",
+      "path": "PUBLISH.md",
+      "hash": "sha256:24cfcc15b0b604f035e4e1c96139a7673f8b34a10e886d4e672c828a8310fb44",
+      "size": 512,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:README.md",
+      "path": "README.md",
+      "hash": "sha256:5c95a1735f10d3dd8bff257e92d7c2c737e42ecb7d27788b38e8bd10d99ea02c",
+      "size": 22306,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:schemantic.config.example.json",
+      "path": "schemantic.config.example.json",
+      "hash": "sha256:1bd5a7dc9e34e12345530b80019ae9a6a874649bf20c1e1f4fc9bb4a31a41578",
+      "size": 547,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:scripts/release.sh",
+      "path": "scripts/release.sh",
+      "hash": "sha256:14d9ff4f65153224d13ccc0c279ab0b82fbec2a32b03840d0c484e857026a5b9",
+      "size": 711,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:SECURITY.md",
+      "path": "SECURITY.md",
+      "hash": "sha256:bf962c09311c534847f61f8f689d86dc8dfa1b03fa488cfc24a7e6a23d30f92b",
+      "size": 4353,
+      "language": "markdown",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/generated-shape.test.ts",
+      "path": "src/__tests__/generated-shape.test.ts",
+      "hash": "sha256:4207511e2be8faffc1a93e200859fd2de97d3eea3de6b41d59f182eafb83619a",
+      "size": 1171,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/generators/object-generator.test.ts",
+      "path": "src/__tests__/generators/object-generator.test.ts",
+      "hash": "sha256:2e13883dd76847099bb5827e1ef731420d907b7950cfc2f88f5148aa2178074a",
+      "size": 10662,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/integration/fastapi-integration.test.ts",
+      "path": "src/__tests__/integration/fastapi-integration.test.ts",
+      "hash": "sha256:bee14cc20a6b6fa5126581c33337a3144ca506a5b040dda753054ab3bf13239f",
+      "size": 22066,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/integration/prefix.test.ts",
+      "path": "src/__tests__/integration/prefix.test.ts",
+      "hash": "sha256:1ba7094c04c8af93a17cf97554a3c06aa12d9fe28c2c8bb5085f63d423c53eae",
+      "size": 1613,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/integration/validation-shape.test.ts",
+      "path": "src/__tests__/integration/validation-shape.test.ts",
+      "hash": "sha256:5960c1860a368596c784e32ae6e1b44337ac851eeee3aaf1312321ada3c80a1c",
+      "size": 2295,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/parsers/openapi.test.ts",
+      "path": "src/__tests__/parsers/openapi.test.ts",
+      "hash": "sha256:3f5fe7e38bb66f7d001d5f4fbf2785e70bcae96203be153332095c9682a58600",
+      "size": 8681,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/plugins/branded-types.test.ts",
+      "path": "src/__tests__/plugins/branded-types.test.ts",
+      "hash": "sha256:1510acc5137ba6a1045d9a17992388b0875bc76a7b862177e51b8a82927d896d",
+      "size": 23241,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/plugins/performance-monitoring.test.ts",
+      "path": "src/__tests__/plugins/performance-monitoring.test.ts",
+      "hash": "sha256:ba1b08ed9d5f6a9dd8372d340bbd4bd4a3084e969a6d2d8d269dd956fe48a257",
+      "size": 19759,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/plugins/request-deduplication.test.ts",
+      "path": "src/__tests__/plugins/request-deduplication.test.ts",
+      "hash": "sha256:68f1a34d164352ab412bc6a3cccd8704929b16046e4edfa99aeeeff065fb2c1a",
+      "size": 15607,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/plugins/zod-validation.test.ts",
+      "path": "src/__tests__/plugins/zod-validation.test.ts",
+      "hash": "sha256:fb91cbba0d40c2650b49a24df83e61a1cb950d09f6b887c6fcebf0f4be2a7d78",
+      "size": 14411,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/setup.ts",
+      "path": "src/__tests__/setup.ts",
+      "hash": "sha256:9caffb9be29861634664d1157c9b30cbd7ef523ed404896f351e5e0e5f1cc053",
+      "size": 865,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/test-config.ts",
+      "path": "src/__tests__/test-config.ts",
+      "hash": "sha256:7192839a47f2168d628be8b84dec7be625b7b568c0a5d0df2ea8bd33cde4e5b0",
+      "size": 15038,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/__tests__/typesync.test.ts",
+      "path": "src/__tests__/typesync.test.ts",
+      "hash": "sha256:9fb306c26327c31c75957d4fa18f2dcd267548cd9c1c72e1c16498ba96e7ac86",
+      "size": 7322,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/cli.js",
+      "path": "src/cli.js",
+      "hash": "sha256:2ab545b3e53cee8ebfea3c38ea36eb136ec8116c2adaad594006c3544d486692",
+      "size": 220,
+      "language": "javascript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/cli/index.ts",
+      "path": "src/cli/index.ts",
+      "hash": "sha256:87622586a8110e407bcb230e3d1ca370528243bb860a6571e2f7dbf56383f08b",
+      "size": 24933,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/core/index.ts",
+      "path": "src/core/index.ts",
+      "hash": "sha256:3427e537366b1393bc74497be8ed6e3f0b857d729d0783d4a0cb8c4bcd7c530b",
+      "size": 67,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/core/schemantic.ts",
+      "path": "src/core/schemantic.ts",
+      "hash": "sha256:b82e0bd3b26525d3336fd7f8fb6249dae4d2b1a40d128dd2fe48393ea70c71f2",
+      "size": 19310,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/api-client-generator.ts",
+      "path": "src/generators/api-client-generator.ts",
+      "hash": "sha256:c686643c11317b357b70c6f73b700137cef72d94123d1d443bad136ee025223c",
+      "size": 32854,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/base.ts",
+      "path": "src/generators/base.ts",
+      "hash": "sha256:240d631c4e87afe7c12cf42257195840e548ddc79ab357da48d2ceed55b1c61f",
+      "size": 8395,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/enum-generator.ts",
+      "path": "src/generators/enum-generator.ts",
+      "hash": "sha256:60c57c627270fe36be4b15954a5eacfd003100d25c9f30f1295cba04e440e965",
+      "size": 5931,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/factory.ts",
+      "path": "src/generators/factory.ts",
+      "hash": "sha256:b639f89758706bcb3c6db42d8ea3d845602851d075c487c3f1a5c2934c36a28f",
+      "size": 4284,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/hook-generator.ts",
+      "path": "src/generators/hook-generator.ts",
+      "hash": "sha256:043cfc18741973a7ddea79f3cf63e7fe21093e744114c0c045a7adf97ed619ea",
+      "size": 22548,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/index.ts",
+      "path": "src/generators/index.ts",
+      "hash": "sha256:05e51cff990ec3c319043553bef35de6efecbf1068df1bc40956041115bdaa43",
+      "size": 241,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/object-generator.ts",
+      "path": "src/generators/object-generator.ts",
+      "hash": "sha256:3956c5bdce338c5da630c4ab0f5306cc14c2d934ff412e88ca5c7893e5583be9",
+      "size": 11527,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/generators/primitive-generator.ts",
+      "path": "src/generators/primitive-generator.ts",
+      "hash": "sha256:285d2dd775e6fa7fdb70856c1b1e9e7987ba2fe4f09bf5b664f902edff1a292f",
+      "size": 4746,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/index.ts",
+      "path": "src/index.ts",
+      "hash": "sha256:f3ecdbd01961432c02da7fa0c65e7e0751614bd95244da939eaae1105e4560cd",
+      "size": 829,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/parsers/base.ts",
+      "path": "src/parsers/base.ts",
+      "hash": "sha256:5d37e68b6f9ac7fabb202b76402060a54c0caa6d52776a8cdf06879481ab202f",
+      "size": 4190,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/parsers/factory.ts",
+      "path": "src/parsers/factory.ts",
+      "hash": "sha256:7d057220d906cf3455f955b75a5d3eff300fb6e31b6df163007ae9b795241837",
+      "size": 3976,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/parsers/index.ts",
+      "path": "src/parsers/index.ts",
+      "hash": "sha256:1869faf4f0a6591f1b89ae97409644d510cf4136a24a6bad7844190ed7a3766b",
+      "size": 119,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/parsers/openapi.ts",
+      "path": "src/parsers/openapi.ts",
+      "hash": "sha256:9186f932ba7d7987f8f53813565513e4c869800ef05a6d83f1c8607685143d2d",
+      "size": 12304,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/branded-types.ts",
+      "path": "src/plugins/branded-types.ts",
+      "hash": "sha256:d103b6f691b5583e49a1e0f08b971f2ffb860639415ffb4e3bc87e1f3af26647",
+      "size": 20019,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/builtin.ts",
+      "path": "src/plugins/builtin.ts",
+      "hash": "sha256:aade5291f1f7d08cd66432181c58d6bf1311a89edb587878f4916e0665350ec0",
+      "size": 11446,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/index.ts",
+      "path": "src/plugins/index.ts",
+      "hash": "sha256:88784aeb2ac7ef07fd45a68315d2b27f59199628eb5c6b8770c6e941d8fd4dbe",
+      "size": 121,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/loader.ts",
+      "path": "src/plugins/loader.ts",
+      "hash": "sha256:bebf90297263abc591ceb7961de194ded8f214b6a3cadae79860ddc4c821bdd5",
+      "size": 7254,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/manager.ts",
+      "path": "src/plugins/manager.ts",
+      "hash": "sha256:c16243f57d8a494c8b891b4b75e8c6b0f76650a6f26ab0dc1d4ce70ff62b4812",
+      "size": 7966,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/performance-monitoring.ts",
+      "path": "src/plugins/performance-monitoring.ts",
+      "hash": "sha256:0bdc997e10ec7f044179f130b47c4bb374342cfea5978c597345e5ef6aef5ee7",
+      "size": 23028,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/request-deduplication.ts",
+      "path": "src/plugins/request-deduplication.ts",
+      "hash": "sha256:e83c5d88cf15cc3a3f1e532d7d5082e163b4582bd573f5b376a2f174eda748d8",
+      "size": 19709,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/plugins/zod-validation.ts",
+      "path": "src/plugins/zod-validation.ts",
+      "hash": "sha256:04a202338029e75d8ade651735031db3a0559183c6c150b0c9b8cfa054c5096d",
+      "size": 29233,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/types/core.ts",
+      "path": "src/types/core.ts",
+      "hash": "sha256:6c97102a3763faba89899f4cdb30b91d39bd7df369f56c88134813cf98cfbd7b",
+      "size": 6312,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/types/index.ts",
+      "path": "src/types/index.ts",
+      "hash": "sha256:3a3b5b8eb1e81c7169836eb5940f02e44d2602f8f2d8baf104cee54bc09e7e01",
+      "size": 136,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/types/openapi.ts",
+      "path": "src/types/openapi.ts",
+      "hash": "sha256:586f15fdb005a24de19cab7daebe786bb240d6d27d1eed8e875b47a53a2de7c8",
+      "size": 7336,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:src/types/schema.ts",
+      "path": "src/types/schema.ts",
+      "hash": "sha256:a4f55d4f81e5063aa31cfb1a3d5198ef38e88533ff7199d5338a9094c98e1c0d",
+      "size": 2402,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/api-client.ts",
+      "path": "test-output/api-client.ts",
+      "hash": "sha256:7123bceaf66131fde9db759196af9e3b21e1d0c99319d945f140c3c311c05ac2",
+      "size": 4750,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/barrel.ts",
+      "path": "test-output/barrel.ts",
+      "hash": "sha256:9467f66b8d220ee9073c582599efda60b348c2369315633d90f94c4982de2dee",
+      "size": 135,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated-test/types.ts",
+      "path": "test-output/generated-test/types.ts",
+      "hash": "sha256:d53ba6e16649ba6ec741719b7ebb1737c34c9e234ea3308ae17acc75cc3c4f7d",
+      "size": 86,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated-zod/api-client.ts",
+      "path": "test-output/generated-zod/api-client.ts",
+      "hash": "sha256:c44e2f510e35dd1736d178777514ddcc34f398031ab1b15e97730c789027aae2",
+      "size": 8421,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated-zod/types.ts",
+      "path": "test-output/generated-zod/types.ts",
+      "hash": "sha256:ffc6998a303b4bc377a22930d513a2b5a1fd0fc2ea407783e77af40a965e1ce5",
+      "size": 13469,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated/api-client.ts",
+      "path": "test-output/generated/api-client.ts",
+      "hash": "sha256:20f39ff6351b2aa8e857ef29c19528eccfc4d30d65e569939cfd0bb89dad7d7c",
+      "size": 8726,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated/barrel.ts",
+      "path": "test-output/generated/barrel.ts",
+      "hash": "sha256:c38e070e809011137c77b000fbcc3df938c6fe56fa3fc1adc8c97bbd2859a2d8",
+      "size": 212,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated/hooks.ts",
+      "path": "test-output/generated/hooks.ts",
+      "hash": "sha256:007ef2283bc5231428c76b3cf5b22b85ba4a9575c32b9b47fa569ff766b758a4",
+      "size": 4605,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated/index.ts",
+      "path": "test-output/generated/index.ts",
+      "hash": "sha256:1ea2ad63590b940638ea8f6b00db1d85489f908bb9d31fa30c35828c86c057b1",
+      "size": 1136,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generated/types.ts",
+      "path": "test-output/generated/types.ts",
+      "hash": "sha256:3857ba43e929a6cb8c8737540686c9d00ff3ccfaf695b13aa2db0e4f717320f3",
+      "size": 13820,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/generation-config.json",
+      "path": "test-output/generation-config.json",
+      "hash": "sha256:88177f368c012b58f8439ea0623791352ce7fc259c66729c6613bad56bb5367e",
+      "size": 653,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/hooks.ts",
+      "path": "test-output/hooks.ts",
+      "hash": "sha256:ae4781396410a6779f751653f6b0e796285fdb7201516251d7f2a938f3ecfb56",
+      "size": 1077,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/image-conversion-schema-openapi.json",
+      "path": "test-output/image-conversion-schema-openapi.json",
+      "hash": "sha256:db36693bac39d6cb2305c608adf0117cabef89f576f962d90bd36b44d57200de",
+      "size": 9952,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/index.ts",
+      "path": "test-output/index.ts",
+      "hash": "sha256:e4986cdc0f2fc5adfb227dd50caf3cdeb860d8f50c3e2d2f0372abbf326abc88",
+      "size": 45,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/repro-openapi.json",
+      "path": "test-output/repro-openapi.json",
+      "hash": "sha256:40bd7aeb0bfb5771cfc87de011ef7f4ac59b28376287d5ae9fe683635b58f3c7",
+      "size": 747,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-output/types.ts",
+      "path": "test-output/types.ts",
+      "hash": "sha256:c837456a767c6613e40eed2edbf4e09653d0f2e1ee9ec482df72180b5175d739",
+      "size": 263,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/allof-inher-union/api-client.ts",
+      "path": "test-schema-generation/allof-inher-union/api-client.ts",
+      "hash": "sha256:248ed9fd866777f22614e7d861b313b925f3149c4ecbba0c133871abf44253f5",
+      "size": 6090,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/allof-inher-union/barrel.ts",
+      "path": "test-schema-generation/allof-inher-union/barrel.ts",
+      "hash": "sha256:2ccd3f3b372613d014d9467fc078e665847acdd8f690d8c914e48ba996fad903",
+      "size": 132,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/allof-inher-union/combined.ts",
+      "path": "test-schema-generation/allof-inher-union/combined.ts",
+      "hash": "sha256:086f707e3fa1a3f2c1660220db39300adf735afbd219d78e432b6f37ddef7971",
+      "size": 9892,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/allof-inher-union/hooks.ts",
+      "path": "test-schema-generation/allof-inher-union/hooks.ts",
+      "hash": "sha256:4f693780e39fb5921cc92e0ac490b90ab10f175a377e6f6e77f09f1854bce37d",
+      "size": 1152,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/allof-inher-union/index.ts",
+      "path": "test-schema-generation/allof-inher-union/index.ts",
+      "hash": "sha256:e1b62335cf0211994107f72a381d060bd0ce2376add8d13e4bdb99d6eb7908b8",
+      "size": 227,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/allof-inher-union/types.ts",
+      "path": "test-schema-generation/allof-inher-union/types.ts",
+      "hash": "sha256:056cde9fdb279a7887c51a895c4d06543a54dbad7b815c340b27db4af52c20f2",
+      "size": 1455,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/auth-file-uploads/api-client.ts",
+      "path": "test-schema-generation/auth-file-uploads/api-client.ts",
+      "hash": "sha256:c689784dda9c69e4a4cdc72d4fde93c93d0c9e75881d3b11161828c9ff09d408",
+      "size": 6899,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/auth-file-uploads/barrel.ts",
+      "path": "test-schema-generation/auth-file-uploads/barrel.ts",
+      "hash": "sha256:2ccd3f3b372613d014d9467fc078e665847acdd8f690d8c914e48ba996fad903",
+      "size": 132,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/auth-file-uploads/combined.ts",
+      "path": "test-schema-generation/auth-file-uploads/combined.ts",
+      "hash": "sha256:cc489cf12fd593c68254faed320bd21f6951790d3d5ac6a22d37895e6cda565d",
+      "size": 15602,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/auth-file-uploads/hooks.ts",
+      "path": "test-schema-generation/auth-file-uploads/hooks.ts",
+      "hash": "sha256:177377b805fbb1a0a07d5a910f136a862216bf414d01e0a0f7de6ec7d685558d",
+      "size": 2001,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/auth-file-uploads/index.ts",
+      "path": "test-schema-generation/auth-file-uploads/index.ts",
+      "hash": "sha256:e982298b0d3953a337e68ee9b1c16738de42fcdf80c978cded939a55b49cdc14",
+      "size": 558,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/auth-file-uploads/types.ts",
+      "path": "test-schema-generation/auth-file-uploads/types.ts",
+      "hash": "sha256:6a21b5438d92df77d14ccfda18be1f6ff531cc32a8800112906a2433003ecf61",
+      "size": 4677,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/combine.sh",
+      "path": "test-schema-generation/combine.sh",
+      "hash": "sha256:d7ae2f874fdb97a2d03c6882dd331228dd7bd5bafb64eac425bb58d196614c58",
+      "size": 2211,
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/edge-case/api-client.ts",
+      "path": "test-schema-generation/edge-case/api-client.ts",
+      "hash": "sha256:9744b5b7e88f6c01e986e0ddc486841710ec5b015c7808e17e9951269ae6288f",
+      "size": 6848,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/edge-case/barrel.ts",
+      "path": "test-schema-generation/edge-case/barrel.ts",
+      "hash": "sha256:2ccd3f3b372613d014d9467fc078e665847acdd8f690d8c914e48ba996fad903",
+      "size": 132,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/edge-case/combined.ts",
+      "path": "test-schema-generation/edge-case/combined.ts",
+      "hash": "sha256:f0b7727fbf361d4f60df5aa2d5a8b4d5702339e80b7e6f7d93125d86c76e114b",
+      "size": 19823,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/edge-case/hooks.ts",
+      "path": "test-schema-generation/edge-case/hooks.ts",
+      "hash": "sha256:b47dcc4b566fc0dde9726849d4a3f5cd2883bb7b47b7b98f4ecf86a27296a0ca",
+      "size": 2059,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/edge-case/index.ts",
+      "path": "test-schema-generation/edge-case/index.ts",
+      "hash": "sha256:cef4946d3c0d8d4ea9d2297539a2b2513cacb57cfdd15c3069c41a2185db748f",
+      "size": 753,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/edge-case/types.ts",
+      "path": "test-schema-generation/edge-case/types.ts",
+      "hash": "sha256:6feb148b099a8e4ee885878140a0a583d28f8650cd5984342828ad27943e00d6",
+      "size": 8682,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/nested-dictmap-datetime/api-client.ts",
+      "path": "test-schema-generation/nested-dictmap-datetime/api-client.ts",
+      "hash": "sha256:96aff9ba1bb015b3b63391addd86cba5a4a2ea0cf2fd51a73df031c7dc7d9c86",
+      "size": 6052,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/nested-dictmap-datetime/barrel.ts",
+      "path": "test-schema-generation/nested-dictmap-datetime/barrel.ts",
+      "hash": "sha256:2ccd3f3b372613d014d9467fc078e665847acdd8f690d8c914e48ba996fad903",
+      "size": 132,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/nested-dictmap-datetime/combined.ts",
+      "path": "test-schema-generation/nested-dictmap-datetime/combined.ts",
+      "hash": "sha256:1474a3d61fb760406588b8d9b00bbbead6aed97a99969ceb8c55ed3db71308cb",
+      "size": 13696,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/nested-dictmap-datetime/hooks.ts",
+      "path": "test-schema-generation/nested-dictmap-datetime/hooks.ts",
+      "hash": "sha256:071d822f59c44c5cb97687fb56735c8f193e46c2497adf9213b34b84e28982c2",
+      "size": 1004,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/nested-dictmap-datetime/index.ts",
+      "path": "test-schema-generation/nested-dictmap-datetime/index.ts",
+      "hash": "sha256:827f42354c7decdbb34753ec611391bde2143265092a03830f6e21bd061827b7",
+      "size": 414,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/nested-dictmap-datetime/types.ts",
+      "path": "test-schema-generation/nested-dictmap-datetime/types.ts",
+      "hash": "sha256:03aa548c66f36638f6bfc58b36c05b86b2b5b91f339de4913e89de26aef0ad2f",
+      "size": 4988,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/pag-nested/api-client.ts",
+      "path": "test-schema-generation/pag-nested/api-client.ts",
+      "hash": "sha256:c508bc5f0970163d46699351b21b5b6b8bef5df30bac08d05b86eb98581d84e8",
+      "size": 7203,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/pag-nested/barrel.ts",
+      "path": "test-schema-generation/pag-nested/barrel.ts",
+      "hash": "sha256:2ccd3f3b372613d014d9467fc078e665847acdd8f690d8c914e48ba996fad903",
+      "size": 132,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/pag-nested/combined.ts",
+      "path": "test-schema-generation/pag-nested/combined.ts",
+      "hash": "sha256:ef50be0343313fac300c555f012f3097ad39ec1964dfc17898fceac72b78891c",
+      "size": 14867,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/pag-nested/hooks.ts",
+      "path": "test-schema-generation/pag-nested/hooks.ts",
+      "hash": "sha256:70eb02b3600adf0dc7c3b6c655f4f1b7d9dcb7c435abf21088f7783001dc30ec",
+      "size": 2082,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/pag-nested/index.ts",
+      "path": "test-schema-generation/pag-nested/index.ts",
+      "hash": "sha256:f5813683377962400b1a126eaf9e7b7793836b1801e4d9df2afff950ed802271",
+      "size": 438,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schema-generation/pag-nested/types.ts",
+      "path": "test-schema-generation/pag-nested/types.ts",
+      "hash": "sha256:6a2b342633566aa44d231fd56275ff5dea0af92f68e891e7b179ec8275591413",
+      "size": 4343,
+      "language": "typescript",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schemas/allof-inher-union.json",
+      "path": "test-schemas/allof-inher-union.json",
+      "hash": "sha256:eea712d01c00d2c166c6ae02b8102ae001af01148b90038e18f1e1fd74562d96",
+      "size": 1786,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schemas/auth-file-uploads.json",
+      "path": "test-schemas/auth-file-uploads.json",
+      "hash": "sha256:087d68d5ba0da37204563b66017999335b8e7ef4d0eb5c13000b53c5d1b16622",
+      "size": 2252,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schemas/edge-case.json",
+      "path": "test-schemas/edge-case.json",
+      "hash": "sha256:0b191b938cb186a48f53d9dfe7500d929377b75c73d92aa365e23499d24bc116",
+      "size": 3095,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schemas/image-conversion-schema-openapi.json",
+      "path": "test-schemas/image-conversion-schema-openapi.json",
+      "hash": "sha256:db36693bac39d6cb2305c608adf0117cabef89f576f962d90bd36b44d57200de",
+      "size": 9952,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schemas/nested-dictmap-datetime.json",
+      "path": "test-schemas/nested-dictmap-datetime.json",
+      "hash": "sha256:0bbacb8a74c12caeb207336e767496fd4c77ccf279102988576ac51762c9b748",
+      "size": 1938,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:test-schemas/pag-nested.json",
+      "path": "test-schemas/pag-nested.json",
+      "hash": "sha256:c9c9c54ce6313dedc479cc456e26d0da8c6180da3771d0739ffa13cdb553aa04",
+      "size": 2200,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:tsconfig.json",
+      "path": "tsconfig.json",
+      "hash": "sha256:d4da7682e98700eef9962be31f3c384ab06359d7dcbb5f9cf84829658738940d",
+      "size": 904,
+      "language": "json",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    },
+    {
+      "id": "file:workflows-in-progress/dependencies.yml",
+      "path": "workflows-in-progress/dependencies.yml",
+      "hash": "sha256:6b60f073e856f60738e2b5e561d289b7e69c5f074b82a448c7c75bdae1ec6403",
+      "size": 1974,
+      "language": "yaml",
+      "status": "active",
+      "firstSeenAt": "2026-05-10T03:48:33.607Z",
+      "lastSeenAt": "2026-05-10T22:14:11.638Z"
+    }
+  ]
+}

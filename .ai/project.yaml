@@ -1,0 +1,28 @@
+schemaVersion: "0.2"
+project:
+  id: schemantic
+  stableId: project:schemantic
+  name: schemantic
+  displayName: schemantic
+  type: unknown
+  status: wip
+  summary: "TODO: Describe this project."
+  tags: []
+  primaryLanguages: []
+stack: {}
+architecture:
+  entrypoints: []
+  externalDependencies: []
+  relatedProjects: []
+artifacts:
+  modules: .ai/modules.yaml
+  flows: .ai/flows/
+  generated: .ai/generated/
+  notes: .ai/notes/
+  context: .ai/context/
+  manifest: .ai/manifest.lock
+agent:
+  usefulCommands: []
+  debugStrategy: []
+review:
+  status: unreviewed

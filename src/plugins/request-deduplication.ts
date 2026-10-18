@@ -39,7 +39,7 @@ interface RequestDeduplicationOptions {
   maxPendingRequests?: number;
   /** Enable stale-while-revalidate pattern */
   enableStaleWhileRevalidate?: boolean;
-  /** Custom cache key generation */
+  /** Retired generation-time function names. Supply a callback to the generated runtime constructor. */
   customKeyGenerator?: string; // Function name for custom key generation
   /** Per-endpoint cache policies */
   endpointPolicies?: Record<
@@ -78,7 +78,6 @@ export const requestDeduplicationPlugin: SchemanticPlugin = {
       return;
     }
 
-    try {
       // Add deduplication middleware to client
       const deduplicationCode = generateDeduplicationCode(
         generatedClient,
@@ -87,7 +86,7 @@ export const requestDeduplicationPlugin: SchemanticPlugin = {
       generatedClient.content += deduplicationCode;
 
       // Update dependencies
-      generatedClient.dependencies.push("crypto-js"); // For hashing
+
 
       // Add deduplication exports
       generatedClient.exports.push(
@@ -95,14 +94,9 @@ export const requestDeduplicationPlugin: SchemanticPlugin = {
         "CacheManager",
         "RequestCoalescer",
         "clearRequestCache",
-        "getCacheStats"
+        "getCacheStats", "invalidateCache", "withDeduplication", "DeduplicationRequest", "RequestKeyGenerator"
       );
-    } catch (error) {
-      console.warn(
-        "Request deduplication plugin afterClientGeneration failed:",
-        error
-      );
-    }
+
   },
 };
 
@@ -135,600 +129,150 @@ function generateDeduplicationCode(
   _generatedClient: GeneratedApiClient,
   options: RequestDeduplicationOptions
 ): string {
+  if (options.customKeyGenerator !== undefined) {
+    throw new Error("Generation-time customKeyGenerator names are unsupported; pass a callback to the runtime RequestDeduplicator constructor");
+  }
   return `
-
-/**
- * Advanced Request Deduplication System
- */
-
-/**
- * LRU Cache implementation with TTL support
- */
-class LRUCacheWithTTL<K, V> {
-  private readonly maxSize: number;
-  private readonly cache = new Map<K, { value: V; timestamp: number; ttl: number }>();
-  private readonly accessOrder = new Map<K, number>();
-  private accessCounter = 0;
-
-  constructor(maxSize: number = ${options.maxCacheSize || 1000}) {
-    this.maxSize = maxSize;
+/** Request identity includes all supplied headers. For implicit cookie/session credentials,
+ * supply cacheScope, create one deduplicator per session, or use skipCache. Keys are never logged. */
+export interface DeduplicationRequest {
+  method: string; url: string; headers: Record<string, string>; body?: unknown;
+  params?: Record<string, unknown>; cacheScope?: string;
+}
+export type RequestKeyGenerator = (request: DeduplicationRequest) => string;
+function canonicalRequestValue(value: unknown, seen = new Set<unknown>()): string {
+  if (value === null) return 'null';
+  if (typeof value !== 'object') {
+    if (typeof value === 'function' || typeof value === 'symbol') throw new Error('Unsupported cache identity');
+    return typeof value + ':' + JSON.stringify(typeof value === 'number' && Object.is(value, -0) ? '-0' : String(value));
   }
-
-  set(key: K, value: V, ttl: number = ${
-    options.defaultTTL || 5 * 60 * 1000
-  }): void {
-    const now = Date.now();
-    
-    // Remove expired entries before adding new one
-    this.cleanup();
-    
-    // If at capacity, remove LRU item
-    if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
-      this.evictLRU();
-    }
-
-    this.cache.set(key, {
-      value,
-      timestamp: now,
-      ttl
+  if (seen.has(value)) throw new Error('Cyclic cache identity');
+  seen.add(value);
+  try {
+    if (value instanceof Date) return 'date:' + value.toISOString();
+    if (Array.isArray(value)) return '[' + Array.from(value, item => canonicalRequestValue(item, seen)).join(',') + ']';
+    if (Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) throw new Error('Unsupported cache identity');
+    return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonicalRequestValue((value as Record<string, unknown>)[key], seen)).join(',') + '}';
+  } finally { seen.delete(value); }
+}
+function requestIdentity(request: DeduplicationRequest): string {
+  const headers: Record<string, string> = {};
+  new Headers(request.headers).forEach((value, key) => { headers[key] = value; });
+  // Preserve URL query ordering: repeated/order-sensitive query values can affect server responses.
+  return canonicalRequestValue({ ...request, method: request.method.toUpperCase(), headers });
+}
+export class RequestCoalescer {
+  private readonly pending = new Map<string, Promise<unknown>>();
+  constructor(private readonly maxPending = ${options.maxPendingRequests ?? 100}) {}
+  async coalesce<T>(key: string, factory: () => Promise<T>): Promise<T> {
+    const existing = this.pending.get(key);
+    if (existing) return existing as Promise<T>;
+    if (this.pending.size >= this.maxPending) return factory();
+    const promise = Promise.resolve().then(factory).finally(() => {
+      if (this.pending.get(key) === promise) this.pending.delete(key);
     });
-    
-    this.accessOrder.set(key, ++this.accessCounter);
+    this.pending.set(key, promise); return promise;
   }
-
-  get(key: K): V | undefined {
+  clear(): void { this.pending.clear(); }
+  getPendingCount(): number { return this.pending.size; }
+}
+interface CacheEntry<T> { data: T; timestamp: number; ttl: number; staleWhileRevalidate: boolean; }
+export class CacheManager<T = unknown> {
+  private readonly cache = new Map<string, CacheEntry<T>>();
+  private readonly revalidations = new Map<string, Promise<unknown>>();
+  private hits = 0; private misses = 0; private evictions = 0;
+  constructor(private readonly options: { defaultTTL: number; enableStaleWhileRevalidate: boolean; debugLogging: boolean; maxSize?: number }) {}
+  get(key: string, allowStale = this.options.enableStaleWhileRevalidate): T | undefined {
     const entry = this.cache.get(key);
-    if (!entry) {
-      return undefined;
+    if (!entry || (Date.now() - entry.timestamp >= entry.ttl && !(allowStale && entry.staleWhileRevalidate))) {
+      this.misses++; if (entry) this.cache.delete(key); return undefined;
     }
-
-    const now = Date.now();
-    if (now - entry.timestamp > entry.ttl) {
-      // Entry is expired
-      this.cache.delete(key);
-      this.accessOrder.delete(key);
-      return undefined;
+    this.hits++; this.cache.delete(key); this.cache.set(key, entry); return entry.data;
+  }
+  set(key: string, data: T, ttl = this.options.defaultTTL, staleWhileRevalidate = this.options.enableStaleWhileRevalidate): void {
+    if ((this.options.maxSize ?? ${options.maxCacheSize ?? 1000}) <= 0) return;
+    this.cache.delete(key);
+    if (this.cache.size >= (this.options.maxSize ?? ${options.maxCacheSize ?? 1000})) {
+      const oldest = this.cache.keys().next().value;
+      if (oldest !== undefined) { this.cache.delete(oldest); this.evictions++; }
     }
-
-    // Update access order
-    this.accessOrder.set(key, ++this.accessCounter);
-    return entry.value;
+    this.cache.set(key, { data, ttl, timestamp: Date.now(), staleWhileRevalidate });
   }
-
-  has(key: K): boolean {
-    return this.get(key) !== undefined;
+  hasFresh(key: string): boolean { const e = this.cache.get(key); return !!e && Date.now() - e.timestamp < e.ttl; }
+  has(key: string): boolean { return this.cache.has(key); }
+  invalidate(key: string): void { this.cache.delete(key); this.revalidations.delete(key); }
+  clear(): void { this.cache.clear(); this.revalidations.clear(); this.hits = 0; this.misses = 0; this.evictions = 0; }
+  keys(): IterableIterator<string> { return this.cache.keys(); }
+  getStats(): { size: number; hitRate: number; hits: number; misses: number; evictions: number } {
+    for (const [key, entry] of this.cache) if (!entry.staleWhileRevalidate && Date.now() - entry.timestamp >= entry.ttl) this.cache.delete(key);
+    return { size: this.cache.size, hitRate: this.hits + this.misses ? this.hits / (this.hits + this.misses) : 0, hits: this.hits, misses: this.misses, evictions: this.evictions };
   }
-
-  delete(key: K): boolean {
-    const result = this.cache.delete(key);
-    this.accessOrder.delete(key);
-    return result;
-  }
-
-  clear(): void {
-    this.cache.clear();
-    this.accessOrder.clear();
-    this.accessCounter = 0;
-  }
-
-  size(): number {
-    this.cleanup();
-    return this.cache.size;
-  }
-
-  private cleanup(): void {
-    const now = Date.now();
-    const expiredKeys: K[] = [];
-
-    for (const [key, entry] of this.cache) {
-      if (now - entry.timestamp > entry.ttl) {
-        expiredKeys.push(key);
-      }
-    }
-
-    for (const key of expiredKeys) {
-      this.cache.delete(key);
-      this.accessOrder.delete(key);
-    }
-  }
-
-  private evictLRU(): void {
-    let oldestKey: K | undefined;
-    let oldestAccess = Infinity;
-
-    for (const [key, accessTime] of this.accessOrder) {
-      if (accessTime < oldestAccess) {
-        oldestAccess = accessTime;
-        oldestKey = key;
-      }
-    }
-
-    if (oldestKey !== undefined) {
-      this.cache.delete(oldestKey);
-      this.accessOrder.delete(oldestKey);
-    }
-  }
-
-  getStats(): { size: number; hitRate: number; evictions: number } {
-    return {
-      size: this.cache.size,
-      hitRate: 0, // Would need to track hits/misses for this
-      evictions: 0 // Would need to track evictions for this
-    };
+  revalidateInBackground<U extends T>(key: string, factory: () => Promise<U>, ttl = this.options.defaultTTL, staleWhileRevalidate = this.options.enableStaleWhileRevalidate): void {
+    if (this.revalidations.has(key)) return;
+    let refresh: Promise<U>; try { refresh = factory(); } catch { return; }
+    const promise = refresh.then(data => {
+      // Invalidation or clear revokes pending writes.
+      if (this.revalidations.get(key) === promise) this.set(key, data, ttl, staleWhileRevalidate);
+    }).catch(() => undefined).finally(() => { if (this.revalidations.get(key) === promise) this.revalidations.delete(key); });
+    this.revalidations.set(key, promise);
   }
 }
-
-/**
- * Request fingerprint generator
- */
-class RequestFingerprintGenerator {
-  /**
-   * Generate a unique fingerprint for a request
-   */
-  static generate(
-    method: string,
-    url: string,
-    headers: Record<string, string> = {},
-    body?: unknown,
-    params?: Record<string, unknown>
-  ): string {
-    const fingerprint = {
-      method: method.toUpperCase(),
-      url: this.normalizeURL(url),
-      headers: this.normalizeHeaders(headers),
-      body: body ? JSON.stringify(body) : undefined,
-      params: params ? JSON.stringify(params) : undefined
-    };
-
-    // Simple hash generation (in production, use crypto-js or similar)
-    return this.simpleHash(JSON.stringify(fingerprint));
-  }
-
-  private static normalizeURL(url: string): string {
-    try {
-      const urlObj = new URL(url);
-      // Sort query parameters for consistent fingerprinting
-      const params = new URLSearchParams(urlObj.search);
-      const sortedParams = new URLSearchParams();
-      Array.from(params.keys()).sort().forEach(key => {
-        params.getAll(key).forEach(value => sortedParams.append(key, value));
-      });
-      urlObj.search = sortedParams.toString();
-      return urlObj.toString();
-    } catch {
-      return url;
-    }
-  }
-
-  private static normalizeHeaders(headers: Record<string, string>): Record<string, string> {
-    const normalized: Record<string, string> = {};
-    
-    // Only include cache-relevant headers and normalize case
-    const relevantHeaders = ['authorization', 'content-type', 'accept', 'cache-control'];
-    
-    for (const [key, value] of Object.entries(headers)) {
-      const lowerKey = key.toLowerCase();
-      if (relevantHeaders.includes(lowerKey)) {
-        normalized[lowerKey] = value;
-      }
-    }
-    
-    return normalized;
-  }
-
-  private static simpleHash(str: string): string {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return hash.toString(36);
-  }
-}
-
-/**
- * Request coalescing manager
- */
-class RequestCoalescer {
-  private readonly pendingRequests = new Map<string, Promise<unknown>>();
-  private readonly maxPending: number;
-
-  constructor(maxPending = ${options.maxPendingRequests || 100}) {
-    this.maxPending = maxPending;
-  }
-
-  /**
-   * Coalesce identical requests
-   */
-  async coalesce<T>(
-    fingerprint: string,
-    requestFactory: () => Promise<T>
-  ): Promise<T> {
-    // Check if identical request is already pending
-    const existingRequest = this.pendingRequests.get(fingerprint);
-    if (existingRequest) {
-      ${
-        options.enableDebugLogging
-          ? "console.debug(`Request coalesced: ${fingerprint}`);"
-          : ""
-      }
-      return existingRequest as Promise<T>;
-    }
-
-    // Check if we're at capacity
-    if (this.pendingRequests.size >= this.maxPending) {
-      ${
-        options.enableDebugLogging
-          ? "console.warn(`Request coalescing at capacity, executing directly`);"
-          : ""
-      }
-      return requestFactory();
-    }
-
-    // Create new request and track it
-    const requestPromise = requestFactory()
-      .finally(() => {
-        // Clean up when request completes
-        this.pendingRequests.delete(fingerprint);
-      });
-
-    this.pendingRequests.set(fingerprint, requestPromise);
-    return requestPromise;
-  }
-
-  /**
-   * Clear all pending requests
-   */
-  clear(): void {
-    this.pendingRequests.clear();
-  }
-
-  /**
-   * Get current pending request count
-   */
-  getPendingCount(): number {
-    return this.pendingRequests.size;
-  }
-}
-
-/**
- * Cache manager with stale-while-revalidate support
- */
-class CacheManager<T = unknown> {
-  private readonly cache = new LRUCacheWithTTL<string, CacheEntry<T>>();
-  private readonly staleRevalidatePromises = new Map<string, Promise<T>>();
-
-  constructor(private readonly options: {
-    defaultTTL: number;
-    enableStaleWhileRevalidate: boolean;
-    debugLogging: boolean;
-  }) {}
-
-  /**
-   * Get cached response or undefined if not cached/expired
-   */
-  get(fingerprint: string): T | undefined {
-    const entry = this.cache.get(fingerprint);
-    
-    if (!entry) {
-      return undefined;
-    }
-
-    const now = Date.now();
-    const age = now - entry.timestamp;
-    
-    if (age > entry.ttl) {
-      // Entry is expired
-      if (this.options.enableStaleWhileRevalidate && !entry.stale) {
-        // Mark as stale but return it
-        entry.stale = true;
-        this.cache.set(fingerprint, entry, entry.ttl);
-        ${
-          options.enableDebugLogging
-            ? "this.options.debugLogging && console.debug(`Serving stale data: ${fingerprint}`);"
-            : ""
-        }
-        return entry.data;
-      }
-      
-      // Entry is too old even for stale-while-revalidate
-      this.cache.delete(fingerprint);
-      return undefined;
-    }
-
-    ${
-      options.enableDebugLogging
-        ? "this.options.debugLogging && console.debug(`Cache hit: ${fingerprint}`);"
-        : ""
-    }
-    return entry.data;
-  }
-
-  /**
-   * Set cached response
-   */
-  set(fingerprint: string, data: T, ttl?: number): void {
-    const entry: CacheEntry<T> = {
-      data,
-      timestamp: Date.now(),
-      ttl: ttl || this.options.defaultTTL,
-      stale: false
-    };
-
-    this.cache.set(fingerprint, entry, entry.ttl);
-    ${
-      options.enableDebugLogging
-        ? "this.options.debugLogging && console.debug(`Cache set: ${fingerprint}`);"
-        : ""
-    }
-  }
-
-  /**
-   * Check if entry exists and is fresh
-   */
-  hasFresh(fingerprint: string): boolean {
-    const entry = this.cache.get(fingerprint);
-    if (!entry) return false;
-    
-    const age = Date.now() - entry.timestamp;
-    return age <= entry.ttl && !entry.stale;
-  }
-
-  /**
-   * Check if entry exists (including stale)
-   */
-  has(fingerprint: string): boolean {
-    return this.cache.has(fingerprint);
-  }
-
-  /**
-   * Invalidate cache entry
-   */
-  invalidate(fingerprint: string): void {
-    this.cache.delete(fingerprint);
-    this.staleRevalidatePromises.delete(fingerprint);
-    ${
-      options.enableDebugLogging
-        ? "this.options.debugLogging && console.debug(`Cache invalidated: ${fingerprint}`);"
-        : ""
-    }
-  }
-
-  /**
-   * Clear entire cache
-   */
-  clear(): void {
-    this.cache.clear();
-    this.staleRevalidatePromises.clear();
-  }
-
-  /**
-   * Get cache statistics
-   */
-  getStats(): { size: number; hitRate: number } {
-    return {
-      size: this.cache.size(),
-      hitRate: 0 // Would need hit/miss tracking
-    };
-  }
-
-  /**
-   * Revalidate stale entry in background
-   */
-  revalidateInBackground<U extends T>(
-    fingerprint: string,
-    revalidator: () => Promise<U>
-  ): void {
-    if (this.staleRevalidatePromises.has(fingerprint)) {
-      return; // Already revalidating
-    }
-
-    const revalidationPromise = revalidator()
-      .then(freshData => {
-        this.set(fingerprint, freshData);
-        return freshData;
-      })
-      .catch(error => {
-        ${
-          options.enableDebugLogging
-            ? "this.options.debugLogging && console.warn(`Background revalidation failed: ${fingerprint}`, error);"
-            : ""
-        }
-        throw error;
-      })
-      .finally(() => {
-        this.staleRevalidatePromises.delete(fingerprint);
-      });
-
-    this.staleRevalidatePromises.set(fingerprint, revalidationPromise);
-  }
-}
-
-/**
- * Main request deduplicator
- */
 export class RequestDeduplicator {
-  private readonly cacheManager: CacheManager;
-  private readonly coalescer: RequestCoalescer;
-  private readonly endpointPolicies: Record<string, any>;
-
-  constructor() {
-    this.cacheManager = new CacheManager({
-      defaultTTL: ${options.defaultTTL || 5 * 60 * 1000},
-      enableStaleWhileRevalidate: ${options.enableStaleWhileRevalidate || true},
-      debugLogging: ${options.enableDebugLogging || false}
-    });
-    
-    this.coalescer = new RequestCoalescer(${options.maxPendingRequests || 100});
-    this.endpointPolicies = ${JSON.stringify(options.endpointPolicies || {})};
-  }
-
-  /**
-   * Execute request with deduplication
-   */
-  async execute<T>(
-    method: string,
-    url: string,
-    requestFactory: () => Promise<T>,
-    options: {
-      headers?: Record<string, string>;
-      body?: unknown;
-      params?: Record<string, unknown>;
-      skipCache?: boolean;
-      customTTL?: number;
-    } = {}
-  ): Promise<T> {
-    if (options.skipCache) {
-      return requestFactory();
+  private readonly cacheManager = new CacheManager({ defaultTTL: ${options.defaultTTL ?? 300000}, enableStaleWhileRevalidate: ${options.enableStaleWhileRevalidate ?? true}, debugLogging: ${options.enableDebugLogging ?? false}, maxSize: ${options.maxCacheSize ?? 1000} });
+  private readonly coalescer = new RequestCoalescer();
+  private readonly urls = new Map<string, Set<string>>();
+  private epoch = 0;
+  private readonly endpointPolicies: Record<string, { enabled?: boolean; ttl?: number; staleWhileRevalidate?: boolean }> = ${JSON.stringify(options.endpointPolicies ?? {})};
+  constructor(private readonly runtimeOptions: { customKeyGenerator?: RequestKeyGenerator } = {}) {}
+  async execute<T>(method: string, url: string, factory: () => Promise<T>, options: { headers?: Record<string, string>; body?: unknown; params?: Record<string, unknown>; cacheScope?: string; skipCache?: boolean; customTTL?: number } = {}): Promise<T> {
+    if (options.skipCache || !['GET', 'HEAD'].includes(method.toUpperCase())) return factory();
+    const policy = this.getEndpointPolicy(url); if (!policy.enabled) return factory();
+    const request: DeduplicationRequest = { method: method.toUpperCase(), url, headers: options.headers ?? {}, ...(options.body !== undefined ? { body: options.body } : {}), ...(options.params !== undefined ? { params: options.params } : {}), ...(options.cacheScope !== undefined ? { cacheScope: options.cacheScope } : {}) };
+    const keyGenerator = this.runtimeOptions.customKeyGenerator;
+    let key: string;
+    if (keyGenerator) key = keyGenerator(request);
+    else { try { key = requestIdentity(request); } catch { return factory(); } }
+    const ttl = options.customTTL ?? policy.ttl;
+    const cached = this.cacheManager.get(key, policy.staleWhileRevalidate);
+    if (cached !== undefined || this.cacheManager.has(key)) {
+      if (policy.staleWhileRevalidate && !this.cacheManager.hasFresh(key)) this.cacheManager.revalidateInBackground(key, factory, ttl, policy.staleWhileRevalidate);
+      return cached as T;
     }
-
-    // Generate request fingerprint
-    const fingerprint = RequestFingerprintGenerator.generate(
-      method,
-      url,
-      options.headers,
-      options.body,
-      options.params
-    );
-
-    // Check endpoint-specific policy
-    const policy = this.getEndpointPolicy(url);
-    if (!policy.enabled) {
-      return requestFactory();
+    const epoch = this.epoch;
+    const result = ${options.enableCoalescing ?? true} ? await this.coalescer.coalesce(key, factory) : await factory();
+    if (epoch === this.epoch) {
+      this.cacheManager.set(key, result, ttl, policy.staleWhileRevalidate);
+      const urls = this.urls.get(key) ?? new Set<string>(); urls.add(url); this.urls.set(key, urls);
+      for (const known of this.urls.keys()) if (!this.cacheManager.has(known)) this.urls.delete(known);
     }
-
-    // Try cache first
-    const cachedResult = this.cacheManager.get(fingerprint);
-    if (cachedResult !== undefined) {
-      // If stale and stale-while-revalidate is enabled, revalidate in background
-      if (policy.staleWhileRevalidate && !this.cacheManager.hasFresh(fingerprint)) {
-        this.cacheManager.revalidateInBackground(fingerprint, requestFactory);
-      }
-      return cachedResult as T;
-    }
-
-    // No cache hit, execute request with coalescing
-    const result = await this.coalescer.coalesce(fingerprint, requestFactory);
-
-    // Cache the result
-    const ttl = options.customTTL || policy.ttl || ${
-      options.defaultTTL || 5 * 60 * 1000
-    };
-    this.cacheManager.set(fingerprint, result, ttl);
-
     return result;
   }
-
-  /**
-   * Invalidate cache for specific pattern
-   */
   invalidate(pattern: string | RegExp): void {
-    // In a real implementation, this would iterate through cache keys
-    // and invalidate matching entries
-    if (typeof pattern === 'string') {
-      const fingerprint = RequestFingerprintGenerator.generate('GET', pattern);
-      this.cacheManager.invalidate(fingerprint);
+    this.epoch++; this.coalescer.clear();
+    for (const [key, urls] of this.urls) {
+      const matches = Array.from(urls).some(url => { if (typeof pattern === 'string') return url.includes(pattern); pattern.lastIndex = 0; return pattern.test(url); });
+      if (matches) { this.cacheManager.invalidate(key); this.urls.delete(key); }
     }
   }
-
-  /**
-   * Clear all caches
-   */
-  clearCache(): void {
-    this.cacheManager.clear();
-    this.coalescer.clear();
+  clearCache(): void { this.epoch++; this.cacheManager.clear(); this.coalescer.clear(); this.urls.clear(); }
+  getStats(): { cacheSize: number; pendingRequests: number; cacheHitRate: number; hits: number; misses: number; evictions: number } {
+    const stats = this.cacheManager.getStats(); return { cacheSize: stats.size, pendingRequests: this.coalescer.getPendingCount(), cacheHitRate: stats.hitRate, hits: stats.hits, misses: stats.misses, evictions: stats.evictions };
   }
-
-  /**
-   * Get cache statistics
-   */
-  getStats(): {
-    cacheSize: number;
-    pendingRequests: number;
-    cacheHitRate: number;
-  } {
-    return {
-      cacheSize: this.cacheManager.getStats().size,
-      pendingRequests: this.coalescer.getPendingCount(),
-      cacheHitRate: this.cacheManager.getStats().hitRate
-    };
-  }
-
-  private getEndpointPolicy(url: string): {
-    enabled: boolean;
-    ttl: number;
-    staleWhileRevalidate: boolean;
-  } {
-    // Simple URL matching - in production, use more sophisticated matching
-    for (const [pattern, policy] of Object.entries(this.endpointPolicies)) {
-      if (url.includes(pattern)) {
-        return {
-          enabled: policy.enabled ?? true,
-          ttl: policy.ttl ?? ${options.defaultTTL || 5 * 60 * 1000},
-          staleWhileRevalidate: policy.staleWhileRevalidate ?? ${
-            options.enableStaleWhileRevalidate || true
-          }
-        };
-      }
-    }
-
-    return {
-      enabled: true,
-      ttl: ${options.defaultTTL || 5 * 60 * 1000},
-      staleWhileRevalidate: ${options.enableStaleWhileRevalidate || true}
-    };
+  private getEndpointPolicy(url: string): { enabled: boolean; ttl: number; staleWhileRevalidate: boolean } {
+    const match = Object.entries(this.endpointPolicies).find(([pattern]) => url.includes(pattern));
+    const policy = match?.[1]; return { enabled: policy?.enabled ?? true, ttl: policy?.ttl ?? ${options.defaultTTL ?? 300000}, staleWhileRevalidate: policy?.staleWhileRevalidate ?? ${options.enableStaleWhileRevalidate ?? true} };
   }
 }
-
-/**
- * Global deduplicator instance
- */
 const globalDeduplicator = new RequestDeduplicator();
-
-/**
- * Utility functions
- */
-export function clearRequestCache(): void {
-  globalDeduplicator.clearCache();
-}
-
-export function getCacheStats(): ReturnType<RequestDeduplicator['getStats']> {
-  return globalDeduplicator.getStats();
-}
-
-export function invalidateCache(pattern: string | RegExp): void {
-  globalDeduplicator.invalidate(pattern);
-}
-
-/**
- * Request wrapper with deduplication
- */
-export function withDeduplication<T extends (...args: any[]) => Promise<any>>(
-  requestFn: T,
-  options: {
-    method: string;
-    urlExtractor: (...args: Parameters<T>) => string;
-    headersExtractor?: (...args: Parameters<T>) => Record<string, string>;
-    bodyExtractor?: (...args: Parameters<T>) => unknown;
-    paramsExtractor?: (...args: Parameters<T>) => Record<string, unknown>;
-  }
-): T {
+export function clearRequestCache(): void { globalDeduplicator.clearCache(); }
+export function getCacheStats(): ReturnType<RequestDeduplicator['getStats']> { return globalDeduplicator.getStats(); }
+export function invalidateCache(pattern: string | RegExp): void { globalDeduplicator.invalidate(pattern); }
+export function withDeduplication<T extends (...args: any[]) => Promise<any>>(requestFn: T, options: { method: string; urlExtractor: (...args: Parameters<T>) => string; headersExtractor?: (...args: Parameters<T>) => Record<string, string>; bodyExtractor?: (...args: Parameters<T>) => unknown; paramsExtractor?: (...args: Parameters<T>) => Record<string, unknown>; cacheScopeExtractor?: (...args: Parameters<T>) => string }): T {
   return ((...args: Parameters<T>) => {
-    const url = options.urlExtractor(...args);
-    const headers = options.headersExtractor?.(...args);
-    const body = options.bodyExtractor?.(...args);
-    const params = options.paramsExtractor?.(...args);
-
-    return globalDeduplicator.execute(
-      options.method,
-      url,
-      () => requestFn(...args),
-      { headers, body, params }
-    );
+    const headers = options.headersExtractor?.(...args); const body = options.bodyExtractor?.(...args); const params = options.paramsExtractor?.(...args); const cacheScope = options.cacheScopeExtractor?.(...args);
+    return globalDeduplicator.execute(options.method, options.urlExtractor(...args), () => requestFn(...args), { ...(headers !== undefined ? { headers } : {}), ...(body !== undefined ? { body } : {}), ...(params !== undefined ? { params } : {}), ...(cacheScope !== undefined ? { cacheScope } : {}) });
   }) as T;
-}`;
 }
-
-// Export plugin for registration
+`;
+}
 export default requestDeduplicationPlugin;

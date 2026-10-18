@@ -26,10 +26,3 @@ afterEach(() => {
 
 // Set up environment variables for testing
 process.env.NODE_ENV = "test";
-
-// Dummy test to satisfy Jest requirement
-describe("Setup", () => {
-  it("should configure test environment", () => {
-    expect(process.env.NODE_ENV).toBe("test");
-  });
-});

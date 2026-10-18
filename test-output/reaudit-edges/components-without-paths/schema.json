@@ -1,0 +1,14 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Edge API",
+    "version": "1"
+  },
+  "components": {
+    "schemas": {
+      "Model": {
+        "type": "string"
+      }
+    }
+  }
+}

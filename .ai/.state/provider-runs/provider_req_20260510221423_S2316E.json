@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "0.2",
+  "id": "provider_audit_provider_req_20260510221423_S2316E",
+  "requestId": "provider_req_20260510221423_S2316E",
+  "projectId": "schemantic",
+  "projectRootHash": "sha256:bb6f9fe6ab12ce5e5f13eec3750caab409335175852308fda7a05b1976d7c3e7",
+  "provider": {
+    "id": "openrouter-dev",
+    "kind": "openrouter",
+    "displayName": "OpenRouter Development Adapter",
+    "model": "inclusionai/ring-2.6-1t:free",
+    "version": "0.1.0",
+    "baseUrl": "https://openrouter.ai/api/v1/chat/completions"
+  },
+  "startedAt": "2026-05-10T22:14:23.395Z",
+  "completedAt": "2026-05-10T22:14:56.072Z",
+  "durationMs": 32677,
+  "live": false,
+  "dryRun": false,
+  "networkAllowed": true,
+  "status": "failed",
+  "evidence": {
+    "packetId": "evidence:schemantic:flow:54af1c2f16",
+    "purpose": "flow",
+    "snapshotId": "snap_20260510221412_J9T3G8",
+    "inputsHash": "sha256:26e38055d9d076a052bcd0f718f173c16b3aa022371e7bdd3915d642267ddad1",
+    "selectedFacts": 150,
+    "omittedFacts": 1750,
+    "sourceFiles": 30,
+    "estimatedInputTokens": 77770,
+    "truncated": false
+  },
+  "requestSummary": {
+    "riskCeiling": "medium",
+    "allowedTargets": [
+      ".ai/project.yaml",
+      ".ai/modules.yaml",
+      ".ai/flows/*.flow.yaml",
+      ".ai/notes/*"
+    ],
+    "promptRedacted": true,
+    "promptHash": "sha256:de95a4164ed7ab7c2bf322d831ab9b596ae8a57e31a8d26fd79a6c9b30af9509",
+    "promptBytes": 236810
+  },
+  "responseSummary": {
+    "title": "Provider request failed",
+    "risk": "low",
+    "targetFiles": [],
+    "changeCount": 0,
+    "warningCount": 1,
+    "rationaleHash": "sha256:a68b56fd9372c77e4d9cb0983dfbf2838f2a639cbb19dbbe2fb3fcec318c42c5",
+    "fullChangeValuesRedacted": true
+  },
+  "warnings": [
+    "PROVIDER_DEFAULT_EXTERNAL_OR_BUILTIN: Default provider mock was not found in config; built-ins may still satisfy it.",
+    "OpenRouter response content was not valid provider JSON: Unterminated string in JSON at position 4712 (line 80 column 187)",
+    "Provider response failed policy validation. No proposal file was created."
+  ],
+  "evidenceWarnings": [],
+  "retry": {
+    "retryable": true,
+    "sourceRequestId": "provider_req_20260510221423_S2316E",
+    "attempt": 0,
+    "recommendedMode": "repair",
+    "reasons": [
+      "OpenRouter response content was not valid provider JSON: Unterminated string in JSON at position 4712 (line 80 column 187)",
+      "Provider response failed policy validation. No proposal file was created."
+    ],
+    "intent": {
+      "purpose": "flow",
+      "query": "primary API route, CLI command, data pipeline, or main application flow"
+    },
+    "suggestedArgs": [
+      "providers retry",
+      "provider_req_20260510221423_S2316E",
+      "--include-source-snippets",
+      "--snippet-policy focused-symbols"
+    ]
+  },
+  "redaction": {
+    "level": "default",
+    "redactedFields": [
+      "request.evidence.prompt.messages[].content",
+      "request.evidence.prompt.text",
+      "response.changes[].value",
+      "rawProviderResponse",
+      "apiKeyEnv values"
+    ],
+    "notes": [
+      "Audit logs summarize provider behavior without storing full prompts or generated artifact payloads by default.",
+      "Use requestId, evidence packet ID, proposal ID, and hashes to correlate with local artifacts."
+    ]
+  }
+}

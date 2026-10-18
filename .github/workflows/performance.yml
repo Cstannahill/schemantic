@@ -1,119 +1,99 @@
-name: Performance Tests
+name: Generation observations
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   schedule:
-    # Run performance tests daily at 2:00 AM UTC
-    - cron: "0 2 * * *"
+    - cron: '29 8 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: generation-observations-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   performance:
-    name: Performance Benchmarks
+    name: Record fixture generation measurements
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          node-version: "18"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Setup test data
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Generate fixtures and record repeated observations
+        shell: bash
         run: |
-          mkdir -p perf-test-data
-
-          # Download large OpenAPI schemas for performance testing
-          curl -o perf-test-data/large-schema-1.json https://raw.githubusercontent.com/APIs-guru/openapi-directory/main/APIs/azure.com/2019-06-01.json || echo "Failed to download schema 1"
-          curl -o perf-test-data/large-schema-2.json https://raw.githubusercontent.com/APIs-guru/openapi-directory/main/APIs/googleapis.com/2023-01-01.json || echo "Failed to download schema 2"
-
-          # Use local FastAPI schema as fallback
-          cp examples/example-generated/react-app/openapi-schema.json perf-test-data/fallback-schema.json
-
-      - name: Run performance tests
-        run: |
-          echo "🚀 Running performance benchmarks..."
-
-          # Test type generation performance
-          for schema in perf-test-data/*.json; do
-            if [ -f "$schema" ]; then
-              echo "Testing with $(basename $schema)..."
-              
-              start_time=$(date +%s%N)
-              timeout 300 node dist/cli/index.js generate \
-                --file "$schema" \
-                --output "./perf-output-$(basename $schema .json)" \
-                --quiet || echo "Timeout or error with $schema"
-              end_time=$(date +%s%N)
-              
-              duration=$(( (end_time - start_time) / 1000000 ))
-              echo "✅ Generated types for $(basename $schema) in ${duration}ms"
-              
-              # Check memory usage
-              du -sh "./perf-output-$(basename $schema .json)" 2>/dev/null || echo "Output directory not found"
-            fi
-          done
-
-      - name: Memory usage test
-        run: |
-          echo "🧠 Testing memory usage..."
-
-          # Run with memory monitoring
-          /usr/bin/time -v node dist/cli/index.js generate \
-            --file examples/example-generated/react-app/openapi-schema.json \
-            --output ./memory-test-output \
-            --quiet 2>&1 | grep -E "(Maximum resident set size|User time|System time)" || true
-
-      - name: Concurrent generation test
-        run: |
-          echo "⚡ Testing concurrent generation..."
-
-          # Test multiple concurrent generations
-          for i in {1..5}; do
-            node dist/cli/index.js generate \
-              --file examples/example-generated/react-app/openapi-schema.json \
-              --output "./concurrent-test-$i" \
-              --quiet &
-          done
-
-          wait
-          echo "✅ Concurrent generation completed"
-
-      - name: Bundle size analysis
-        run: |
-          echo "📦 Analyzing bundle size..."
-
-          # Check generated file sizes
-          echo "Generated file sizes:"
-          find . -name "*.ts" -path "./perf-output-*" -exec ls -lh {} \; | head -20
-          find . -name "*.ts" -path "./memory-test-output*" -exec ls -lh {} \; | head -10
-
-          # Check dist bundle size
-          echo "Distribution bundle sizes:"
-          ls -lh dist/ | head -20
-
-      - name: Performance regression check
-        run: |
-          echo "📊 Performance summary:"
-          echo "- Type generation completed for multiple schemas"
-          echo "- Memory usage within acceptable limits"
-          echo "- Concurrent generation successful"
-          echo "- Bundle sizes analyzed"
-
-          # In a real implementation, you would compare against baseline metrics
-          # and fail the build if performance regresses significantly
-
-      - name: Cleanup
-        run: |
-          rm -rf perf-test-data perf-output-* memory-test-output concurrent-test-*
+          node <<'JS'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const os = require('node:os');
+          const crypto = require('node:crypto');
+          const { spawnSync } = require('node:child_process');
+          const assert = require('node:assert/strict');
+          const schemas = fs.readdirSync('test-schemas').filter(name => name.endsWith('.json')).sort();
+          assert(schemas.length > 0, 'No measurement fixtures');
+          const report = {
+            commit: process.env.GITHUB_SHA,
+            node: process.version,
+            platform: process.platform,
+            architecture: process.arch,
+            cpu: os.cpus()[0]?.model,
+            warmupsPerFixture: 1,
+            samplesPerFixture: 3,
+            note: 'Hosted-runner observations; no performance regression threshold or baseline comparison.',
+            measurements: []
+          };
+          fs.mkdirSync('perf-output', { recursive: true });
+          try {
+            for (const schema of schemas) {
+              const schemaPath = path.join('test-schemas', schema);
+              const samples = [];
+              let generatedSourceBytes = 0;
+              for (let sample = 0; sample <= report.samplesPerFixture; sample++) {
+                const output = path.join('perf-output', path.basename(schema, '.json'));
+                fs.rmSync(output, { recursive: true, force: true });
+                const start = process.hrtime.bigint();
+                const result = spawnSync(process.execPath, ['dist/cli/index.js', 'generate', schemaPath, '--output', output, '--quiet'], { encoding: 'utf8', timeout: 120000 });
+                const elapsedMs = Number(process.hrtime.bigint() - start) / 1e6;
+                fs.writeFileSync(path.join('perf-output', `${path.basename(schema, '.json')}-${sample}.log`), `${result.stdout || ''}\n${result.stderr || ''}`);
+                assert.equal(result.status, 0, result.error?.message || result.stderr || `Failed ${schema}`);
+                for (const file of ['types.ts', 'api-client.ts', 'index.ts']) assert(fs.existsSync(path.join(output, file)), `Missing ${file} for ${schema}`);
+                generatedSourceBytes = fs.readdirSync(output).filter(name => name.endsWith('.ts')).reduce((sum, name) => sum + fs.statSync(path.join(output, name)).size, 0);
+                if (sample > 0) samples.push(elapsedMs);
+              }
+              const sorted = [...samples].sort((a, b) => a - b);
+              report.measurements.push({
+                schema,
+                schemaSha256: crypto.createHash('sha256').update(fs.readFileSync(schemaPath)).digest('hex'),
+                elapsedMs: samples,
+                medianMs: sorted[Math.floor(sorted.length / 2)],
+                minMs: sorted[0],
+                maxMs: sorted.at(-1),
+                generatedSourceBytes
+              });
+            }
+          } finally {
+            fs.writeFileSync('generation-measurements.json', JSON.stringify(report, null, 2));
+            console.log(JSON.stringify(report, null, 2));
+          }
+          const rows = report.measurements.map(item => `| ${item.schema} | ${item.medianMs.toFixed(1)} | ${item.minMs.toFixed(1)} | ${item.maxMs.toFixed(1)} | ${item.generatedSourceBytes} |`).join('\n');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `Fixture CLI durations include process startup. One warmup and three measured runs per fixture. Hosted-runner observations have no regression threshold.\n\n| Fixture | Median ms | Min ms | Max ms | Generated bytes |\n| --- | ---: | ---: | ---: | ---: |\n${rows}\n`);
+          JS
+      - name: Preserve observations and diagnostics
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: generation-observations-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            generation-measurements.json
+            perf-output/
+          if-no-files-found: warn
+          retention-days: 14

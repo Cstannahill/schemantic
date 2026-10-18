@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "0.2",
+  "id": "provider_audit_provider_req_20260510060353_I4Z46O",
+  "requestId": "provider_req_20260510060353_I4Z46O",
+  "projectId": "schemantic",
+  "projectRootHash": "sha256:bb6f9fe6ab12ce5e5f13eec3750caab409335175852308fda7a05b1976d7c3e7",
+  "provider": {
+    "id": "ollama",
+    "kind": "ollama",
+    "displayName": "Ollama Local Chat Adapter",
+    "model": "Gemma4-E4B-IT-A",
+    "version": "0.1.0",
+    "baseUrl": "http://127.0.0.1:11434/api/chat"
+  },
+  "startedAt": "2026-05-10T06:03:53.519Z",
+  "completedAt": "2026-05-10T06:03:53.674Z",
+  "durationMs": 155,
+  "live": false,
+  "dryRun": true,
+  "networkAllowed": false,
+  "status": "refused",
+  "evidence": {
+    "packetId": "evidence:schemantic:flow:54af1c2f16",
+    "purpose": "flow",
+    "snapshotId": "snap_20260510060353_F09IKZ",
+    "inputsHash": "sha256:2858be3141cb29484edaab7ef21bc6ff69b136a16526c10383b958e427694f2c",
+    "selectedFacts": 0,
+    "omittedFacts": 1900,
+    "sourceFiles": 3,
+    "estimatedInputTokens": 74403,
+    "truncated": true
+  },
+  "requestSummary": {
+    "riskCeiling": "medium",
+    "allowedTargets": [
+      ".ai/project.yaml",
+      ".ai/modules.yaml",
+      ".ai/flows/*.flow.yaml",
+      ".ai/notes/*"
+    ],
+    "promptRedacted": true,
+    "promptHash": "sha256:5dca4b1873b0f90af106664645befa4781050032392523a1952a39b395548669",
+    "promptBytes": 227010
+  },
+  "responseSummary": {
+    "title": "Dry-run provider request for ollama:Gemma4-E4B-IT-A",
+    "risk": "low",
+    "targetFiles": [],
+    "changeCount": 0,
+    "warningCount": 3,
+    "rationaleHash": "sha256:c2c43d1bd0f05d1783ca6c7f10ec94b4b77d90eabca3d86dd684f619cbb39cf5",
+    "fullChangeValuesRedacted": true
+  },
+  "warnings": [
+    "No network or subprocess provider call was sent.",
+    "Use the mock provider for deterministic proposal draft tests.",
+    "Live provider execution requires --allow-network and --provider-live. Phase 29 supports live OpenRouter and local Ollama adapters.",
+    "Provider refused to generate a proposal. No proposal file was created."
+  ],
+  "evidenceWarnings": [
+    "Evidence packet exceeded requested maxTokens (73953/6000) and was truncated to 0 facts."
+  ],
+  "retry": {
+    "retryable": true,
+    "sourceRequestId": "provider_req_20260510060353_I4Z46O",
+    "attempt": 0,
+    "recommendedMode": "rewrite",
+    "reasons": [
+      "No network or subprocess provider call was sent.",
+      "Use the mock provider for deterministic proposal draft tests.",
+      "Live provider execution requires --allow-network and --provider-live. Phase 29 supports live OpenRouter and local Ollama adapters.",
+      "Provider refused to generate a proposal. No proposal file was created."
+    ],
+    "intent": {
+      "purpose": "flow",
+      "query": "primary API route, CLI command, data pipeline, or main application flow"
+    },
+    "suggestedArgs": [
+      "providers retry",
+      "provider_req_20260510060353_I4Z46O",
+      "--include-source-snippets",
+      "--snippet-policy focused-symbols"
+    ]
+  },
+  "redaction": {
+    "level": "default",
+    "redactedFields": [
+      "request.evidence.prompt.messages[].content",
+      "request.evidence.prompt.text",
+      "response.changes[].value",
+      "rawProviderResponse",
+      "apiKeyEnv values"
+    ],
+    "notes": [
+      "Audit logs summarize provider behavior without storing full prompts or generated artifact payloads by default.",
+      "Use requestId, evidence packet ID, proposal ID, and hashes to correlate with local artifacts."
+    ]
+  }
+}

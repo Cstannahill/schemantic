@@ -1,0 +1,317 @@
+[
+  {
+    "name": "dictionary-known-property",
+    "success": true,
+    "errors": [],
+    "endpoints": 0,
+    "diagnostics": [
+      {
+        "file": "consumer.ts",
+        "line": 1,
+        "code": 2322,
+        "message": "Type '{ name: string; score: number; }' is not assignable to type 'MixedDictionary'.   Type '{ name: string; score: number; }' is not assignable to type 'Record<string, number>'.     Property 'name' is incompatible with index signature.       Type 'string' is not assignable to type 'number'."
+      }
+    ]
+  },
+  {
+    "name": "allof-required-only",
+    "success": true,
+    "errors": [],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "ref-required-sibling",
+    "success": true,
+    "errors": [],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "pathitem-ref",
+    "success": true,
+    "errors": [],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "multipart-binary",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [
+      {
+        "file": "consumer.ts",
+        "line": 1,
+        "code": 2322,
+        "message": "Type 'Blob' is not assignable to type 'string'."
+      }
+    ]
+  },
+  {
+    "name": "raw-binary",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [
+      {
+        "file": "consumer.ts",
+        "line": 1,
+        "code": 2345,
+        "message": "Argument of type 'Blob' is not assignable to parameter of type 'string'."
+      }
+    ]
+  },
+  {
+    "name": "readonly-writeonly",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [
+      {
+        "file": "consumer.ts",
+        "line": 1,
+        "code": 2345,
+        "message": "Argument of type '{ name: string; password: string; }' is not assignable to parameter of type 'User'.   Property 'id' is missing in type '{ name: string; password: string; }' but required in type 'User'."
+      }
+    ]
+  },
+  {
+    "name": "verbatim-module",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [
+      {
+        "file": "api-client.ts",
+        "line": 1,
+        "code": 1484,
+        "message": "'User' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled."
+      }
+    ]
+  },
+  {
+    "name": "global-blob-name",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [
+      {
+        "file": "api-client.ts",
+        "line": 77,
+        "code": 2359,
+        "message": "The right-hand side of an 'instanceof' expression must be either of type 'any', a class, function, or other type assignable to the 'Function' interface type, or an object type with a 'Symbol.hasInstance' method."
+      },
+      {
+        "file": "api-client.ts",
+        "line": 81,
+        "code": 2359,
+        "message": "The right-hand side of an 'instanceof' expression must be either of type 'any', a class, function, or other type assignable to the 'Function' interface type, or an object type with a 'Symbol.hasInstance' method."
+      },
+      {
+        "file": "api-client.ts",
+        "line": 82,
+        "code": 2351,
+        "message": "This expression is not constructable.   Type 'typeof Blob' has no construct signatures."
+      },
+      {
+        "file": "api-client.ts",
+        "line": 86,
+        "code": 2351,
+        "message": "This expression is not constructable.   Type 'typeof Blob' has no construct signatures."
+      }
+    ]
+  },
+  {
+    "name": "version-3.0.4",
+    "success": false,
+    "errors": [
+      {
+        "code": "UNSUPPORTED_VERSION",
+        "message": "Unsupported OpenAPI version: 3.0.4",
+        "path": "openapi",
+        "severity": "error"
+      },
+      {
+        "code": "GENERATION_ERROR",
+        "message": "OpenAPI schema validation failed",
+        "severity": "error"
+      }
+    ],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "version-3.1.1",
+    "success": false,
+    "errors": [
+      {
+        "code": "UNSUPPORTED_VERSION",
+        "message": "Unsupported OpenAPI version: 3.1.1",
+        "path": "openapi",
+        "severity": "error"
+      },
+      {
+        "code": "GENERATION_ERROR",
+        "message": "OpenAPI schema validation failed",
+        "severity": "error"
+      }
+    ],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "version-3.1.2",
+    "success": false,
+    "errors": [
+      {
+        "code": "UNSUPPORTED_VERSION",
+        "message": "Unsupported OpenAPI version: 3.1.2",
+        "path": "openapi",
+        "severity": "error"
+      },
+      {
+        "code": "GENERATION_ERROR",
+        "message": "OpenAPI schema validation failed",
+        "severity": "error"
+      }
+    ],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "boolean-schema",
+    "success": false,
+    "errors": [
+      {
+        "code": "INVALID_SCHEMA",
+        "message": "Invalid schema: Anything",
+        "path": "components.schemas.Anything",
+        "severity": "error"
+      },
+      {
+        "code": "INVALID_SCHEMA",
+        "message": "Invalid schema: Nothing",
+        "path": "components.schemas.Nothing",
+        "severity": "error"
+      },
+      {
+        "code": "GENERATION_ERROR",
+        "message": "OpenAPI schema validation failed",
+        "severity": "error"
+      }
+    ],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "components-without-paths",
+    "success": false,
+    "errors": [
+      {
+        "code": "GENERATION_ERROR",
+        "message": "Invalid schema: missing or invalid paths field",
+        "severity": "error"
+      }
+    ],
+    "endpoints": 0,
+    "diagnostics": []
+  },
+  {
+    "name": "yaml-advertised",
+    "metadata": {
+      "name": "OpenAPI Parser",
+      "version": "1.0.0",
+      "supportedFormats": [
+        "json",
+        "yaml"
+      ],
+      "supportedVersions": [
+        "3.0.0",
+        "3.0.1",
+        "3.0.2",
+        "3.0.3",
+        "3.1.0"
+      ],
+      "description": "Parser for OpenAPI 3.0+ specifications from FastAPI applications"
+    },
+    "error": "Unexpected token 'o', \"openapi: 3\"... is not valid JSON"
+  },
+  {
+    "name": "auth-headers",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [],
+    "runtime": {
+      "afterSet": {
+        "url": "/auth",
+        "authorization": "Bearer original, Bearer new"
+      },
+      "afterClear": {
+        "url": "/auth",
+        "authorization": "Bearer original"
+      }
+    }
+  },
+  {
+    "name": "binary-no-schema",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [],
+    "runtime": {
+      "type": "undefined"
+    }
+  },
+  {
+    "name": "default-response",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [],
+    "runtime": {
+      "type": "undefined"
+    }
+  },
+  {
+    "name": "xml-response",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [],
+    "runtime": {
+      "type": "object",
+      "constructor": "Blob",
+      "value": "<ok>true</ok>"
+    }
+  },
+  {
+    "name": "object-query",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [],
+    "runtime": {
+      "type": "object",
+      "constructor": "Object",
+      "value": {
+        "url": "/query?filter=%5Bobject+Object%5D"
+      }
+    }
+  },
+  {
+    "name": "multi-media-response",
+    "success": true,
+    "errors": [],
+    "endpoints": 1,
+    "diagnostics": [],
+    "runtime": {
+      "type": "object",
+      "constructor": "Object",
+      "value": {
+        "ok": true
+      }
+    }
+  }
+]

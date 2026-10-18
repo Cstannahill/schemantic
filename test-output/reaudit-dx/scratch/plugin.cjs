@@ -1,0 +1,1 @@
+module.exports = {name:"dx-plugin",version:"1",description:"probe", beforeGeneration(){}};

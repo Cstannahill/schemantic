@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "types.ts": "aae06a4945d7ff3f5b1d3045847d95ce4f8d42adbc20612b64b7251a8dccccbe",
+    "conversion.ts": "9ee8cb1ac232fad61c58dc10d259f20db78eafaeb969f3d53132d713dc9893c0",
+    "api-client.ts": "88a515f0e9d05ac0d7d06f1644ae8b250114d1e1930bdd6b9819717334edd958",
+    "hooks.ts": "289489b524c7a2b6cbced1fef614b439d8653a798484399bfd135693b7227ee2",
+    "index.ts": "693c0bbe33cff0b6c46d931ef6869e84026761273f65f44e42f9cc41053212a4"
+  }
+}

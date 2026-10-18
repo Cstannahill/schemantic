@@ -27,23 +27,11 @@ import {
   isOpenAPISchemaObject,
   ExtendedSchemaObject,
 } from "../types/schema";
+import { propertyKey, typeName as formatGeneratedName, referenceName } from "../generators/schema-type";
 
 // Type-only reference to Zod - user must install zod as a dependency
 type ZodType<T = unknown> = {
   parse(data: unknown): T;
-  safeParse(data: unknown):
-    | { success: true; data: T }
-    | {
-        success: false;
-        error: {
-          issues: Array<{
-            path: (string | number)[];
-            message: string;
-            code?: string;
-          }>;
-        };
-      };
-  pipe<U>(schema: ZodType<U>): ZodType<U>;
 };
 
 /**
@@ -67,7 +55,7 @@ interface ZodValidationOptions {
 /**
  * Schema cache for performance optimization
  */
-const schemaCache = new Map<string, string>();
+let schemaCaches = new WeakMap<GenerationContext, Map<string, string>>();
 
 /**
  * Memoized schema transformation for performance
@@ -112,23 +100,22 @@ export const zodValidationPlugin: SchemanticPlugin = {
 
     try {
       const options = getPluginOptions(context);
-      const schemaKey = generateSchemaKey(schema);
+      const sourceKey = generateSchemaKey(schema);
+      const schemaKey = sourceKey === undefined ? undefined : JSON.stringify(options) + sourceKey;
 
       // Use memoized transformation for performance
-      if (options.cacheSchemas && memoizedSchemaTransform.has(schemaKey)) {
+      if (options.cacheSchemas && schemaKey !== undefined && memoizedSchemaTransform.has(schemaKey)) {
         return memoizedSchemaTransform.get(schemaKey)!;
       }
 
       const transformedSchema = transformSchemaForZod(schema, options);
 
-      if (options.cacheSchemas) {
+      if (options.cacheSchemas && schemaKey !== undefined) {
+        if (memoizedSchemaTransform.size >= 1000) memoizedSchemaTransform.delete(memoizedSchemaTransform.keys().next().value!);
         memoizedSchemaTransform.set(schemaKey, transformedSchema);
       }
 
       return transformedSchema;
-    } catch (error) {
-      console.warn(`Zod validation plugin transformSchema failed:`, error);
-      return schema;
     } finally {
       const endTime = performance.now();
       recordPerformanceMetric("transformSchema", endTime - startTime);
@@ -191,7 +178,7 @@ export const zodValidationPlugin: SchemanticPlugin = {
 
       // Add branded type exports if enabled
       if (options.generateBrandedTypes) {
-        generatedType.exports.push(`Branded${typeName}`);
+        generatedType.exports.push(`Branded${typeName}`, `createBranded${typeName}`);
       }
 
       // Add validation exports
@@ -204,11 +191,6 @@ export const zodValidationPlugin: SchemanticPlugin = {
       if (options.generateTypeGuards) {
         generatedType.exports.push(`is${typeName}`);
       }
-    } catch (error) {
-      console.warn(
-        `Zod validation plugin afterTypeGeneration failed for ${typeName}:`,
-        error
-      );
     } finally {
       const endTime = performance.now();
       recordPerformanceMetric("afterTypeGeneration", endTime - startTime);
@@ -227,11 +209,13 @@ export const zodValidationPlugin: SchemanticPlugin = {
     try {
       const options = getPluginOptions(context);
 
+      const validationErrorName = chooseValidationErrorName(generatedClient, context);
       // Add validation middleware to client
       const validationMiddleware = generateValidationMiddleware(
         generatedClient,
         context,
-        options
+        options,
+        validationErrorName
       );
 
       // Add request/response validation helpers
@@ -275,12 +259,7 @@ export const zodValidationPlugin: SchemanticPlugin = {
       generatedClient.exports.push(
         "validateRequest",
         "validateResponse",
-        "ValidationError"
-      );
-    } catch (error) {
-      console.warn(
-        `Zod validation plugin afterClientGeneration failed:`,
-        error
+        validationErrorName, "createValidationPipeline", "createLazyValidator"
       );
     } finally {
       const endTime = performance.now();
@@ -294,7 +273,7 @@ export const zodValidationPlugin: SchemanticPlugin = {
  */
 function getPluginOptions(context: GenerationContext): ZodValidationOptions {
   const pluginConfig = context.config.plugins?.find(
-    (p) => p.name === "zod-validation"
+    (p) => p.enabled && (p.name === "zod-validation" || p.name === "validation")
   );
   return {
     strictMode: true,
@@ -310,8 +289,13 @@ function getPluginOptions(context: GenerationContext): ZodValidationOptions {
 /**
  * Generate a unique key for schema caching
  */
-function generateSchemaKey(schema: ResolvedSchema): string {
-  return JSON.stringify(schema);
+function generateSchemaKey(schema: ResolvedSchema): string | undefined {
+  // Circular in-memory schema graphs have no JSON cache identity. Bypass caching
+  // instead of inventing a sentinel shared by unrelated recursive graphs.
+  try { return JSON.stringify(schema); } catch (error) {
+    if (error instanceof TypeError && /circular/i.test(error.message)) return undefined;
+    throw error;
+  }
 }
 
 /**
@@ -319,13 +303,17 @@ function generateSchemaKey(schema: ResolvedSchema): string {
  */
 function transformSchemaForZod(
   schema: ResolvedSchema,
-  options: ZodValidationOptions
+  options: ZodValidationOptions,
+  seen = new WeakMap<object, ResolvedSchema>()
 ): ResolvedSchema {
   if (!isOpenAPISchemaObject(schema)) {
     return schema;
   }
 
+  const existing = seen.get(schema);
+  if (existing) return existing;
   const transformedSchema = { ...schema } as ExtendedSchemaObject;
+  seen.set(schema, transformedSchema);
 
   // Add Zod validation metadata
   transformedSchema._zodValidation = {
@@ -337,11 +325,12 @@ function transformSchemaForZod(
   // Process properties recursively
   if (schema.properties) {
     transformedSchema.properties = {};
-    for (const [propName, propSchema] of Object.entries(schema.properties)) {
+    for (const [propName, propSchema] of Object.entries(schema.properties ?? {})) {
       if (typeof propSchema === "object" && propSchema !== null) {
         transformedSchema.properties[propName] = transformSchemaForZod(
           propSchema as ResolvedSchema,
-          options
+          options,
+          seen
         );
       } else {
         transformedSchema.properties[propName] = propSchema;
@@ -361,16 +350,17 @@ async function generateZodSchema(
   options: ZodValidationOptions,
   context?: GenerationContext
 ): Promise<string> {
-  const cacheKey = `${typeName}-${generateSchemaKey(schema)}`;
+  const sourceKey = generateSchemaKey(schema);
+  const cacheKey = sourceKey === undefined ? undefined : JSON.stringify([typeName, context?.config.typePrefix, context?.config.typeSuffix, options, sourceKey]);
 
-  if (options.cacheSchemas && schemaCache.has(cacheKey)) {
-    return schemaCache.get(cacheKey)!;
-  }
+  let cache = context ? schemaCaches.get(context) : undefined;
+  if (context && !cache) { cache = new Map<string, string>(); schemaCaches.set(context, cache); }
+  if (options.cacheSchemas && cacheKey !== undefined && cache?.has(cacheKey)) return cache.get(cacheKey)!;
 
   const zodSchema = buildZodSchema(schema, options, 0, context);
 
-  if (options.cacheSchemas) {
-    schemaCache.set(cacheKey, zodSchema);
+  if (options.cacheSchemas && cacheKey !== undefined) {
+    cache?.set(cacheKey, zodSchema);
   }
 
   return zodSchema;
@@ -379,78 +369,131 @@ async function generateZodSchema(
 /**
  * Build Zod schema from OpenAPI schema
  */
-function buildZodSchema(
+export function buildZodSchema(
   schema: ResolvedSchema,
   options: ZodValidationOptions,
   depth = 0,
   context?: GenerationContext
 ): string {
-  // Handle oneOf/discriminated unions early
-  if (isOpenAPISchemaObject(schema)) {
-    const obj = schema as ExtendedSchemaObject;
-    if (Array.isArray(obj.oneOf) && obj.oneOf.length > 0) {
-      return buildOneOfSchema(obj, options, context);
+  if (depth > 30) return "z.unknown()";
+  if (typeof schema === "object" && schema !== null && "$ref" in schema && schema.$ref) {
+    const ref = schema.$ref as string;
+    const siblings = Object.fromEntries(Object.entries(schema).filter(([key]) => key !== "$ref" && !key.startsWith("_") && !["description", "title", "deprecated", "example"].includes(key)));
+    const nullable = siblings.nullable === true;
+    delete siblings.nullable;
+    const resolved = context?.schemaResolver?.(ref);
+    let referenceSchema: string;
+    if (Object.keys(siblings).length && resolved) {
+      const inheritedType = isOpenAPISchemaObject(resolved) && ["string", "number", "integer", "array", "boolean"].includes(String(resolved.type)) ? { type: resolved.type } : {};
+      referenceSchema = `z.intersection(${buildZodSchema(resolved, { ...options, strictMode: false }, depth + 1, context)}, ${buildZodSchema({ ...inheritedType, ...siblings } as ResolvedSchema, { ...options, strictMode: false }, depth + 1, context)})`;
+    } else if (/^#\/components\/schemas\/[^/]+$/.test(ref)) {
+      referenceSchema = `z.lazy(() => ${formatTypeNameWithContext(referenceName(ref), context)}Schema)`;
+    } else {
+      referenceSchema = resolved ? buildZodSchema(resolved, options, depth + 1, context) : "z.unknown()";
     }
+    return nullable ? `${referenceSchema}.nullable()` : referenceSchema;
   }
-  // Handle schema references first
-  if (
-    typeof schema === "object" &&
-    schema !== null &&
-    "$ref" in schema &&
-    schema.$ref
-  ) {
-    // Extract type name from reference and generate schema reference
-    const refPath = schema.$ref as string;
-    const typeName = refPath.split("/").pop();
-    // Try to resolve and inline if it's a union (oneOf)
-    if (context?.schemaResolver) {
-      const resolved = context.schemaResolver(refPath);
-      if (resolved && isOpenAPISchemaObject(resolved)) {
-        const obj = resolved as ExtendedSchemaObject;
-        if (Array.isArray(obj.oneOf) && obj.oneOf.length > 0) {
-          return buildOneOfSchema(obj, options, context);
+  if (!isOpenAPISchemaObject(schema)) return "z.unknown()";
+  if (schema["x-schemantic-binary"] === true) return "z.instanceof(globalThis.Blob)";
+  const build = (part: ResolvedSchema) => buildZodSchema(part, options, depth + 1, context);
+  let result: string;
+  if (schema.enum?.length) {
+    const literals = schema.enum.map(value => `z.literal(${JSON.stringify(value)})`);
+    const literalSchema = literals.length === 1 ? literals[0]! : `z.union([${literals.join(", ")}])`;
+    const own = { ...schema }; delete own.enum;
+    result = `z.intersection(${literalSchema}, ${build(own)})`;
+  } else if (schema.const !== undefined) {
+    const own = { ...schema }; delete own.const;
+    result = `z.intersection(z.literal(${JSON.stringify(schema.const)}), ${build(own)})`;
+  } else if (schema.oneOf?.length || schema.anyOf?.length || schema.allOf?.length) {
+    // A composition and its sibling constraints apply together. Implicit strict
+    // mode must not reject fields contributed by another intersected schema;
+    // explicit additionalProperties:false still applies within each branch.
+    const compositionOptions = { ...options, strictMode: false };
+    const hasSiblingFields = !!schema.properties || !!schema.required?.length || schema.additionalProperties !== undefined;
+    const compositionCount = [schema.oneOf, schema.anyOf, schema.allOf].filter(parts => parts?.length).length;
+    const intersectsFields = hasSiblingFields || compositionCount > 1;
+    const unionOptions = intersectsFields ? compositionOptions : options;
+    const buildPart = (part: ResolvedSchema, partOptions: ZodValidationOptions = compositionOptions, inlineReference = true): string => {
+      if (typeof part === "object" && part !== null && "$ref" in part && typeof part.$ref === "string") {
+        const resolved = context?.schemaResolver?.(part.$ref);
+        if (resolved && inlineReference) {
+          const siblings = { ...part } as ExtendedSchemaObject;
+          delete siblings.$ref;
+          const nullable = siblings.nullable === true; delete siblings.nullable;
+          // Retain the entire reference expression instead of substituting only
+          // its target and losing minLength/properties/required beside $ref.
+          return buildZodSchema({ allOf: [resolved, siblings], ...(nullable ? { nullable: true } : {}) }, partOptions, depth + 1, context);
         }
       }
+      return buildZodSchema(part, partOptions, depth + 1, context);
+    };
+    const parts: string[] = [];
+    if (schema.oneOf?.length) {
+      const variants = schema.oneOf.map(part => buildPart(part as ResolvedSchema, unionOptions, intersectsFields));
+      const union = variants.length === 1 ? variants[0]! : `z.union([${variants.join(", ")}])`;
+      parts.push(`${union}.refine((value: unknown) => [${variants.join(", ")}].filter(variant => variant.safeParse(value).success).length === 1, { message: "Expected exactly one matching schema" })`);
     }
-    if (typeName) {
-      const formattedTypeName = formatTypeNameWithContext(typeName, context);
-      return `${formattedTypeName}Schema`;
+    if (schema.anyOf?.length) {
+      const variants = schema.anyOf.map(part => buildPart(part as ResolvedSchema, unionOptions, intersectsFields));
+      parts.push(variants.length === 1 ? variants[0]! : `z.union([${variants.join(", ")}])`);
+    }
+    if (schema.allOf?.length) parts.push(...schema.allOf.map(part => buildPart(part as ResolvedSchema)));
+    const own = { ...schema };
+    delete own.oneOf; delete own.anyOf; delete own.allOf; delete own.nullable; delete own.not;
+    const siblingValidator = buildZodSchema(own, compositionOptions, depth + 1, context);
+    if (siblingValidator !== "z.unknown()") parts.push(siblingValidator);
+    result = parts.reduce((left, right) => `z.intersection(${left}, ${right})`);
+  } else if (Array.isArray(schema.type)) {
+    const parts = schema.type.map(type => build({ ...schema, type, nullable: false }));
+    result = parts.length === 1 ? parts[0]! : `z.union([${parts.join(", ")}])`;
+  } else {
+    switch (schema.type) {
+      case "string": result = buildStringSchema(schema, options); break;
+      case "number": case "integer": result = buildNumberSchema(schema, options); break;
+      case "boolean": result = "z.boolean()"; break;
+      case "null": result = "z.null()"; break;
+      case "array":
+        result = `z.array(${schema.items ? build(schema.items as ResolvedSchema) : "z.unknown()"})`;
+        if (schema.minItems !== undefined) result += `.min(${schema.minItems})`;
+        if (schema.maxItems !== undefined) result += `.max(${schema.maxItems})`;
+        if (schema.uniqueItems) result += `.refine((items: unknown[]) => items.every((item, index) => items.findIndex(other => { const canonical = (value: unknown): string => Array.isArray(value) ? '[' + value.map(canonical).join(',') + ']' : value !== null && typeof value === 'object' ? '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical((value as Record<string, unknown>)[key])).join(',') + '}' : JSON.stringify(value) ?? 'undefined'; return canonical(other) === canonical(item); }) === index), { message: "Array items must be unique" })`;
+        break;
+      case "object": result = buildObjectSchema(schema, options, depth, context); break;
+      default: result = schema.properties || schema.required || schema.additionalProperties !== undefined
+        ? buildObjectSchema(schema, options, depth, context) : buildUntypedConstraintSchema(schema, options, depth, context);
     }
   }
+  if (schema.not) result += `.refine((value: unknown) => !(${build(schema.not as ResolvedSchema)}).safeParse(value).success, { message: "Value matches prohibited schema" })`;
+  return schema.nullable ? `${result}.nullable()` : result;
+}
 
-  if (!isOpenAPISchemaObject(schema)) {
-    return "z.unknown()";
+/** Validate applicable keywords even when a sibling schema does not declare type. */
+function buildUntypedConstraintSchema(
+  schema: ExtendedSchemaObject,
+  options: ZodValidationOptions,
+  depth: number,
+  context?: GenerationContext
+): string {
+  let result = "z.unknown()";
+  const check = (applies: string, validator: string): void => {
+    result += `.refine((value: unknown) => !(${applies}) || (${validator}).safeParse(value).success)`;
+  };
+  if (schema.minLength !== undefined || schema.maxLength !== undefined || schema.pattern || schema.format) {
+    check("typeof value === 'string'", buildStringSchema({ ...schema, type: "string" }, options));
   }
-
-  // Prevent infinite recursion
-  if (depth > 10) {
-    return "z.unknown()";
+  if (schema.minimum !== undefined || schema.maximum !== undefined || schema.exclusiveMinimum !== undefined || schema.exclusiveMaximum !== undefined || schema.multipleOf !== undefined) {
+    check("typeof value === 'number'", buildNumberSchema({ ...schema, type: "number" }, options));
   }
-
-  switch (schema.type) {
-    case "string":
-      return buildStringSchema(schema, options);
-    case "number":
-    case "integer":
-      return buildNumberSchema(schema, options);
-    case "boolean":
-      return "z.boolean()";
-    case "array": {
-      const itemSchema = schema.items
-        ? buildZodSchema(
-            schema.items as ResolvedSchema,
-            options,
-            depth + 1,
-            context
-          )
-        : "z.unknown()";
-      return `z.array(${itemSchema})`;
-    }
-    case "object":
-      return buildObjectSchema(schema, options, depth, context);
-    default:
-      return "z.unknown()";
+  if (schema.minProperties !== undefined || schema.maxProperties !== undefined) {
+    check("typeof value === 'object' && value !== null && !Array.isArray(value)", appendObjectPropertyConstraints("z.record(z.string(), z.unknown())", schema));
   }
+  if (schema.items || schema.minItems !== undefined || schema.maxItems !== undefined || schema.uniqueItems) {
+    const arraySchema = { ...schema, type: "array" } as ExtendedSchemaObject;
+    delete arraySchema.not; delete arraySchema.nullable;
+    check("Array.isArray(value)", buildZodSchema(arraySchema, options, depth + 1, context));
+  }
+  return result;
 }
 
 /**
@@ -465,15 +508,7 @@ function formatTypeNameWithContext(
   name: string,
   context?: GenerationContext
 ): string {
-  const tokens = name.split(/[-_\s]+/).filter(Boolean);
-  const pascalCase = tokens
-    .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ""))
-    .join("");
-
-  const prefix = context?.config?.typePrefix ?? "";
-  const suffix = context?.config?.typeSuffix ?? "";
-
-  return `${prefix || ""}${pascalCase}${suffix || ""}`;
+  return formatGeneratedName(name, context?.config.typePrefix, context?.config.typeSuffix);
 }
 
 /**
@@ -494,7 +529,7 @@ function buildStringSchema(
   }
 
   if (schema.pattern) {
-    zodSchema += `.regex(/${schema.pattern}/)`;
+    zodSchema += `.regex(new RegExp(${JSON.stringify(schema.pattern)}))`;
   }
 
   if (schema.format) {
@@ -530,7 +565,7 @@ function buildStringSchema(
   if (_options.customErrorMessages && schema.description) {
     const customMessage = _options.customErrorMessages[schema.description];
     if (customMessage) {
-      zodSchema += `.describe("${customMessage}")`;
+      zodSchema += `.describe(${JSON.stringify(customMessage)})`;
     }
   }
 
@@ -554,6 +589,14 @@ function buildNumberSchema(
     zodSchema += `.max(${schema.maximum})`;
   }
 
+  if (schema.exclusiveMinimum !== undefined) {
+    const bound = typeof schema.exclusiveMinimum === "number" ? schema.exclusiveMinimum : schema.exclusiveMinimum ? schema.minimum : undefined;
+    if (bound !== undefined) zodSchema += `.gt(${bound})`;
+  }
+  if (schema.exclusiveMaximum !== undefined) {
+    const bound = typeof schema.exclusiveMaximum === "number" ? schema.exclusiveMaximum : schema.exclusiveMaximum ? schema.maximum : undefined;
+    if (bound !== undefined) zodSchema += `.lt(${bound})`;
+  }
   if (schema.multipleOf !== undefined) {
     zodSchema += `.multipleOf(${schema.multipleOf})`;
   }
@@ -570,35 +613,16 @@ function buildObjectSchema(
   depth: number,
   context?: GenerationContext
 ): string {
-  if (!schema.properties) {
-    return "z.object({})";
+  if (!schema.properties && !schema.required?.length) {
+    const values = typeof schema.additionalProperties === "object"
+      ? buildZodSchema(schema.additionalProperties as ResolvedSchema, options, depth + 1, context) : "z.unknown()";
+    const base = schema.additionalProperties === false ? "z.object({}).strict()" : `z.record(z.string(), ${values})`;
+    return appendObjectPropertyConstraints(base, schema);
   }
 
   const properties: string[] = [];
   const required = schema.required || [];
-  const transformPairs: string[] = [];
-  const wantsCamel = context?.config?.namingConvention === "camelCase";
-
-  // Helper: convert prop name to camelCase similar to generator
-  const toCamel = (str: string): string => {
-    if (!str) return str;
-    // sanitize: collapse non-alnum into underscore, trim
-    const sanitized = str
-      .replace(/[^A-Za-z0-9]+/g, "_")
-      .replace(/^_+|_+$/g, "")
-      .replace(/_+/g, "_");
-    const parts = sanitized.split(/_+/).filter(Boolean);
-    if (parts.length === 0) return "";
-    const head = parts[0] ?? "";
-    const tail = parts.slice(1);
-    const camelHead = head ? head.charAt(0).toLowerCase() + head.slice(1) : "";
-    const camelTail = tail.map((p) =>
-      p ? p.charAt(0).toUpperCase() + p.slice(1) : ""
-    );
-    return camelHead + camelTail.join("");
-  };
-
-  for (const [propName, propSchema] of Object.entries(schema.properties)) {
+  for (const [propName, propSchema] of Object.entries(schema.properties ?? {})) {
     if (typeof propSchema === "object" && propSchema !== null) {
       let propZodSchema = buildZodSchema(
         propSchema as ResolvedSchema,
@@ -611,58 +635,35 @@ function buildObjectSchema(
         propZodSchema += ".optional()";
       }
 
-      properties.push(`  ${propName}: ${propZodSchema}`);
+      properties.push(`  ${propertyKey(propName)}: ${propZodSchema}`);
 
-      if (wantsCamel) {
-        const camel = toCamel(propName);
-        if (camel !== propName) {
-          transformPairs.push(`  ${camel}: val[${JSON.stringify(propName)}]`);
-        }
-      }
+
     }
   }
 
-  const strictMode = options.strictMode ? ".strict()" : "";
+  for (const name of required) if (!schema.properties?.[name]) properties.push(`  ${propertyKey(name)}: z.unknown().refine((value: unknown) => value !== undefined, { message: "Required property" })`);
+  const strictMode = schema.additionalProperties === true ? ".passthrough()"
+    : typeof schema.additionalProperties === "object" ? `.catchall(${buildZodSchema(schema.additionalProperties as ResolvedSchema, options, depth + 1, context)})`
+    : options.strictMode || schema.additionalProperties === false ? ".strict()" : ".passthrough()";
   const base = `z.object({\n${properties.join(",\n")}\n})${strictMode}`;
-  if (wantsCamel && transformPairs.length > 0) {
-    // Type the transform parameter to avoid implicit any in generated code
-    return `${base}.transform((val: Record<string, unknown>) => ({\n${transformPairs.join(
-      ",\n"
-    )}\n}))`;
-  }
-  // Default: return the base schema when no transform is required
-  return base;
+  return appendObjectPropertyConstraints(base, schema);
+}
+
+function appendObjectPropertyConstraints(base: string, schema: ExtendedSchemaObject): string {
+  // Zod intersections may reconcile strict-object unrecognized-key issues against
+  // sibling schemas. OpenAPI's explicit additionalProperties:false applies to
+  // this schema's own declared properties, so check the original input first.
+  const allowedKeys = JSON.stringify(Object.keys(schema.properties ?? {}));
+  let result = schema.additionalProperties === false
+    ? `z.unknown().refine((value: unknown) => value === null || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).every(key => ${allowedKeys}.includes(key)), { message: "Unexpected object property" }).pipe(${base})`
+    : base;
+  if (schema.minProperties !== undefined) result += `.refine((value: Record<string, unknown>) => Object.keys(value).length >= ${schema.minProperties}, { message: "Too few properties" })`;
+  if (schema.maxProperties !== undefined) result += `.refine((value: Record<string, unknown>) => Object.keys(value).length <= ${schema.maxProperties}, { message: "Too many properties" })`;
+  return result;
 }
 /**
  * Build Zod union/discriminatedUnion schema for oneOf
  */
-function buildOneOfSchema(
-  schema: ExtendedSchemaObject,
-  options: ZodValidationOptions,
-  context?: GenerationContext
-): string {
-  const variants = (schema.oneOf || []).map((variant) => {
-    if (
-      typeof variant === "object" &&
-      variant !== null &&
-      "$ref" in (variant as Record<string, unknown>)
-    ) {
-      const refPath = (variant as Record<string, unknown>)["$ref"] as string;
-      const name = refPath.split("/").pop() || "Unknown";
-      return `${formatTypeNameWithContext(name, context)}Schema`;
-    }
-    return buildZodSchema(variant as ResolvedSchema, options, 0, context);
-  });
-
-  const discriminator = schema.discriminator?.propertyName;
-  if (discriminator) {
-    return `z.discriminatedUnion(${JSON.stringify(
-      discriminator
-    )}, [${variants.join(", ")}])`;
-  }
-  return `z.union([${variants.join(", ")}])`;
-}
-
 /**
  * Generate branded type for compile-time safety
  */
@@ -700,12 +701,10 @@ export function is${typeName}(value: unknown): value is ${typeName} {
 /**
  * Generate Zod imports based on options
  */
-function generateZodImports(options: ZodValidationOptions): string {
+function generateZodImports(_options: ZodValidationOptions): string {
   const imports = ["z"];
 
-  if (options.generateBrandedTypes) {
-    imports.push("ZodType");
-  }
+
 
   return `import { ${imports.join(", ")} } from 'zod';`;
 }
@@ -724,7 +723,7 @@ function generateValidationModule(
 /**
  * Zod validation schema for ${typeName}
  */
-export const ${typeName}Schema = ${zodSchema};
+export const ${typeName}Schema: z.ZodType = ${zodSchema};
 
 /**
  * Validate ${typeName} data with detailed error reporting
@@ -756,18 +755,37 @@ export function parse${typeName}(data: unknown): ${typeName} {
 ${brandedType}${typeGuard}`;
 }
 
+/** Runtime helper names must be distinct across type/client exports and imported bindings. */
+function chooseValidationErrorName(client: GeneratedApiClient, context: GenerationContext): string {
+  const claimed = new Set(client.exports);
+  for (const type of context.generatedTypes.values()) {
+    claimed.add(type.name); for (const name of type.exports) claimed.add(name);
+  }
+  for (const generatedClient of context.generatedClients.values()) {
+    claimed.add(generatedClient.name); for (const name of generatedClient.exports) claimed.add(name);
+  }
+  // Cover imported aliases and local bindings supplied by custom client generators.
+  for (const identifier of client.content.match(/\b[A-Za-z_$][\w$]*\b/g) ?? []) claimed.add(identifier);
+  if (!claimed.has("ValidationError")) return "ValidationError";
+  let name = "ResponseValidationError";
+  let suffix = 0;
+  while (claimed.has(name)) name = `ResponseValidationError${++suffix}`;
+  return name;
+}
+
 /**
  * Generate validation middleware for API client
  */
 function generateValidationMiddleware(
   _generatedClient: GeneratedApiClient,
   _context: GenerationContext,
-  options: ZodValidationOptions
+  options: ZodValidationOptions,
+  errorName: string
 ): string {
   // Ensure z/ZodType import is present in client content
   if (!_generatedClient.content.includes("from 'zod'")) {
     _generatedClient.content =
-      `import { z, ZodType } from 'zod';\n` + _generatedClient.content;
+      `import { z } from 'zod';\nimport type { ZodType } from 'zod';\n` + _generatedClient.content;
   } else if (!_generatedClient.content.includes("ZodType")) {
     // Append ZodType to existing import if only z is imported
     _generatedClient.content = _generatedClient.content.replace(
@@ -783,23 +801,23 @@ function generateValidationMiddleware(
     );
   }
   const strictModeCode = options.strictMode
-    ? "throw new ValidationError(result.error?.issues ?? [], data);"
-    : "// In non-strict mode, return data as-is";
+    ? `throw new ${errorName}(result.error?.issues ?? [], data);`
+    : "return data as T;";
 
   return `
 /**
  * Validation middleware for API requests and responses
  */
-export class ValidationError extends Error {
+export class ${errorName} extends Error {
   public issues: readonly z.core.$ZodIssue[];
   constructor(issues: readonly z.core.$ZodIssue[], public data: unknown) {
     const message = issues
       .map((iss) => (iss.path && iss.path.length > 0 ? iss.path.join('.') + ': ' + iss.message : '(root): ' + iss.message))
       .join('; ');
     super('Validation failed: ' + message);
-    this.name = 'ValidationError';
+    this.name = '${errorName}';
     this.issues = issues;
-    Object.setPrototypeOf(this, ValidationError.prototype);
+    Object.setPrototypeOf(this, ${errorName}.prototype);
   }
 }
 
@@ -812,7 +830,7 @@ export function validateRequest<T>(data: unknown, schema: ZodType<T>): T {
   if (!result.success) {
     const issues = result.error?.issues ?? [];
     // Use Zod v4 core issue type
-    throw new ValidationError(issues as readonly z.core.$ZodIssue[], data);
+    throw new ${errorName}(issues as readonly z.core.$ZodIssue[], data);
   }
 
   return result.data;
@@ -977,6 +995,8 @@ class BoundedValidationCache {
 }
 
 const validationCache = new BoundedValidationCache();
+const validationSchemaIds = new WeakMap<object, number>();
+let nextValidationSchemaId = 0;
 
 export function memoizedValidation<T>(
   data: unknown,
@@ -984,18 +1004,25 @@ export function memoizedValidation<T>(
   cacheKey?: string,
   schemaVersion = "1.0"
 ): T {
-  if (!cacheKey) {
+  // Cache primitive inputs/results only. Caller-owned objects and stateful references
+  // must be validated on every call rather than reusing mutable results.
+  if (!cacheKey || (data !== null && typeof data === "object") || typeof data === "function" || typeof data === "symbol") {
     return schema.parse(data);
   }
 
-  const cached = validationCache.get(cacheKey);
+  let schemaId = validationSchemaIds.get(schema);
+  if (schemaId === undefined) { schemaId = ++nextValidationSchemaId; validationSchemaIds.set(schema, schemaId); }
+  let identity: string;
+  try { identity = JSON.stringify([cacheKey, schemaId, schemaVersion, typeof data, typeof data === "number" && Object.is(data, -0) ? "-0" : String(data)]); } catch { return schema.parse(data); }
+  const cached = validationCache.get(identity);
 
   if (cached && cached.schemaVersion === schemaVersion) {
     return cached.result as T;
   }
 
   const result = schema.parse(data);
-  validationCache.set(cacheKey, {
+  if ((result !== null && typeof result === "object") || typeof result === "function" || typeof result === "symbol") return result;
+  validationCache.set(identity, {
     result,
     timestamp: Date.now(),
     schemaVersion,
@@ -1035,7 +1062,7 @@ export function getZodValidationPerformanceStats(): Record<
  * Clear performance metrics and caches
  */
 export function clearZodValidationCaches(): void {
-  schemaCache.clear();
+  schemaCaches = new WeakMap<GenerationContext, Map<string, string>>();
   memoizedSchemaTransform.clear();
   performanceMetrics.clear();
   validationCache.clear();

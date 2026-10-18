@@ -1,0 +1,1 @@
+export default {schemaFile: "./schema.json", outputDir: "./tsconfig-output"};

@@ -1,0 +1,1 @@
+import { EdgeApiClient } from './api-client'; new EdgeApiClient({baseUrl:'http://localhost'}).upload(new Blob(['abc']));

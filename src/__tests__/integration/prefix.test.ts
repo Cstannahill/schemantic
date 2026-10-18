@@ -5,20 +5,23 @@ import { DEFAULT_CONFIG, SchemanticConfig } from "../../types/core";
 
 describe("integration: prefix handling", () => {
   jest.setTimeout(20000);
+  let outDir: string;
+
+  beforeEach(async () => {
+    const parent = path.resolve(__dirname, "../../../.artifacts/jest");
+    await fs.mkdir(parent, { recursive: true });
+    outDir = await fs.mkdtemp(path.join(parent, "prefix-"));
+  });
+
+  afterEach(async () => {
+    if (outDir) await fs.rm(outDir, { recursive: true, force: true, maxRetries: 3 });
+  });
 
   test("generated types have no API prefix when typePrefix is empty", async () => {
     const schemaPath = path.resolve(
       __dirname,
       "../../../test-schemas/allof-inher-union.json"
     );
-    const outDir = path.resolve(
-      __dirname,
-      "../../../test-output/generated-test"
-    );
-
-    // Clean output
-    await fs.rm(outDir, { recursive: true, force: true }).catch(() => {});
-
     const config = {
       ...DEFAULT_CONFIG,
       schemaFile: schemaPath,

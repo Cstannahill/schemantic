@@ -6,6 +6,7 @@
 import { ResolvedSchema, isOpenAPISchemaObject } from "../types/schema";
 import { GenerationContext, GeneratedType } from "../types/core";
 import { BaseTypeGenerator, TypeGenerationOptions } from "./base";
+import { schemaType } from "./schema-type";
 
 /**
  * Primitive type generator implementation
@@ -16,12 +17,10 @@ export class PrimitiveTypeGenerator extends BaseTypeGenerator {
   }
 
   generate(schema: ResolvedSchema, context: GenerationContext): GeneratedType {
-    if (!isOpenAPISchemaObject(schema)) {
-      throw new Error("Cannot generate primitive from reference schema");
-    }
+
 
     const typeName = this.getTypeName(schema, context);
-    const comment = this.generateComment(schema.description, schema.example);
+    const comment = isOpenAPISchemaObject(schema) ? this.generateComment(schema.description, schema.example) : "";
 
     let content = "";
 
@@ -30,13 +29,19 @@ export class PrimitiveTypeGenerator extends BaseTypeGenerator {
     }
 
     // Generate type alias
-    const typeAlias = this.generateTypeAlias(schema, typeName);
+    const dependencies: string[] = [];
+    const expression = schemaType(schema, ref => {
+      const name = this.formatTypeName(this.extractTypeNameFromRef(ref));
+      dependencies.push(name);
+      return name;
+    }, this.options.customTypeMappings, context.schemaResolver);
+    const typeAlias = 'export type ' + typeName + ' = ' + expression + ';\n';
     content += typeAlias;
 
     return {
       name: typeName,
       content,
-      dependencies: [],
+      dependencies,
       exports: [typeName],
       isInterface: false,
       isEnum: false,
@@ -45,36 +50,7 @@ export class PrimitiveTypeGenerator extends BaseTypeGenerator {
     };
   }
 
-  canHandle(schema: ResolvedSchema): boolean {
-    if (!isOpenAPISchemaObject(schema)) {
-      return false;
-    }
-
-    // Handle primitive types
-    if (
-      schema.type &&
-      typeof schema.type === "string" &&
-      ["string", "number", "integer", "boolean"].includes(schema.type)
-    ) {
-      return true;
-    }
-
-    // Handle const values
-    if (schema.const !== undefined) {
-      return true;
-    }
-
-    // Handle arrays of primitives
-    if (
-      schema.type === "array" &&
-      schema.items &&
-      this.isPrimitiveSchema(schema.items)
-    ) {
-      return true;
-    }
-
-    return false;
-  }
+  canHandle(_schema: ResolvedSchema): boolean { return true; }
 
   getPriority(): number {
     return 50; // Lower priority than specialized generators
@@ -88,66 +64,6 @@ export class PrimitiveTypeGenerator extends BaseTypeGenerator {
       supportedTypes: ["string", "number", "integer", "boolean", "array"],
       supportedFormats: ["json"],
     };
-  }
-
-  /**
-   * Generate type alias
-   */
-  private generateTypeAlias(schema: ResolvedSchema, typeName: string): string {
-    const type = this.generateType(schema);
-    return `export type ${typeName} = ${type};\n`;
-  }
-
-  /**
-   * Generate TypeScript type from schema
-   */
-  private generateType(schema: ResolvedSchema): string {
-    if (!isOpenAPISchemaObject(schema)) {
-      return "unknown";
-    }
-
-    // Handle const values
-    if (schema.const !== undefined) {
-      return JSON.stringify(schema.const);
-    }
-
-    // Handle arrays
-    if (schema.type === "array") {
-      const itemType = schema.items
-        ? this.generateType(schema.items)
-        : "unknown";
-      return `${itemType}[]`;
-    }
-
-    // Handle basic types
-    if (schema.type) {
-      return this.mapSchemaTypeToTypeScript(schema.type, schema.format);
-    }
-
-    return "unknown";
-  }
-
-  /**
-   * Check if schema is a primitive type
-   */
-  private isPrimitiveSchema(schema: ResolvedSchema): boolean {
-    if (!isOpenAPISchemaObject(schema)) {
-      return false;
-    }
-
-    if (
-      schema.type &&
-      typeof schema.type === "string" &&
-      ["string", "number", "integer", "boolean"].includes(schema.type)
-    ) {
-      return true;
-    }
-
-    if (schema.const !== undefined) {
-      return true;
-    }
-
-    return false;
   }
 
   /**

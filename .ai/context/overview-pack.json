@@ -1,0 +1,199 @@
+{
+  "schemaVersion": "0.2",
+  "id": "overview-pack:schemantic",
+  "mode": "overview",
+  "class": "materialized",
+  "projectId": "schemantic",
+  "title": "Overview Pack: schemantic",
+  "summary": "TODO: Describe this project.",
+  "tokenEstimate": 425,
+  "freshness": {
+    "generatedFromSnapshotId": "snap_20260510221412_727CJ3",
+    "generatedAt": "2026-05-10T22:14:12.313Z",
+    "packContentHash": "sha256:bb3eb75928f8903f358c38d4fec85b69f7efa44476f472583cf9b7d05d33ca89",
+    "packRecipeId": "overview-pack:v1",
+    "packRecipeVersion": "1.0.0",
+    "schemaVersion": "0.2",
+    "freshnessAtRead": "fresh",
+    "inputsHash": "sha256:076d56008b0b1c2c5e541c07c1347825c054fa54a3e0567c199b3d49739f2277"
+  },
+  "includedArtifacts": [
+    {
+      "path": ".ai/project.yaml",
+      "hash": "sha256:38eeed2c0ff6f7ebc56afe60d6e31d1d96acd827a86e6852a01c5fc775591d09"
+    },
+    {
+      "path": ".ai/modules.yaml",
+      "hash": "sha256:aa2bde56b820b74fe13a03a09365d6c5d3caafdeee29159a516b71bc3295d211"
+    },
+    {
+      "path": ".ai/generated/merged-facts.json",
+      "hash": "sha256:3605865bdb76ced6e0054a8a410a571ffc224b6ae9a82c60a17900173c3ba25f"
+    }
+  ],
+  "includedFacts": [
+    {
+      "factId": "dependency:npm:@eslint/js",
+      "contentHash": "sha256:ffe1741e5a0f79d8e2e92c506b794ff3b84ad1442bee78aa369ac89258d03d5d",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:@types/jest",
+      "contentHash": "sha256:c0e31a6178d2b3251400362b0a06601fe25469659f48037e8783e0fa5ebae3af",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:@types/node",
+      "contentHash": "sha256:ca50d26ff87cf0c7ebf46f799cfc0db267a5463ce94f711abea4a03874e4d238",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:@typescript-eslint/eslint-plugin",
+      "contentHash": "sha256:d15da2511b1d8c934464fd8c15b32c4abef129f86f31b63e4161d8d570b0a911",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:@typescript-eslint/parser",
+      "contentHash": "sha256:16383a8bab41db51a65eb906afae74143bbc8b62bd3ee38f4411731042ff9775",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:axios",
+      "contentHash": "sha256:492fc7f306b508cd8b33f34b535ed3946739539d9c6f8ebe8acac41d90fc2d5e",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:chokidar",
+      "contentHash": "sha256:02239908f2ce6651eda7546f3e5150cf07826155dde68696055dc35b9450c522",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:commander",
+      "contentHash": "sha256:e4e64839fa7a2ea3077589aadf9f165f58a8e02bbef3d6d741a44f302ad37d45",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:eslint",
+      "contentHash": "sha256:4becf03ddd9f1c2d0b517322d32d28d7727ebede0b6c0c4f260f5603c91bf12d",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:jest",
+      "contentHash": "sha256:d63a4572eb637bccdf8a40eabaf632fd99334b2fe084c4bad00f723229440fa5",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:ts-jest",
+      "contentHash": "sha256:c7750c20a812b027d9b894de5b1a575c4f06416baa6af22517a2c44e94fbe3aa",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:typescript",
+      "contentHash": "sha256:c299d553a2ccf7e0a5913f63b9acb4538d39b3e1930f08c37dde919e64124efe",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "dependency:npm:zod",
+      "contentHash": "sha256:71dc9da4a25777d39fe23168bd4b5e573223ebe21f66ff65f540d08bb5eab737",
+      "selectedBecause": "dependency"
+    },
+    {
+      "factId": "entrypoint:config:package-json",
+      "contentHash": "sha256:4c5c5291607bd0a7eaf77c47072a200a2f5e302c2263d62848101d35a87b9f40",
+      "selectedBecause": "entrypoint"
+    },
+    {
+      "factId": "import:javascript:combine.js:fs",
+      "contentHash": "sha256:b1328f8bcbd508b2909c9720e25c4e06b593aa4291d692a029955e41d48a8e49",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:javascript:combine.js:path",
+      "contentHash": "sha256:f8915450bc312bfdc88eeed638d183b92e7f4a9ab1f0d8d3bc9b1b46a4521290",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:javascript:eslint.config.js:@eslint/js",
+      "contentHash": "sha256:739045007e8cda99090e7a794e83cc5b41e19b3b8bf08dc475b122a5d01c07a8",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:javascript:eslint.config.js:@typescript-eslint/eslint-plugin",
+      "contentHash": "sha256:39f35e9b34ba6f3119ff9e7bbc74a6506207efe6f35b13a30a9a55a22d7ca24d",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:javascript:eslint.config.js:@typescript-eslint/parser",
+      "contentHash": "sha256:11aaef64e4479637a962d02d2f65d22803399fae333b404821e007f347a4e5c2",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:javascript:src/cli.js:./cli/index",
+      "contentHash": "sha256:c6bcc784c9b9364aa5ac2210e68b511065c904bafffcf2b59f4be3a54eec3df8",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:local-test/react-app/src/lib/api/api-client.ts:./types",
+      "contentHash": "sha256:35b2575dede641f31f62dbd0f539056f6def9e60b40fb0cdfec8f532fdd85581",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:local-test/react-app/src/lib/api/api-client.ts:zod",
+      "contentHash": "sha256:284372768fa74cb376837d4c98aa36d32aa01f7feb294decec7a7736753245e2",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:local-test/react-app/src/lib/api/hooks.ts:./api-client",
+      "contentHash": "sha256:1d968e88d331c146b7f20d3237d3af4ae0d75e771639771f7d676e95a7435d86",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:local-test/react-app/src/lib/api/hooks.ts:./types",
+      "contentHash": "sha256:493ca715a2d8bf465e931b91b93e6091489eb6130a72cf07bd560dd85d6eb4fc",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:local-test/react-app/src/lib/api/hooks.ts:react",
+      "contentHash": "sha256:eb8b14ac342edb2fa157c84153b3b141d9e5e7fbdbeb9856377b0b30e4f36191",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:local-test/react-app/src/lib/api/types.ts:zod",
+      "contentHash": "sha256:3b446ba84cf408143cee56e70acf575f9b3852968c85f172da6cf5bbe040e230",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:src/__tests__/generated-shape.test.ts:fs",
+      "contentHash": "sha256:431b8a18153912cba3f7935a966ebedb0a7683051d6fbb0fd959e973dd66c87d",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:src/__tests__/generated-shape.test.ts:path",
+      "contentHash": "sha256:09e6edf0518c081571b86a8eaeb7c0f5c0ef4d80685f46b305386510844c2437",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:src/__tests__/generators/object-generator.test.ts:../../generators/base",
+      "contentHash": "sha256:870988137daefb05dc2052674f48eba35d0c138a7ebdabdade9ca920ce61192e",
+      "selectedBecause": "import"
+    },
+    {
+      "factId": "import:typescript:src/__tests__/generators/object-generator.test.ts:../../generators/object-generator",
+      "contentHash": "sha256:4f3681d394b14bfa7ce235a89ea8cfe9007c06e4513bbe13d47765bc798cc3b1",
+      "selectedBecause": "import"
+    }
+  ],
+  "criticalFiles": [],
+  "criticalFlows": [],
+  "criticalModules": [],
+  "debugHotspots": [],
+  "promptParts": {
+    "roleInstruction": "You are using CodeCurator project intelligence to understand this repository.",
+    "contextUsageRules": [
+      "Prefer source-backed and manifest-backed claims over inferred summaries.",
+      "Treat this pack as a materialized view, not as source of truth."
+    ],
+    "antiHallucinationConstraints": [],
+    "packBody": "Project: schemantic\nMode: overview\nSummary: TODO: Describe this project.\n\nGenerated Facts:\n- dependency: dependency:npm:@eslint/js (active, confidence 0.98)\n- dependency: dependency:npm:@types/jest (active, confidence 0.98)\n- dependency: dependency:npm:@types/node (active, confidence 0.98)\n- dependency: dependency:npm:@typescript-eslint/eslint-plugin (active, confidence 0.98)\n- dependency: dependency:npm:@typescript-eslint/parser (active, confidence 0.98)\n- dependency: dependency:npm:axios (active, confidence 0.98)\n- dependency: dependency:npm:chokidar (active, confidence 0.98)\n- dependency: dependency:npm:commander (active, confidence 0.98)\n- dependency: dependency:npm:eslint (active, confidence 0.98)\n- dependency: dependency:npm:jest (active, confidence 0.98)\n- dependency: dependency:npm:ts-jest (active, confidence 0.98)\n- dependency: dependency:npm:typescript (active, confidence 0.98)\n- dependency: dependency:npm:zod (active, confidence 0.98)\n- entrypoint: entrypoint:config:package-json (active, confidence 0.98)\n- import: import:javascript:combine.js:fs (active, confidence 0.82)\n- import: import:javascript:combine.js:path (active, confidence 0.82)\n- import: import:javascript:eslint.config.js:@eslint/js (active, confidence 0.82)\n- import: import:javascript:eslint.config.js:@typescript-eslint/eslint-plugin (active, confidence 0.82)\n- import: import:javascript:eslint.config.js:@typescript-eslint/parser (active, confidence 0.82)\n- import: import:javascript:src/cli.js:./cli/index (active, confidence 0.82)"
+  }
+}

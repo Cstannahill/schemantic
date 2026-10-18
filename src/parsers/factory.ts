@@ -4,7 +4,7 @@
  */
 
 import { SchemanticConfig } from "../types/core";
-import { SchemaParser, ParserMetadata } from "./base";
+import { SchemaParser, ParserMetadata, parseJsonSchemaText } from "./base";
 import { OpenAPIParser } from "./openapi";
 
 /**
@@ -105,7 +105,7 @@ export class ParserFactory {
 
     // Check data structure
     if (input.data || input.string) {
-      const data = input.data || JSON.parse(input.string!);
+      const data = input.data || parseJsonSchemaText(input.string!);
       if (typeof data === "object" && data !== null) {
         if ("openapi" in data) {
           return "openapi";

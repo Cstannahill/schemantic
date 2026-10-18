@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "0.2",
+  "generatedAt": "2026-05-10T22:14:11.638Z",
+  "projectId": "schemantic",
+  "scannerId": "codecurator.scanner.config",
+  "scannerVersion": "0.1.0",
+  "stats": {
+    "filesDiscovered": 168,
+    "observationsEmitted": 2318,
+    "mergedFacts": 1900,
+    "conflicts": 195,
+    "tombstones": 0,
+    "externalScannersRun": 0,
+    "externalObservationsAccepted": 0
+  },
+  "warnings": []
+}

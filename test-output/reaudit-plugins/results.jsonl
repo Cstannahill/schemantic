@@ -1,0 +1,11 @@
+{"probe":"branded-multiple-types","success":true,"diagnostics":[{"code":2300,"message":"Duplicate identifier 'AuthState'."},{"code":2300,"message":"Duplicate identifier 'AuthState'."}],"invalidGuard":true,"arrayGuard":true,"assertInvalid":"accepted","primitiveBranded":false}
+{"probe":"branded-disable-options","guardStillEmitted":true,"assertStillEmitted":true}
+{"probe":"strict-mode","success":true,"strictHelper":false,"strictFile":false}
+{"probe":"monitoring-disabled-timing","success":true,"diagnostics":[{"code":2305,"message":"Module '\"./api-client\"' has no exported member 'PerformanceMonitor'."},{"code":2305,"message":"Module '\"./api-client\"' has no exported member 'getPerformanceStats'."},{"code":2305,"message":"Module '\"./api-client\"' has no exported member 'clearPerformanceStats'."}]}
+{"probe":"permissive-validation","invalidResponse":"undefined"}
+{"probe":"fingerprint-collision","a":"Aa","b":"Aa","calls":1}
+{"probe":"header-separation","x":"tenantA","y":"tenantA","calls":1}
+{"probe":"endpoint-no-stale","stale":"old","calls":1}
+{"probe":"regex-invalidation","invalidated":1,"calls":1,"stats":{"cacheSize":1,"pendingRequests":0,"cacheHitRate":0}}
+{"probe":"zod-schema-constraints","allOfValid":false,"oneOfOverlap":true,"minItems":true,"uniqueItems":true,"exclusiveMinimum":true,"enumMinLength":true}
+{"probe":"plugin-failure-reporting","success":true,"errors":[],"warnings":[]}

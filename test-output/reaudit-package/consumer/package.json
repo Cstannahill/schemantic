@@ -1,0 +1,9 @@
+{
+  "name": "schemantic-audit-consumer",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "schemantic": "file:../schemantic-0.3.0.tgz"
+  }
+}

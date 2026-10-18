@@ -3,9 +3,7 @@ module.exports = {
   testEnvironment: "node",
   roots: ["<rootDir>/src"],
   testMatch: [
-    "**/__tests__/**/*.ts",
     "**/?(*.)+(spec|test).ts",
-    "**/tests/**/*.ts",
   ],
   transform: {
     "^.+\\.ts$": "ts-jest",
@@ -13,6 +11,7 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/*.d.ts",
+    "!src/__tests__/**",
     "!src/**/*.test.ts",
     "!src/**/*.spec.ts",
     "!src/cli/index.ts",

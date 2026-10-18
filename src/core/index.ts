@@ -3,3 +3,4 @@
  */
 
 export * from "./schemantic";
+export * from './configuration';

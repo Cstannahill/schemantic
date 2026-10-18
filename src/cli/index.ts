@@ -14,9 +14,13 @@ import {
   GenerationWarning,
 } from "../types/core";
 import { Schemantic } from "../core/schemantic";
+import { resolveConfiguration } from "../core/configuration";
 import { PluginLoader } from "../plugins";
 import { getBuiltinPlugins } from "../plugins/builtin";
 import * as readline from "readline";
+import * as path from 'path';
+import { watch } from 'chokidar';
+import { createRequire } from 'module';
 
 // Removed unused CliCommand interface
 
@@ -34,6 +38,7 @@ interface CliOptions {
  */
 export class SchemanticCli {
   private program: Command;
+  private pluginDirectory = process.cwd();
 
   constructor() {
     this.program = new Command();
@@ -49,7 +54,7 @@ export class SchemanticCli {
       .description(
         "Generate TypeScript types and API clients from OpenAPI schemas"
       )
-      .version("1.0.0")
+      .version((require('../../package.json') as { version: string }).version)
       .option("-i, --interactive", "Run in interactive mode")
       .option("-v, --verbose", "Verbose output")
       .option("-q, --quiet", "Quiet output")
@@ -79,18 +84,17 @@ export class SchemanticCli {
       .option("--types", "Generate types only")
       .option("--client", "Generate API client only")
       .option("--hooks", "Generate React hooks")
-      .option("--strict", "Use strict TypeScript types", true)
+      .option("--strict", "Use strict TypeScript types")
+      .option("--no-strict", "Disable strict TypeScript types")
       .option(
         "--naming <convention>",
-        "Naming convention (camelCase|snake_case|PascalCase)",
-        "camelCase"
+        "Naming convention (camelCase|snake_case|PascalCase)"
       )
       .option(
         "--prefix <prefix>",
-        "Type name prefix (leave blank for none)",
-        ""
+        "Type name prefix (leave blank for none)"
       )
-      .option("--suffix <suffix>", "Type name suffix", "")
+      .option("--suffix <suffix>", "Type name suffix")
       .option("--exclude-paths <paths>", "Exclude paths (comma-separated)")
       .option("--include-paths <paths>", "Include paths (comma-separated)")
       .option(
@@ -111,7 +115,7 @@ export class SchemanticCli {
       )
       .option("--watch", "Watch for changes and regenerate")
       .action(async (source: string, options: CliOptions) => {
-        await this.handleGenerateCommand(source, options);
+        await this.handleGenerateCommand(source, { ...this.program.opts(), ...options });
       });
   }
 
@@ -125,9 +129,9 @@ export class SchemanticCli {
       .description("Validate OpenAPI schema")
       .option("-u, --url <url>", "OpenAPI schema URL")
       .option("-f, --file <file>", "OpenAPI schema file path")
-      .option("--fix", "Attempt to fix common issues")
+      .option("-c, --config [file]", "Configuration file path (otherwise discover schemantic.config.json/.cjs/.js)")
       .action(async (source, options) => {
-        await this.handleValidateCommand(source, options);
+        await this.handleValidateCommand(source, { ...this.program.opts(), ...options });
       });
   }
 
@@ -150,7 +154,7 @@ export class SchemanticCli {
 
     pluginCommand
       .command("load <path>")
-      .description("Load plugin from file or package")
+      .description("Inspect a plugin file or package (does not persist installation)")
       .action(async (path) => {
         await this.handlePluginLoadCommand(path);
       });
@@ -163,10 +167,11 @@ export class SchemanticCli {
     this.program
       .command("init [directory]")
       .description("Initialize a new schemantic configuration")
-      .option("-t, --template <template>", "Configuration template", "default")
+      .option("-t, --template <template>", "Configuration template (default|types|react)", "default")
       .option("--yes", "Skip interactive prompts")
+      .option("--force", "Replace an existing schemantic.config.json")
       .action(async (directory, options) => {
-        await this.handleInitCommand(directory, options);
+        await this.handleInitCommand(directory, { ...this.program.opts(), ...options });
       });
   }
 
@@ -199,6 +204,8 @@ export class SchemanticCli {
 
       // Load configuration
       const config = await this.loadConfiguration(source, options);
+      this.outputEffectiveConfiguration(config, options);
+      if (options.watch && !config.schemaFile) throw new Error('--watch requires a local schema file');
 
       // Create Schemantic instance
       const schemanticInstance = new Schemantic(config);
@@ -211,6 +218,27 @@ export class SchemanticCli {
 
       // Output results
       this.outputResults(result, options);
+      if (!result.success) process.exitCode = 1;
+      if (options.watch) {
+        const watcher = watch(config.schemaFile!, { ignoreInitial: true, awaitWriteFinish: { stabilityThreshold: 100 } });
+        let generating = false;
+        let pending = false;
+        watcher.on('change', async () => {
+          pending = true;
+          if (generating) return;
+          generating = true;
+          try {
+            while (pending) {
+              pending = false;
+              const update = await schemanticInstance.generate();
+              this.outputResults(update, options);
+              process.exitCode = update.success ? 0 : 1;
+            }
+          } finally { generating = false; }
+        });
+        watcher.on('ready', () => { if (!options.quiet) console.log(`Watching ${config.schemaFile}`); });
+        watcher.on('error', error => this.handleError(error, options));
+      }
     } catch (error) {
       this.handleError(error, options);
     }
@@ -226,6 +254,7 @@ export class SchemanticCli {
     try {
       // Load configuration
       const config = await this.loadConfiguration(source, options);
+      this.outputEffectiveConfiguration(config, options);
 
       // Create Schemantic instance
       const schemanticInstance = new Schemantic(config);
@@ -235,6 +264,7 @@ export class SchemanticCli {
 
       // Output validation results
       this.outputValidationResults(result, options);
+      if (!result.isValid) process.exitCode = 1;
     } catch (error) {
       this.handleError(error, options);
     }
@@ -249,9 +279,12 @@ export class SchemanticCli {
   ): Promise<void> {
     try {
       const targetDir = directory || process.cwd();
+      if (!['default', 'types', 'react'].includes(String(options.template || 'default'))) {
+        throw new Error('Unknown template; choose default, types, or react');
+      }
 
       if (options.yes) {
-        await this.createDefaultConfig(targetDir);
+        await this.createDefaultConfig(targetDir, options);
       } else {
         await this.runInitInteractive(targetDir, options);
       }
@@ -284,10 +317,11 @@ export class SchemanticCli {
   private async handlePluginLoadCommand(path: string): Promise<void> {
     try {
       const loader = new PluginLoader();
-      const plugin = await loader.loadPluginFromFile(path);
+      const plugin = await loader.loadPlugin(path);
 
       console.log(`Loaded plugin: ${plugin.name} (${plugin.version})`);
       console.log(`Description: ${plugin.description}`);
+      console.log('Use this file/package in generate --plugins or the active config; inspection does not persist registration.');
     } catch (error) {
       this.handleError(error, {});
     }
@@ -305,6 +339,7 @@ export class SchemanticCli {
       if (subCommand) {
         subCommand.help();
       } else {
+        process.exitCode = 1;
         console.log(`Unknown command: ${command}`);
         console.log("Available commands:");
         this.program.commands.forEach((cmd) => {
@@ -367,21 +402,39 @@ export class SchemanticCli {
     source?: string,
     options: CliOptions = {}
   ): Promise<SchemanticConfig> {
+    this.pluginDirectory = process.cwd();
+    if (options.url && options.file) throw new Error('Choose one schema source: --url or --file');
     let config: Partial<SchemanticConfig> = { ...DEFAULT_CONFIG };
 
-    // Load from config file if specified. Commander may set options.config to
-    // a string (path) or boolean true when the flag is present without value.
-    if (options.config) {
-      const configPath =
-        typeof options.config === "string" && options.config.trim().length > 0
-          ? (options.config as string)
-          : "./schemantic.config.json";
+    const fs = await import('fs/promises');
+    let configPath = typeof options.config === 'string' ? path.resolve(options.config) : undefined;
+    if (!configPath) {
+      for (const name of ['schemantic.config.json', 'schemantic.config.cjs', 'schemantic.config.js']) {
+        const candidate = path.resolve(name);
+        try { await fs.access(candidate); configPath = candidate; break; } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+        }
+      }
+      if (options.config && !configPath) throw new Error('No schemantic.config.json/.cjs/.js found in the current directory');
+    }
+    if (configPath) {
       const configFile = await this.loadConfigFile(configPath);
+      const directory = path.dirname(configPath);
+      this.pluginDirectory = directory;
+      if (configFile.schemaFile) configFile.schemaFile = path.resolve(directory, configFile.schemaFile);
+      if (configFile.outputDir) configFile.outputDir = path.resolve(directory, configFile.outputDir);
+      if (configFile.plugins) configFile.plugins = configFile.plugins.map(plugin => ({
+        ...plugin,
+        name: PluginLoader.isFileSpecifier(plugin.name) ? path.resolve(directory, plugin.name) : plugin.name,
+      }));
       config = { ...config, ...configFile };
     }
 
     // Handle source parameter (URL or file path)
     if (source) {
+      delete config.schemaUrl;
+      delete config.schemaFile;
+      delete config.schemaData;
       if (source.startsWith("http://") || source.startsWith("https://")) {
         config.schemaUrl = source;
       } else {
@@ -391,23 +444,29 @@ export class SchemanticCli {
 
     // Override with command line options
     if (options.url) {
+      delete config.schemaFile;
+      delete config.schemaData;
       config.schemaUrl = options.url as string;
     }
 
     if (options.file) {
+      delete config.schemaUrl;
+      delete config.schemaData;
       config.schemaFile = options.file as string;
     }
 
-    if (options.output) {
+    if (options.output !== undefined) {
       config.outputDir = options.output as string;
     }
 
     if (options.types) {
       config.generateTypes = true;
+      config.generateApiClient = !!options.client;
     }
 
     if (options.client) {
       config.generateApiClient = true;
+      config.generateTypes = true;
     }
 
     if (options.hooks) {
@@ -425,11 +484,11 @@ export class SchemanticCli {
         | "PascalCase";
     }
 
-    if (options.prefix) {
+    if (options.prefix !== undefined) {
       config.typePrefix = options.prefix as string;
     }
 
-    if (options.suffix) {
+    if (options.suffix !== undefined) {
       config.typeSuffix = options.suffix as string;
     }
 
@@ -457,6 +516,10 @@ export class SchemanticCli {
     }
 
     // Validate required fields
+    if (!['camelCase', 'snake_case', 'PascalCase'].includes(config.namingConvention!)) {
+      throw new Error(`Invalid naming convention: ${config.namingConvention}`);
+    }
+    if (config.generateHooks && !config.generateApiClient) throw new Error('React hooks require API client generation');
     if (!config.schemaUrl && !config.schemaFile && !config.schemaData) {
       throw new Error(
         "Either source parameter, --url, --file, or schema data must be provided"
@@ -470,7 +533,7 @@ export class SchemanticCli {
       config.outputDir = DEFAULT_CONFIG.outputDir || "./src/generated";
     }
 
-    return config as SchemanticConfig;
+    return resolveConfiguration(config);
   }
 
   /**
@@ -484,10 +547,13 @@ export class SchemanticCli {
       const content = await fs.readFile(filePath, "utf-8");
 
       if (filePath.endsWith(".json")) {
-        return JSON.parse(content);
-      } else if (filePath.endsWith(".js") || filePath.endsWith(".ts")) {
-        const module = await import(filePath);
-        return module.default || module;
+        const parsed: unknown = JSON.parse(content);
+        return resolveConfiguration(parsed as SchemanticConfig);
+      } else if (filePath.endsWith(".js") || filePath.endsWith(".cjs")) {
+        const configModule: unknown = createRequire(path.resolve(filePath))(path.resolve(filePath));
+        const loaded = configModule && typeof configModule === 'object' && 'default' in configModule
+          ? (configModule as { default: unknown }).default : configModule;
+        return resolveConfiguration(loaded as SchemanticConfig);
       } else {
         throw new Error(`Unsupported configuration file format: ${filePath}`);
       }
@@ -507,16 +573,18 @@ export class SchemanticCli {
   ): Promise<void> {
     const pluginManager = Schemantic.getPluginManager();
 
-    // Load built-in plugins
-    const builtinPlugins = getBuiltinPlugins();
-    for (const plugin of builtinPlugins) {
-      pluginManager.registerPlugin(plugin);
-    }
-
     // Load configured plugins
+    const loader = new PluginLoader();
     if (config.plugins) {
       for (const pluginConfig of config.plugins) {
         if (pluginConfig.enabled) {
+          if (!pluginManager.getPlugin(pluginConfig.name)) {
+            const plugin = await loader.loadPlugin(pluginConfig.name, this.pluginDirectory);
+            if (pluginManager.getPlugin(plugin.name)) throw new Error(`Duplicate plugin name: ${plugin.name}`);
+            pluginManager.registerPlugin(plugin);
+            // The config and instance share this entry; generation uses the resolved exported name.
+            pluginConfig.name = plugin.name;
+          }
           pluginManager.enablePlugin(pluginConfig.name);
         }
       }
@@ -590,12 +658,20 @@ export class SchemanticCli {
    * Handle errors
    */
   private handleError(error: unknown, options: CliOptions): void {
-    if (options.quiet) {
-      process.exit(1);
-    }
+    process.exitCode = 1;
+    if (!options.quiet) console.error('❌ Error:', error instanceof Error ? error.message : String(error));
+  }
 
-    console.error("❌ Error:", error);
-    process.exit(1);
+  private outputEffectiveConfiguration(config: SchemanticConfig, options: CliOptions): void {
+    if (!options.verbose || options.quiet) return;
+    console.log('Effective configuration:', JSON.stringify({
+      source: config.schemaFile || config.schemaUrl || '<in-memory schema>',
+      output: config.outputDir,
+      generateTypes: config.generateTypes,
+      generateApiClient: config.generateApiClient,
+      generateHooks: config.generateHooks,
+      plugins: config.plugins?.filter(plugin => plugin.enabled).map(plugin => plugin.name) || [],
+    }, null, 2));
   }
 
   /**
@@ -649,7 +725,7 @@ export class SchemanticCli {
 
       const generateHooks = await this.askYesNo(
         rl,
-        "Generate React hooks? (y/N): "
+        "Generate React hooks? (y/N): ", false
       );
       config.generateHooks = generateHooks === true;
 
@@ -660,13 +736,15 @@ export class SchemanticCli {
       config.useStrictTypes = strictTypes !== false;
 
       // Create Schemantic instance and generate
-      const schemanticInstance = new Schemantic(config as SchemanticConfig);
-      await this.loadPlugins(config as SchemanticConfig, schemanticInstance);
+      const resolvedConfig = resolveConfiguration(config);
+      const schemanticInstance = new Schemantic(resolvedConfig);
+      await this.loadPlugins(resolvedConfig, schemanticInstance);
 
       console.log("\n⚙️ Generating types and API client...");
       const result = await schemanticInstance.generate();
 
       this.outputResults(result, {});
+      if (!result.success) process.exitCode = 1;
     } finally {
       rl.close();
     }
@@ -677,7 +755,7 @@ export class SchemanticCli {
    */
   private async runInitInteractive(
     directory: string,
-    _options: CliOptions
+    options: CliOptions
   ): Promise<void> {
     console.log("🚀 Schemantic Configuration Initialization\n");
 
@@ -687,7 +765,7 @@ export class SchemanticCli {
     });
 
     try {
-      const config: Partial<SchemanticConfig> = { ...DEFAULT_CONFIG };
+      const config: Partial<SchemanticConfig> = this.templateConfig(options);
 
       // Get schema source
       const schemaSource = await this.askQuestion(
@@ -735,13 +813,13 @@ export class SchemanticCli {
 
       const generateClient = await this.askYesNo(
         rl,
-        "Generate API client by default? (Y/n): "
+        options.template === 'types' ? "Generate API client by default? (y/N): " : "Generate API client by default? (Y/n): ", options.template !== 'types'
       );
       config.generateApiClient = generateClient !== false;
 
       const generateHooks = await this.askYesNo(
         rl,
-        "Generate React hooks by default? (y/N): "
+        options.template === 'react' ? "Generate React hooks by default? (Y/n): " : "Generate React hooks by default? (y/N): ", options.template === 'react'
       );
       config.generateHooks = generateHooks === true;
 
@@ -752,7 +830,7 @@ export class SchemanticCli {
       config.useStrictTypes = strictTypes !== false;
 
       // Save configuration
-      await this.saveConfig(directory, config as SchemanticConfig);
+      await this.saveConfig(directory, resolveConfiguration(config), !!options.force);
       console.log("\n✅ Configuration saved to schemantic.config.json");
     } finally {
       rl.close();
@@ -762,14 +840,14 @@ export class SchemanticCli {
   /**
    * Create default configuration
    */
-  private async createDefaultConfig(directory: string): Promise<void> {
+  private async createDefaultConfig(directory: string, options: CliOptions): Promise<void> {
     const config: SchemanticConfig = {
-      ...DEFAULT_CONFIG,
+      ...this.templateConfig(options),
       outputDir: "./src/generated",
       typePrefix: "",
       generateTypes: true,
-      generateApiClient: true,
-      generateHooks: false,
+      generateApiClient: options.template !== 'types',
+      generateHooks: options.template === 'react',
       useStrictTypes: true,
       namingConvention: "camelCase",
       typeSuffix: "",
@@ -780,7 +858,7 @@ export class SchemanticCli {
       generateIndexFile: true,
     };
 
-    await this.saveConfig(directory, config);
+    await this.saveConfig(directory, config, !!options.force);
     console.log("✅ Default configuration created");
   }
 
@@ -789,13 +867,24 @@ export class SchemanticCli {
    */
   private async saveConfig(
     directory: string,
-    config: SchemanticConfig
+    config: SchemanticConfig,
+    force = false
   ): Promise<void> {
     const fs = await import("fs/promises");
     const path = await import("path");
 
     const configPath = path.join(directory, "schemantic.config.json");
-    await fs.writeFile(configPath, JSON.stringify(config, null, 2), "utf-8");
+    await fs.mkdir(directory, { recursive: true });
+    try {
+      await fs.writeFile(configPath, JSON.stringify(config, null, 2), { encoding: 'utf-8', flag: force ? 'w' : 'wx' });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'EEXIST') throw new Error(`Configuration already exists: ${configPath}; use init --force to replace it`);
+      throw error;
+    }
+  }
+
+  private templateConfig(options: CliOptions): Partial<SchemanticConfig> {
+    return { ...DEFAULT_CONFIG, outputDir: './src/generated', generateApiClient: options.template !== 'types', generateHooks: options.template === 'react' };
   }
 
   /**
@@ -813,15 +902,16 @@ export class SchemanticCli {
   /**
    * Ask a yes/no question and return boolean
    */
-  private askYesNo(rl: readline.Interface, question: string): Promise<boolean> {
-    return new Promise((resolve) => {
+  private askYesNo(rl: readline.Interface, question: string, defaultValue = true): Promise<boolean> {
+    return new Promise((resolve, reject) => {
       rl.question(question, (answer) => {
         const normalized = answer.toLowerCase().trim();
-        if (normalized === "" || normalized === "y" || normalized === "yes") {
+        if (normalized === '') resolve(defaultValue);
+        else if (normalized === "y" || normalized === "yes") {
           resolve(true);
-        } else {
+        } else if (normalized === 'n' || normalized === 'no') {
           resolve(false);
-        }
+        } else reject(new Error('Answer yes or no'));
       });
     });
   }
@@ -835,14 +925,15 @@ export class SchemanticCli {
     choices: string[],
     defaultChoice: string
   ): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       rl.question(question, (answer) => {
         const normalized = answer.toLowerCase().trim();
         if (normalized === "") {
           resolve(defaultChoice);
         } else {
           const choice = choices.find((c) => c.toLowerCase() === normalized);
-          resolve(choice || defaultChoice);
+          if (choice) resolve(choice);
+          else reject(new Error(`Choose one of: ${choices.join(', ')}`));
         }
       });
     });
@@ -851,8 +942,8 @@ export class SchemanticCli {
   /**
    * Run the CLI
    */
-  run(): void {
-    this.program.parse();
+  async run(argv?: string[]): Promise<void> {
+    await this.program.parseAsync(argv);
   }
 }
 
@@ -861,5 +952,5 @@ export const cli = new SchemanticCli();
 
 // Run CLI if this file is executed directly
 if (require.main === module) {
-  cli.run();
+  void cli.run();
 }

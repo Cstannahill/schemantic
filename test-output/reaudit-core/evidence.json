@@ -1,0 +1,370 @@
+[
+  {
+    "id": "fixture:camelCase:plain:allof-inher-union.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:zod:allof-inher-union.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:hooks:allof-inher-union.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:plain:allof-inher-union.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:zod:allof-inher-union.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:hooks:allof-inher-union.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:plain:auth-file-uploads.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:zod:auth-file-uploads.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:hooks:auth-file-uploads.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:plain:auth-file-uploads.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:zod:auth-file-uploads.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:hooks:auth-file-uploads.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:plain:edge-case.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:zod:edge-case.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:hooks:edge-case.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:plain:edge-case.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:zod:edge-case.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:hooks:edge-case.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:plain:image-conversion-schema-openapi.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:zod:image-conversion-schema-openapi.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:hooks:image-conversion-schema-openapi.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:plain:image-conversion-schema-openapi.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:zod:image-conversion-schema-openapi.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:hooks:image-conversion-schema-openapi.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:plain:nested-dictmap-datetime.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:zod:nested-dictmap-datetime.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:hooks:nested-dictmap-datetime.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:plain:nested-dictmap-datetime.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:zod:nested-dictmap-datetime.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:hooks:nested-dictmap-datetime.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:plain:pag-nested.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:zod:pag-nested.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:camelCase:hooks:pag-nested.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:plain:pag-nested.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:zod:pag-nested.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "fixture:preserve:hooks:pag-nested.json",
+    "success": true,
+    "generationErrors": [],
+    "diagnostics": []
+  },
+  {
+    "id": "consumer:cjs-strict-dom",
+    "diagnostics": []
+  },
+  {
+    "id": "consumer:bundler-verbatim",
+    "diagnostics": []
+  },
+  {
+    "id": "consumer:no-unused",
+    "diagnostics": []
+  },
+  {
+    "id": "consumer:node-server-no-dom",
+    "diagnostics": []
+  },
+  {
+    "id": "consumer:nodenext-esm",
+    "diagnostics": []
+  },
+  {
+    "id": "hook:overlapping-mutation",
+    "expectedLatestData": "new-result",
+    "observedData": "new-result",
+    "loading": false
+  },
+  {
+    "id": "hook:reset-pending-mutation",
+    "expectedData": "undefined",
+    "loading": false
+  },
+  {
+    "id": "hook:pending-mutation-loading",
+    "expectedLoading": true,
+    "observedLoading": true
+  },
+  {
+    "id": "hook:equivalent-input-stability",
+    "before": 2,
+    "after": 2,
+    "stable": true
+  },
+  {
+    "id": "lifecycle:validate-vs-generate",
+    "validation": {
+      "isValid": false,
+      "errors": [
+        {
+          "code": "UNRESOLVED_REFERENCE",
+          "message": "Unresolved local reference: #/components/schemas/Missing",
+          "path": "components.schemas.Bad.$ref",
+          "severity": "error"
+        }
+      ],
+      "warnings": []
+    },
+    "generation": {
+      "success": false,
+      "generatedFiles": [],
+      "errors": [
+        {
+          "code": "UNRESOLVED_REFERENCE",
+          "message": "Unresolved local reference: #/components/schemas/Missing",
+          "path": "components.schemas.Bad.$ref",
+          "severity": "error"
+        },
+        {
+          "code": "GENERATION_ERROR",
+          "message": "OpenAPI schema validation failed",
+          "severity": "error"
+        }
+      ],
+      "warnings": [],
+      "statistics": {
+        "totalTypes": 0,
+        "totalEndpoints": 0,
+        "totalFiles": 0,
+        "totalSize": 0,
+        "generationTime": 0,
+        "schemaSize": 0
+      }
+    }
+  },
+  {
+    "id": "feature:generate-queries",
+    "success": false,
+    "errors": [
+      {
+        "code": "CONFIGURATION_ERROR",
+        "message": "generateQueries is not implemented; use generateHooks for plain React hooks"
+      }
+    ],
+    "files": [],
+    "statistics": {}
+  },
+  {
+    "id": "lifecycle:stale-output-files",
+    "reportedFiles": [
+      "types.ts",
+      "conversion.ts",
+      "index.ts"
+    ],
+    "actualFiles": [
+      ".schemantic-manifest.json",
+      "conversion.ts",
+      "index.ts",
+      "types.ts"
+    ]
+  },
+  {
+    "id": "lifecycle:file-collision-case",
+    "platform": "win32",
+    "outputFileName": "Types.ts",
+    "success": false,
+    "errors": [
+      {
+        "code": "GENERATION_ERROR",
+        "message": "Output filename collision: Types.ts",
+        "severity": "error"
+      }
+    ],
+    "actualFiles": [
+      "index.ts",
+      "types.ts"
+    ],
+    "userInterfacePresent": false,
+    "clientWrittenToTypes": true
+  },
+  {
+    "id": "lifecycle:file-collision-ancestor",
+    "platform": "win32",
+    "outputFileName": "types.ts/client.ts",
+    "success": false,
+    "errors": [
+      {
+        "code": "GENERATION_ERROR",
+        "message": "Output filename collision: types.ts/client.ts",
+        "severity": "error"
+      }
+    ],
+    "actualFiles": [
+      "types.ts"
+    ],
+    "userInterfacePresent": true,
+    "clientWrittenToTypes": false
+  },
+  {
+    "id": "plugin:custom-import-preservation",
+    "success": true,
+    "diagnostics": [],
+    "importPreserved": true
+  }
+]

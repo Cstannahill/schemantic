@@ -3,7 +3,6 @@
  * Orchestrates the entire type generation process
  */
 
-import * as fs from "fs/promises";
 import * as path from "path";
 import { OpenAPISchema, OpenAPISchemaObject } from "../types/openapi";
 import { ResolvedSchema } from "../types/schema";
@@ -18,6 +17,7 @@ import {
   GenerationWarning,
   GenerationStatistics,
   TypeRegistry,
+  SchemanticOptions,
 } from "../types/core";
 
 // Re-export commonly used types and constants
@@ -26,7 +26,12 @@ import { ParserFactory } from "../parsers";
 import { TypeGeneratorFactory } from "../generators";
 import { ApiClientGenerator } from "../generators/api-client-generator";
 import { HookGenerator } from "../generators/hook-generator";
-import { PluginManager } from "../plugins";
+import { PluginManager, getBuiltinPlugins } from "../plugins";
+import { referenceName, typeName } from '../generators/schema-type';
+import { resolveConfiguration } from './configuration';
+import { validateOutputNames, writeOutput } from './output-writer';
+import { addSchemaProjections, ProjectionNames } from '../generators/projections';
+import { generateConversionFile, renameSchemaProperties } from '../generators/naming';
 
 /**
  * Main Schemantic class
@@ -35,12 +40,17 @@ export class Schemantic {
   private config: SchemanticConfig;
   private pluginManager: PluginManager;
   private schema?: OpenAPISchema;
+  private wireSchema?: OpenAPISchema;
   private resolvedSchemas: Map<string, ResolvedSchema> = new Map();
   private typeRegistry: TypeRegistry;
+  private selectedSchemaNames: Set<string> | undefined;
+  private clientFileNames = new Map<string, string>();
+  private projections: ProjectionNames = {};
 
-  constructor(config: SchemanticConfig) {
-    this.config = config;
+  constructor(config: SchemanticOptions) {
+    this.config = resolveConfiguration(config);
     this.pluginManager = new PluginManager();
+    for (const plugin of getBuiltinPlugins()) this.pluginManager.registerPlugin(plugin);
     this.typeRegistry = this.createTypeRegistry();
   }
 
@@ -54,8 +64,32 @@ export class Schemantic {
     const generatedFiles: GeneratedFile[] = [];
 
     try {
+      this.config = resolveConfiguration(this.config);
+      if (this.config.generateHooks && !this.config.generateApiClient) throw new Error('React hooks require API client generation');
+      for (const plugin of this.config.plugins || []) {
+        if (plugin.enabled) {
+          if (!this.pluginManager.getPlugin(plugin.name)) throw new Error(`Unknown plugin: ${plugin.name}`);
+          this.pluginManager.enablePlugin(plugin.name);
+        } else this.pluginManager.disablePlugin(plugin.name);
+      }
+      this.resolvedSchemas.clear();
+      this.selectedSchemaNames = undefined;
+      this.clientFileNames.clear();
+      this.typeRegistry = this.createTypeRegistry();
       // Load and parse schema
-      const schema = await this.loadSchema();
+      let schema = JSON.parse(JSON.stringify(await this.loadSchema())) as OpenAPISchema;
+      const validation = await ParserFactory.autoCreateParser({ data: schema }, this.config).validate(schema);
+      warnings.push(...validation.warnings);
+      if (!validation.isValid) {
+        errors.push(...validation.errors);
+        throw new Error('OpenAPI schema validation failed');
+      }
+      this.schema = schema;
+      this.filterSchema(schema);
+      this.validateReferences(schema);
+      this.projections = addSchemaProjections(schema, ParserFactory.autoCreateParser({ data: schema }, this.config).createResolver(schema), this.selectedSchemaNames);
+      this.wireSchema = structuredClone(schema);
+      schema = renameSchemaProperties(schema, this.config.propertyNaming ?? 'camelCase');
       this.schema = schema;
 
       // Create generation context
@@ -69,7 +103,7 @@ export class Schemantic {
 
       // Generate types
       let generatedTypes: GeneratedType[] = [];
-      if (this.config.generateTypes) {
+      if (this.config.generateTypes || this.config.generateApiClient) {
         generatedTypes = await this.generateTypes(context);
       }
 
@@ -80,7 +114,7 @@ export class Schemantic {
       }
 
       // Generate files
-      const files = await this.generateFiles(generatedTypes, generatedClients);
+      const files = await this.generateFiles(generatedTypes, generatedClients, context);
       generatedFiles.push(...files);
 
       // Execute after generation hooks
@@ -99,6 +133,10 @@ export class Schemantic {
 
       await this.pluginManager.executeAfterGeneration(context, result);
 
+      if (!result.success || result.errors.some(error => error.severity === 'error')) throw new Error('A plugin rejected generated output');
+      await writeOutput(this.config.outputDir, result.generatedFiles);
+      result.statistics = this.calculateStatistics(generatedTypes, generatedClients, result.generatedFiles, Date.now() - startTime);
+
       return result;
     } catch (error) {
       errors.push({
@@ -109,7 +147,7 @@ export class Schemantic {
 
       return {
         success: false,
-        generatedFiles,
+        generatedFiles: [],
         errors,
         warnings,
         statistics: this.calculateStatistics(
@@ -156,7 +194,7 @@ export class Schemantic {
    * Load schema from various sources
    */
   private async loadSchema(): Promise<OpenAPISchema> {
-    let input: { url?: string; filePath?: string; data?: OpenAPISchema } = {};
+    let input: { url?: string; filePath?: string; data?: unknown } = {};
 
     if (this.config.schemaUrl) {
       input.url = this.config.schemaUrl;
@@ -175,6 +213,50 @@ export class Schemantic {
   /**
    * Create generation context
    */
+  private filterSchema(schema: OpenAPISchema): void {
+    const matches = (value: string, patterns: string[] = []) => patterns.some(pattern =>
+      new RegExp(`^${pattern.split('*').map(part => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*')}$`).test(value));
+    schema.paths = Object.fromEntries(Object.entries(schema.paths).filter(([name]) =>
+      (!this.config.includePaths?.length || matches(name, this.config.includePaths)) && !matches(name, this.config.excludePaths)));
+    const schemas = schema.components?.schemas;
+    if (!schemas) return;
+    const selected = new Set(Object.keys(schemas).filter(name =>
+      (!this.config.includeSchemas?.length || matches(name, this.config.includeSchemas)) && !matches(name, this.config.excludeSchemas)));
+    const collect = (value: unknown, visited = new Set<string>()) => {
+      if (!value || typeof value !== 'object') return;
+      if ('$ref' in value && typeof value.$ref === 'string') {
+        const ref = value.$ref;
+        if (visited.has(ref)) return;
+        visited.add(ref);
+        if (ref.startsWith('#/components/schemas/')) {
+          const name = referenceName(ref.split('/').slice(0, 4).join('/'));
+          if (matches(name, this.config.excludeSchemas)) throw new Error(`Referenced schema ${name} is explicitly excluded`);
+          selected.add(name);
+          collect(schemas[name], visited);
+        } else {
+          const resolver = ParserFactory.autoCreateParser({ data: schema }, this.config).createResolver(schema);
+          collect(resolver(ref), visited);
+        }
+      }
+      for (const child of Object.values(value)) collect(child, visited);
+    };
+    if (this.config.generateApiClient || this.config.generateHooks) collect(schema.paths);
+    for (const name of [...selected]) collect(schemas[name]);
+    this.selectedSchemaNames = selected;
+  }
+
+  private validateReferences(schema: OpenAPISchema): void {
+    const resolver = ParserFactory.autoCreateParser({ data: schema }, this.config).createResolver(schema);
+    const walk = (value: unknown): void => {
+      if (!value || typeof value !== 'object') return;
+      if ('$ref' in value && typeof value.$ref === 'string' && !resolver(value.$ref)) {
+        throw new Error(`Unresolved or unsupported reference: ${value.$ref}`);
+      }
+      for (const child of Object.values(value)) walk(child);
+    };
+    walk(schema);
+  }
+
   private createGenerationContext(): GenerationContext {
     return {
       config: this.config,
@@ -183,7 +265,9 @@ export class Schemantic {
       generatedTypes: new Map(),
       generatedClients: new Map(),
       typeRegistry: this.typeRegistry,
-      schemaResolver: (ref: string) => this.resolvedSchemas.get(ref),
+      schemaResolver: ParserFactory.autoCreateParser({ data: this.schema! }, this.config).createResolver(this.schema!),
+      projections: this.projections,
+      wireSchema: this.wireSchema!,
     };
   }
 
@@ -197,6 +281,7 @@ export class Schemantic {
 
     // Resolve all schemas
     for (const [name, schemaRef] of Object.entries(schema.components.schemas)) {
+      if (this.selectedSchemaNames && !this.selectedSchemaNames.has(name)) continue;
       if (typeof schemaRef === "object" && schemaRef !== null) {
         // Stamp a stable generated type name to match $ref terminal name
         (schemaRef as OpenAPISchemaObject)._generatedTypeName = name;
@@ -238,6 +323,9 @@ export class Schemantic {
 
       if (generatedType) {
         // Register type
+        if (this.typeRegistry.getType(generatedType.name)) {
+          throw new Error(`Multiple schemas generate the type name ${generatedType.name}`);
+        }
         this.typeRegistry.registerType(generatedType.name, generatedType);
         context.generatedTypes.set(generatedType.name, generatedType);
 
@@ -249,6 +337,13 @@ export class Schemantic {
         );
 
         generatedTypes.push(generatedType);
+      }
+      for (const [name, generator] of this.pluginManager.getCustomTypeGenerators()) {
+        const customType = generator(transformedSchema, context);
+        if (this.typeRegistry.getType(customType.name)) throw new Error(`Custom generator ${name} produced duplicate type ${customType.name}`);
+        this.typeRegistry.registerType(customType.name, customType);
+        context.generatedTypes.set(customType.name, customType);
+        generatedTypes.push(customType);
       }
     }
 
@@ -284,13 +379,10 @@ export class Schemantic {
     // Generate custom clients from plugins
     const customGenerators = this.pluginManager.getCustomClientGenerators();
     for (const [name, generator] of customGenerators) {
-      try {
         const customClient = generator(context);
+        if (context.generatedClients.has(customClient.name)) throw new Error(`Custom generator ${name} produced duplicate client ${customClient.name}`);
         context.generatedClients.set(customClient.name, customClient);
         generatedClients.push(customClient);
-      } catch (error) {
-        console.warn(`Custom client generator ${name} failed:`, error);
-      }
     }
 
     return generatedClients;
@@ -301,18 +393,45 @@ export class Schemantic {
    */
   private async generateFiles(
     generatedTypes: GeneratedType[],
-    generatedClients: GeneratedApiClient[]
+    generatedClients: GeneratedApiClient[],
+    context: GenerationContext,
   ): Promise<GeneratedFile[]> {
     const files: GeneratedFile[] = [];
-
-    // Ensure output directory exists
-    await fs.mkdir(this.config.outputDir, { recursive: true });
+    const exportedTypes = new Set<string>();
+    for (const type of generatedTypes) {
+      for (const name of new Set(type.exports)) {
+        if (exportedTypes.has(name)) throw new Error(`Generated type export collision: ${name}`);
+        exportedTypes.add(name);
+      }
+    }
+    const publicNames = new Set(exportedTypes);
+    const reserveExport = (name: string) => {
+      if (publicNames.has(name)) throw new Error(`Generated public export collision: ${name}; rename the schema or configure a type prefix/suffix`);
+      publicNames.add(name);
+    };
+    for (const client of generatedClients) for (const name of new Set(client.exports)) reserveExport(name);
+    if (this.config.generateHooks) reserveExport('createApiHooks');
+    if (this.config.propertyNaming === 'camelCase') {
+      reserveExport('serializeValue'); reserveExport('deserializeValue');
+      for (const name of Object.keys(this.wireSchema?.components?.schemas || {}).map(name => this.typeRegistry.getType(typeName(name, this.config.typePrefix, this.config.typeSuffix))?.name).filter((name): name is string => !!name)) {
+        reserveExport('serialize' + name); reserveExport('deserialize' + name);
+      }
+    }
+    const names = ['types.ts', 'index.ts', 'hooks.ts', 'conversion.ts'];
+    for (const [index, client] of generatedClients.entries()) {
+      const fileName = index === 0 ? this.config.outputFileName || 'api-client.ts' : client.name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase() + '.ts';
+      if (path.isAbsolute(fileName) || fileName.split(/[\\/]/).includes('..') || !fileName.endsWith('.ts')) throw new Error(`Invalid output filename: ${fileName}`);
+      validateOutputNames([...names, fileName]);
+      names.push(fileName);
+      this.clientFileNames.set(client.name, fileName);
+    }
 
     // Generate types file
     if (generatedTypes.length > 0) {
       const typesFile = await this.generateTypesFile(generatedTypes);
       files.push(typesFile);
     }
+    if (this.config.propertyNaming === 'camelCase') files.push(generateConversionFile(context, this.wireSchema!));
 
     // Generate client files
     for (const client of generatedClients) {
@@ -322,7 +441,7 @@ export class Schemantic {
 
     // Generate hooks file (first-party) when enabled
     if (this.config.generateHooks) {
-      const hooksFile = await this.generateHooksFile();
+      const hooksFile = await this.generateHooksFile(context, generatedClients[0]);
       if (hooksFile) files.push(hooksFile);
     }
 
@@ -352,7 +471,12 @@ export class Schemantic {
     ];
 
     // Generate imports from dependencies
-    const imports = this.generateImportsFromDependencies(allDependencies);
+    const imports = new Map<string, string>();
+    const collectImport = (statement: string) => {
+      const key = statement.replace(/\s+/g, '').replace(/"/g, "'").replace(/;$/, '');
+      imports.set(key, statement.trim());
+    };
+    this.generateImportsFromDependencies(allDependencies).split('\n').filter(line => line.trim()).forEach(collectImport);
 
     // Generate types content ordered by dependencies.
     // Preserve each GeneratedType.content as a whole (except stripping any import lines),
@@ -360,7 +484,7 @@ export class Schemantic {
     const typeContentMap: Record<string, string> = {};
     for (const t of generatedTypes) {
       const cleaned = t.content
-        .replace(/^import\s+.*?from\s+['"][^'"]*['"];?\s*$/gm, "")
+        .replace(/^[ \t]*import\s+(?:[\s\S]*?\s+from\s+)?['"][^'"]+['"];?[ \t]*(?:\r?\n|$)/gm, statement => { collectImport(statement); return ''; })
         .trim();
       if (cleaned.length > 0) typeContentMap[t.name] = cleaned;
     }
@@ -381,10 +505,8 @@ export class Schemantic {
       emittedBlocks.push(rem);
     }
 
-    const content = imports + emittedBlocks.join("\n\n");
+    const content = [...imports.values()].join('\n') + (imports.size ? '\n\n' : '') + emittedBlocks.join("\n\n");
     const filePath = path.join(this.config.outputDir, "types.ts");
-
-    await fs.writeFile(filePath, content, "utf-8");
 
     return {
       path: filePath,
@@ -402,17 +524,22 @@ export class Schemantic {
     client: GeneratedApiClient
   ): Promise<GeneratedFile> {
     // Default to a clean, predictable filename when not provided
-    const fileName = this.config.outputFileName || `api-client.ts`;
+    const fileName = this.clientFileNames.get(client.name)!;
     const filePath = path.join(this.config.outputDir, fileName);
 
-    await fs.writeFile(filePath, client.content, "utf-8");
+    let typeImport = path.relative(path.dirname(filePath), path.join(this.config.outputDir, 'types.js')).replace(/\\/g, '/');
+    if (!typeImport.startsWith('.')) typeImport = './' + typeImport;
+    let conversionImport = path.relative(path.dirname(filePath), path.join(this.config.outputDir, 'conversion.js')).replace(/\\/g, '/');
+    if (!conversionImport.startsWith('.')) conversionImport = './' + conversionImport;
+    const content = client.content.replace(/from (['"])\.\/types(?:\.js)?\1/g, `from '${typeImport}'`)
+      .replace(/from (['"])\.\/conversion\.js\1/g, `from '${conversionImport}'`);
 
     return {
       path: filePath,
-      content: client.content,
+      content,
       type: "client",
       dependencies: client.dependencies,
-      size: Buffer.byteLength(client.content, "utf-8"),
+      size: Buffer.byteLength(content, "utf-8"),
     };
   }
 
@@ -425,51 +552,26 @@ export class Schemantic {
   ): Promise<GeneratedFile> {
     const exports: string[] = [];
 
-    // Export types - filter out generic instances
-    const allTypeExports = generatedTypes.flatMap((type) => type.exports);
-    if (allTypeExports.length > 0) {
-      // Filter out generic instances and keep only base types
-      const baseTypes = new Set<string>();
-
-      for (const exportName of allTypeExports) {
-        if (exportName.includes("<") && exportName.includes(">")) {
-          // Extract base type name from generic type
-          const baseName = exportName.split("<")[0];
-          if (baseName && baseName.trim()) {
-            baseTypes.add(baseName);
-          }
-        } else {
-          baseTypes.add(exportName);
-        }
-      }
-
-      if (baseTypes.size > 0) {
-        exports.push(
-          `export type { ${Array.from(baseTypes).join(", ")} } from './types';`
-        );
-      }
-    }
+    if (generatedTypes.length) exports.push("export * from './types.js';");
+    if (this.config.propertyNaming === 'camelCase') exports.push("export * from './conversion.js';");
 
     // Export clients
     for (const client of generatedClients) {
       // Re-export only values, not types
-      const valueExports = client.exports.filter((e) =>
-        e.endsWith("ApiClient")
-      );
+      const valueExports = client.exports;
       if (valueExports.length > 0) {
         // Use configured output file name or default 'api-client.ts'
-        const clientFileBase = (
-          this.config.outputFileName || `api-client.ts`
-        ).replace(/\.ts$/, "");
+        const clientFileBase = this.clientFileNames.get(client.name)!.replace(/\.ts$/, "").replace(/\\/g, '/');
         exports.push(
-          `export { ${valueExports.join(", ")} } from './${clientFileBase}';`
+          `export { ${valueExports.join(", ")} } from './${clientFileBase}.js';`
         );
+        if (client === generatedClients[0]) exports.push(`export type { ApiClientConfig } from './${clientFileBase}.js';`);
       }
     }
 
     // Export hooks if generated
     if (this.config.generateHooks) {
-      exports.push(`export { createApiHooks } from './hooks';`);
+      exports.push(`export { createApiHooks } from './hooks.js';`);
     }
 
     const content = exports
@@ -478,8 +580,6 @@ export class Schemantic {
       )
       .join("\n");
     const filePath = path.join(this.config.outputDir, "index.ts");
-
-    await fs.writeFile(filePath, content, "utf-8");
 
     return {
       path: filePath,
@@ -493,13 +593,10 @@ export class Schemantic {
   /**
    * Generate hooks file when enabled
    */
-  private async generateHooksFile(): Promise<GeneratedFile | undefined> {
-    try {
-      const hookGen = new HookGenerator(this.createGenerationContext());
-      const hooks = hookGen.generate();
+  private async generateHooksFile(context: GenerationContext, client?: GeneratedApiClient): Promise<GeneratedFile> {
+      const hookGen = new HookGenerator(context);
+      const hooks = hookGen.generate(client);
       const filePath = path.join(this.config.outputDir, "hooks.ts");
-
-      await fs.writeFile(filePath, hooks.content, "utf-8");
 
       return {
         path: filePath,
@@ -508,10 +605,6 @@ export class Schemantic {
         dependencies: [],
         size: Buffer.byteLength(hooks.content, "utf-8"),
       };
-    } catch {
-      // Non-fatal: skip hooks on error
-      return undefined;
-    }
   }
 
   /**

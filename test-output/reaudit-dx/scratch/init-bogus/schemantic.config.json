@@ -1,0 +1,15 @@
+{
+  "generateTypes": true,
+  "generateApiClient": true,
+  "generateHooks": false,
+  "generateQueries": false,
+  "useStrictTypes": true,
+  "useOptionalChaining": true,
+  "useNullishCoalescing": true,
+  "namingConvention": "camelCase",
+  "preserveComments": true,
+  "generateIndexFile": true,
+  "outputDir": "./src/generated",
+  "typePrefix": "",
+  "typeSuffix": ""
+}

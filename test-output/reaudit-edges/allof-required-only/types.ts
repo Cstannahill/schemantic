@@ -1,0 +1,1 @@
+export type RequiredByComposition = { id?: string; } & unknown;

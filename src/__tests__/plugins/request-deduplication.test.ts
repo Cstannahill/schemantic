@@ -128,13 +128,9 @@ export class ApiClient {
         originalContent.length
       );
 
-      // Should add dependencies
-      expect(mockApiClient.dependencies).toEqual(
-        expect.arrayContaining(["crypto-js"])
-      );
-      expect(mockApiClient.dependencies.length).toBeGreaterThan(
-        originalDependencies.length
-      );
+      // Canonical request identity uses platform APIs and preserves existing dependencies.
+      expect(mockApiClient.dependencies).toEqual(originalDependencies);
+      expect(mockApiClient.dependencies).not.toContain("crypto-js");
 
       // Should add exports
       expect(mockApiClient.exports).toEqual(
@@ -231,7 +227,7 @@ export class ApiClient {
 
       // Should still enhance the client with custom configuration
       expect(mockApiClient.content).toContain("RequestDeduplicator");
-      expect(mockApiClient.dependencies).toContain("crypto-js");
+      expect(mockApiClient.dependencies).not.toContain("crypto-js");
     });
   });
 
@@ -449,7 +445,7 @@ export class ApiClient {
 
         // Each client should be enhanced
         expect(client.content).toContain("RequestDeduplicator");
-        expect(client.dependencies).toContain("crypto-js");
+        expect(client.dependencies).not.toContain("crypto-js");
       }
     });
 

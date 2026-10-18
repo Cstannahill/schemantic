@@ -3,7 +3,7 @@
  * These types define the internal structure and interfaces used throughout the system
  */
 
-import { OpenAPISchema } from "./openapi";
+import { OpenAPISchema, OpenAPIInputDocument, OpenAPISchemaObject, OpenAPIRef } from "./openapi";
 import { ResolvedSchema, SchemaResolver } from "./schema";
 
 /**
@@ -13,7 +13,7 @@ export interface SchemanticConfig {
   // Input configuration
   schemaUrl?: string;
   schemaFile?: string;
-  schemaData?: OpenAPISchema;
+  schemaData?: OpenAPIInputDocument;
 
   // Output configuration
   outputDir: string;
@@ -32,6 +32,7 @@ export interface SchemanticConfig {
 
   // Naming conventions
   namingConvention: "camelCase" | "snake_case" | "PascalCase";
+  propertyNaming?: "camelCase" | "preserve";
   typePrefix?: string;
   typeSuffix?: string;
 
@@ -49,6 +50,10 @@ export interface SchemanticConfig {
   preserveComments: boolean;
   generateIndexFile: boolean;
 }
+
+/** Public input may omit fields supplied by defaults. */
+export type SchemanticOptions = Partial<SchemanticConfig>;
+export type ResolvedSchemanticConfig = SchemanticConfig;
 
 /**
  * Plugin configuration interface
@@ -103,6 +108,10 @@ export interface GeneratedEndpoint {
  */
 export interface GeneratedParameter {
   name: string;
+  schema?: OpenAPISchemaObject | OpenAPIRef;
+  variableName?: string;
+  style?: string;
+  explode?: boolean;
   type: string;
   isOptional: boolean;
   isRequired: boolean;
@@ -118,6 +127,7 @@ export interface GeneratedRequestBody {
   isOptional: boolean;
   contentType?: string;
   description?: string;
+  schema?: OpenAPISchemaObject | OpenAPIRef;
 }
 
 /**
@@ -128,6 +138,8 @@ export interface GeneratedResponse {
   type: string;
   isOptional: boolean;
   description?: string;
+  contentType?: string;
+  schema?: OpenAPISchemaObject | OpenAPIRef;
 }
 
 /**
@@ -141,6 +153,8 @@ export interface GenerationContext {
   generatedClients: Map<string, GeneratedApiClient>;
   typeRegistry: TypeRegistry;
   schemaResolver: SchemaResolver;
+  projections?: Record<string, { request?: string; response?: string; binary?: string }>;
+  wireSchema?: OpenAPISchema;
 }
 
 /**
@@ -173,7 +187,7 @@ export interface GenerationResult {
 export interface GeneratedFile {
   path: string;
   content: string;
-  type: "type" | "client" | "hook" | "query" | "index";
+  type: "type" | "client" | "hook" | "query" | "index" | "report";
   dependencies: string[];
   size: number;
 }
@@ -267,6 +281,7 @@ export interface SchemanticPlugin {
  * Default configuration
  */
 export const DEFAULT_CONFIG: Partial<SchemanticConfig> = {
+  outputDir: "./src/generated",
   generateTypes: true,
   generateApiClient: true,
   generateHooks: false,
@@ -275,6 +290,7 @@ export const DEFAULT_CONFIG: Partial<SchemanticConfig> = {
   useOptionalChaining: true,
   useNullishCoalescing: true,
   namingConvention: "camelCase",
+  propertyNaming: "camelCase",
   preserveComments: true,
   generateIndexFile: true,
 };

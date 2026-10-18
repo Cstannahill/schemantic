@@ -1,0 +1,1 @@
+{"schemaFile":"./schema.json","outputDir":"./invalid-values","generateTypes":"false","generateApiClient":"false","useStrictTypes":"false","generateQueries":true,"typoOption":true}

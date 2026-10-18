@@ -176,8 +176,8 @@ describe("ObjectTypeGenerator", () => {
       const result = generator.generate(schema, context);
 
       expect(result.content).toContain("address?: {");
-      expect(result.content).toContain("street?: string;");
-      expect(result.content).toContain("city?: string;");
+      expect(result.content).toContain("street?: string | undefined;");
+      expect(result.content).toContain("city?: string | undefined;");
     });
 
     it("should handle enum properties", () => {
@@ -193,7 +193,7 @@ describe("ObjectTypeGenerator", () => {
 
       const result = generator.generate(schema, context);
 
-      expect(result.content).toContain("status?: string | undefined;");
+      expect(result.content).toContain('status?: "active" | "inactive" | "pending" | undefined;');
     });
 
     it("should handle const properties", () => {
@@ -241,10 +241,10 @@ describe("ObjectTypeGenerator", () => {
 
       const result = generator.generate(schema, context);
 
-      expect(result.content).toContain("user?: {");
-      expect(result.content).toContain("id?: string;");
-      expect(result.content).toContain("} & {");
-      expect(result.content).toContain("name?: string;");
+      expect(result.content).toContain("user?: ({");
+      expect(result.content).toContain("id?: string | undefined;");
+      expect(result.content).toContain("}) & ({");
+      expect(result.content).toContain("name?: string | undefined;");
     });
 
     it("should handle schema references", () => {
@@ -299,10 +299,10 @@ describe("ObjectTypeGenerator", () => {
       const result = generator.generate(schema, context);
 
       expect(result.content).toContain("id?: string | undefined;");
-      expect(result.content).toContain("createdAt?: string | undefined;");
+      expect(result.content).toContain("createdAt?: Date | undefined;");
     });
 
-    it("should handle different naming conventions", () => {
+    it("should preserve wire property names independently of method naming", () => {
       const options = createOptions();
       options.namingConvention = "snake_case";
 
@@ -318,8 +318,8 @@ describe("ObjectTypeGenerator", () => {
 
       const result = generator.generate(schema, context);
 
-      expect(result.content).toContain("first_name?: string | undefined;");
-      expect(result.content).toContain("last_name?: string | undefined;");
+      expect(result.content).toContain("firstName?: string | undefined;");
+      expect(result.content).toContain("lastName?: string | undefined;");
     });
 
     it("should handle type prefix and suffix", () => {

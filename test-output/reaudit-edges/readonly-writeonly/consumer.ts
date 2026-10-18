@@ -1,0 +1,1 @@
+import { EdgeApiClient } from './api-client'; new EdgeApiClient({baseUrl:'http://localhost'}).createUser({name:'Alice',password:'secret'}).then(user=>{const id:number=user.id;});

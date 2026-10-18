@@ -22,6 +22,9 @@ export function createTestConfig(
     preserveComments: true,
     generateIndexFile: true,
     ...DEFAULT_CONFIG,
+    // Existing contract fixtures exercise the explicitly supported wire-preserving mode.
+    // Default camelCase and its HTTP conversions have dedicated re-audit tests.
+    propertyNaming: 'preserve',
     ...overrides,
   };
 
@@ -546,22 +549,3 @@ export function setupMockFs(): void {
 export function resetMockFs(): void {
   jest.clearAllMocks();
 }
-
-/**
- * Basic test to ensure the test utilities work
- */
-describe("Test Utilities", () => {
-  it("should create test configuration", () => {
-    const config = createTestConfig();
-    expect(config).toBeDefined();
-    expect(config.outputDir).toBe("./test-output");
-    expect(config.generateTypes).toBe(true);
-  });
-
-  it("should create test schema", () => {
-    const schema = createTestSchema();
-    expect(schema).toBeDefined();
-    expect(schema.openapi).toBe("3.0.0");
-    expect(schema.info.title).toBe("Test API");
-  });
-});

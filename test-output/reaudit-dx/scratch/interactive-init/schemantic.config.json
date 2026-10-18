@@ -1,0 +1,15 @@
+{
+  "generateTypes": true,
+  "generateApiClient": true,
+  "generateHooks": true,
+  "generateQueries": false,
+  "useStrictTypes": true,
+  "useOptionalChaining": true,
+  "useNullishCoalescing": true,
+  "namingConvention": "camelCase",
+  "preserveComments": true,
+  "generateIndexFile": true,
+  "schemaFile": "./schema.json",
+  "outputDir": "./interactive-valid",
+  "typePrefix": ""
+}

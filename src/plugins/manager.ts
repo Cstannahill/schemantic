@@ -91,10 +91,7 @@ export class PluginManager {
         try {
           await plugin.beforeGeneration(context);
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} beforeGeneration hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} beforeGeneration hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }
@@ -114,10 +111,7 @@ export class PluginManager {
         try {
           await plugin.afterGeneration(context, result);
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} afterGeneration hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} afterGeneration hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }
@@ -138,10 +132,7 @@ export class PluginManager {
         try {
           await plugin.beforeTypeGeneration(typeName, schema, context);
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} beforeTypeGeneration hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} beforeTypeGeneration hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }
@@ -162,10 +153,7 @@ export class PluginManager {
         try {
           await plugin.afterTypeGeneration(typeName, generatedType, context);
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} afterTypeGeneration hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} afterTypeGeneration hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }
@@ -184,10 +172,7 @@ export class PluginManager {
         try {
           await plugin.beforeClientGeneration(context);
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} beforeClientGeneration hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} beforeClientGeneration hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }
@@ -207,10 +192,7 @@ export class PluginManager {
         try {
           await plugin.afterClientGeneration(generatedClient, context);
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} afterClientGeneration hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} afterClientGeneration hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }
@@ -235,10 +217,7 @@ export class PluginManager {
             context
           );
         } catch (error) {
-          console.warn(
-            `Plugin ${plugin.name} transformSchema hook failed:`,
-            error
-          );
+          throw new Error(`Plugin ${plugin.name} transformSchema hook failed: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
     }

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "0.2",
+  "id": "provider_audit_provider_req_20260510060404_LRS9H4",
+  "requestId": "provider_req_20260510060404_LRS9H4",
+  "projectId": "schemantic",
+  "projectRootHash": "sha256:bb6f9fe6ab12ce5e5f13eec3750caab409335175852308fda7a05b1976d7c3e7",
+  "provider": {
+    "id": "ollama",
+    "kind": "ollama",
+    "displayName": "Ollama Local Chat Adapter",
+    "model": "Gemma4-E4B-IT-A",
+    "version": "0.1.0",
+    "baseUrl": "http://127.0.0.1:11434/api/chat"
+  },
+  "startedAt": "2026-05-10T06:04:04.679Z",
+  "completedAt": "2026-05-10T06:05:04.807Z",
+  "durationMs": 60128,
+  "live": true,
+  "dryRun": false,
+  "networkAllowed": true,
+  "status": "failed",
+  "evidence": {
+    "packetId": "evidence:schemantic:flow:54af1c2f16",
+    "purpose": "flow",
+    "snapshotId": "snap_20260510060404_F2QMZY",
+    "inputsHash": "sha256:d48028047a6de2a4c5c9dce161427ec08ab35315871c87765d56aa577205d18f",
+    "selectedFacts": 0,
+    "omittedFacts": 1900,
+    "sourceFiles": 3,
+    "estimatedInputTokens": 74403,
+    "truncated": true
+  },
+  "requestSummary": {
+    "riskCeiling": "medium",
+    "allowedTargets": [
+      ".ai/project.yaml",
+      ".ai/modules.yaml",
+      ".ai/flows/*.flow.yaml",
+      ".ai/notes/*"
+    ],
+    "promptRedacted": true,
+    "promptHash": "sha256:34a6aa178bab11bc6e6384f4110b04e21d8426c3c0b53851c86b1c4661fd1d9b",
+    "promptBytes": 227010
+  },
+  "responseSummary": {
+    "title": "Provider request failed",
+    "risk": "low",
+    "targetFiles": [],
+    "changeCount": 0,
+    "warningCount": 1,
+    "rationaleHash": "sha256:a68b56fd9372c77e4d9cb0983dfbf2838f2a639cbb19dbbe2fb3fcec318c42c5",
+    "fullChangeValuesRedacted": true
+  },
+  "warnings": [
+    "Ollama request timed out: This operation was aborted",
+    "Provider response failed policy validation. No proposal file was created."
+  ],
+  "evidenceWarnings": [
+    "Evidence packet exceeded requested maxTokens (73953/6000) and was truncated to 0 facts."
+  ],
+  "retry": {
+    "retryable": true,
+    "sourceRequestId": "provider_req_20260510060404_LRS9H4",
+    "attempt": 0,
+    "recommendedMode": "repair",
+    "reasons": [
+      "Ollama request timed out: This operation was aborted",
+      "Provider response failed policy validation. No proposal file was created."
+    ],
+    "intent": {
+      "purpose": "flow",
+      "query": "primary API route, CLI command, data pipeline, or main application flow"
+    },
+    "suggestedArgs": [
+      "providers retry",
+      "provider_req_20260510060404_LRS9H4",
+      "--include-source-snippets",
+      "--snippet-policy focused-symbols"
+    ]
+  },
+  "redaction": {
+    "level": "default",
+    "redactedFields": [
+      "request.evidence.prompt.messages[].content",
+      "request.evidence.prompt.text",
+      "response.changes[].value",
+      "rawProviderResponse",
+      "apiKeyEnv values"
+    ],
+    "notes": [
+      "Audit logs summarize provider behavior without storing full prompts or generated artifact payloads by default.",
+      "Use requestId, evidence packet ID, proposal ID, and hashes to correlate with local artifacts."
+    ]
+  }
+}

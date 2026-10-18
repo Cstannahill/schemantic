@@ -6,6 +6,7 @@
 import { ResolvedSchema, isOpenAPISchemaObject } from "../types/schema";
 import { GenerationContext, GeneratedType } from "../types/core";
 import { BaseTypeGenerator, TypeGenerationOptions } from "./base";
+import { propertyKey, schemaType } from "./schema-type";
 
 /**
  * Object type generator implementation
@@ -23,27 +24,11 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
     const typeName = this.getTypeName(schema, context);
     const dependencies: string[] = [];
 
-    // If schema is a pure union (oneOf/anyOf) without own properties, emit a type alias
-    if (
-      (schema.oneOf && schema.oneOf.length > 0) ||
-      (schema.anyOf && schema.anyOf.length > 0)
-    ) {
-      const unionSchemas = [...(schema.oneOf || []), ...(schema.anyOf || [])];
-      const unionTypes = unionSchemas.map((s: ResolvedSchema) =>
-        this.generatePropertyType(s, context, dependencies)
-      );
-      const content = `export type ${typeName} = ${unionTypes.join(" | ")};\n`;
-      const imports = this.generateImports();
-      return {
-        name: typeName,
-        content: imports + content,
-        dependencies,
-        exports: [typeName],
-        isInterface: false,
-        isEnum: false,
-        isUnion: true,
-        sourceSchema: schema,
-      };
+    if (schema.oneOf?.length || schema.anyOf?.length || schema.allOf?.length || schema.nullable || Array.isArray(schema.type) || schema.additionalProperties !== undefined || !schema.properties) {
+      const expression = this.generatePropertyType(schema, context, dependencies);
+      return { name: typeName, content: 'export type ' + typeName + ' = ' + expression + ';\n',
+        dependencies, exports: [typeName], isInterface: false, isEnum: false,
+        isUnion: !!(schema.oneOf || schema.anyOf), sourceSchema: schema };
     }
 
     // Generate interface content (supports allOf merging/extends)
@@ -229,7 +214,7 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
     );
     const optionalType = this.wrapOptional(type, isOptional);
 
-    const formattedName = this.convertName(propertyName);
+    const formattedName = propertyKey(propertyName);
     property += `${formattedName}${isOptional ? "?" : ""}: ${optionalType};`;
 
     return property;
@@ -238,123 +223,12 @@ export class ObjectTypeGenerator extends BaseTypeGenerator {
   /**
    * Generate property type
    */
-  private generatePropertyType(
-    schema: ResolvedSchema,
-    context?: GenerationContext,
-    dependencies?: string[]
-  ): string {
-    // Handle references
-    if ("$ref" in schema && schema.$ref) {
-      const baseType = this.extractTypeNameFromRef(schema.$ref as string);
-      const refType = this.formatTypeName(baseType);
-      if (dependencies && !dependencies.includes(refType)) {
-        dependencies.push(refType);
-      }
-      return refType;
-    }
-
-    if (!isOpenAPISchemaObject(schema)) {
-      return "unknown";
-    }
-
-    // Handle arrays
-    if (schema.type === "array") {
-      const itemType = schema.items
-        ? this.generatePropertyType(schema.items, context, dependencies)
-        : "unknown";
-      return `${itemType}[]`;
-    }
-
-    // Handle unions (oneOf, anyOf)
-    if (schema.oneOf || schema.anyOf) {
-      const unionSchemas = [...(schema.oneOf || []), ...(schema.anyOf || [])];
-      const unionTypes = unionSchemas.map((s: ResolvedSchema) =>
-        this.generatePropertyType(s, context, dependencies)
-      );
-      return unionTypes.join(" | ");
-    }
-
-    // Handle intersections (allOf)
-    if (schema.allOf) {
-      // Prefer merging/extends at interface level; as a property type use intersection
-      const intersectionTypes = schema.allOf.map((s: ResolvedSchema) =>
-        this.generatePropertyType(s, context, dependencies)
-      );
-      return intersectionTypes.join(" & ");
-    }
-
-    // Handle object inline typing and dictionaries
-    if (schema.type === "object") {
-      const hasProps =
-        !!schema.properties && Object.keys(schema.properties!).length > 0;
-      if (hasProps) {
-        const lines: string[] = [];
-        for (const [propName, propSchema] of Object.entries(
-          schema.properties!
-        )) {
-          const isOpt = this.isOptional(schema.required, propName);
-          const t = this.generatePropertyType(
-            propSchema as ResolvedSchema,
-            context,
-            dependencies
-          );
-          const formatted = this.convertName(propName);
-          // When emitting inline object body, do not append undefined type inside the object; use '?' only
-          const propType = isOpt ? t : t;
-          lines.push(`${formatted}${isOpt ? "?" : ""}: ${propType};`);
-        }
-        return `{
-  ${lines.join("\n  ")}
-}`;
-      }
-
-      // Dictionary/object map via additionalProperties
-      if (schema.additionalProperties !== undefined) {
-        if (schema.additionalProperties === true) {
-          return "Record<string, unknown>";
-        }
-        if (
-          schema.additionalProperties &&
-          typeof schema.additionalProperties === "object"
-        ) {
-          const valueType = this.generatePropertyType(
-            schema.additionalProperties as ResolvedSchema,
-            context,
-            dependencies
-          );
-          return `Record<string, ${valueType}>`;
-        }
-      }
-
-      // Fallback for generic object
-      return "Record<string, unknown>";
-    }
-
-    // Handle basic types
-    if (schema.type) {
-      return this.mapSchemaTypeToTypeScript(schema.type, schema.format);
-    }
-
-    // Handle enums
-    if (schema.enum) {
-      return this.generateEnumType(schema.enum);
-    }
-
-    // Handle const
-    if (schema.const !== undefined) {
-      return JSON.stringify(schema.const);
-    }
-
-    // Default fallback
-    return "unknown";
-  }
-
-  /**
-   * Generate enum type
-   */
-  private generateEnumType(enumValues: unknown[]): string {
-    const stringValues = enumValues.map((val) => JSON.stringify(val));
-    return stringValues.join(" | ");
+  private generatePropertyType(schema: ResolvedSchema, context?: GenerationContext, dependencies?: string[]): string {
+    return schemaType(schema, ref => {
+      const name = this.formatTypeName(this.extractTypeNameFromRef(ref));
+      if (dependencies && !dependencies.includes(name)) dependencies.push(name);
+      return name;
+    }, this.options.customTypeMappings, context?.schemaResolver);
   }
 
   /**

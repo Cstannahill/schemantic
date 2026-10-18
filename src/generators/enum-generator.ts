@@ -21,6 +21,20 @@ export class EnumTypeGenerator extends BaseTypeGenerator {
     }
 
     const typeName = this.getTypeName(schema, context);
+    if (schema.enum && (schema.nullable || schema.enum.some(value => typeof value !== 'string' && typeof value !== 'number'))) {
+      const values = [...new Set([...schema.enum.map(value => JSON.stringify(value)), ...(schema.nullable ? ['null'] : [])])].join(' | ');
+      const used = new Set<string>();
+      const entries = schema.enum.map((value, index) => {
+        const base = this.generateEnumKey(value, index);
+        let key = base;
+        let suffix = 2;
+        while (used.has(key)) key = `${base}_${suffix++}`;
+        used.add(key);
+        return `${key}: ${JSON.stringify(value)}`;
+      });
+      return { name: typeName, content: `export const ${typeName} = { ${entries.join(', ')} } as const;\nexport type ${typeName} = ${values};\nexport type ${typeName}Values = ${typeName};`,
+        dependencies: [], exports: [typeName, `${typeName}Values`], isInterface: false, isEnum: true, isUnion: true, sourceSchema: schema };
+    }
     const comment = this.generateComment(schema.description, schema.example);
 
     let content = "";
@@ -96,10 +110,15 @@ export class EnumTypeGenerator extends BaseTypeGenerator {
    */
   private generateStringEnum(typeName: string, enumValues: unknown[]): string {
     const enumEntries: string[] = [];
+    const usedKeys = new Set<string>();
 
     for (const value of enumValues) {
       if (typeof value === "string") {
-        const key = this.generateEnumKey(value);
+        const baseKey = this.generateEnumKey(value, enumEntries.length);
+        let key = baseKey;
+        let suffix = 2;
+        while (usedKeys.has(key)) key = `${baseKey}_${suffix++}`;
+        usedKeys.add(key);
         const enumValue = JSON.stringify(value);
         enumEntries.push(`  ${key} = ${enumValue}`);
       }
@@ -113,10 +132,15 @@ export class EnumTypeGenerator extends BaseTypeGenerator {
    */
   private generateNumericEnum(typeName: string, enumValues: unknown[]): string {
     const enumEntries: string[] = [];
+    const used = new Set<string>();
 
     for (let i = 0; i < enumValues.length; i++) {
       const value = enumValues[i];
-      const key = this.generateEnumKey(value, i);
+      const base = this.generateEnumKey(value, i);
+      let key = base;
+      let suffix = 2;
+      while (used.has(key)) key = `${base}_${suffix++}`;
+      used.add(key);
       const enumValue =
         typeof value === "number" ? value.toString() : JSON.stringify(value);
       enumEntries.push(`  ${key} = ${enumValue}`);
@@ -172,7 +196,7 @@ export class EnumTypeGenerator extends BaseTypeGenerator {
     }
 
     if (typeof value === "number") {
-      return `VALUE_${value}`;
+      return `VALUE_${String(value).replace(/-/g, 'NEGATIVE_').replace(/[^A-Za-z0-9_]/g, '_')}`;
     }
 
     return `VALUE_${index || 0}`;

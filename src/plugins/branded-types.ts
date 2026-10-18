@@ -31,6 +31,7 @@ import {
   isOpenAPISchemaObject,
   ExtendedSchemaObject,
 } from "../types/schema";
+import { buildZodSchema } from "./zod-validation";
 
 /**
  * Configuration options for branded types plugin
@@ -118,50 +119,35 @@ export const brandedTypesPlugin: SchemanticPlugin = {
   ) => {
     const options = getPluginOptions(context);
 
-    if (!options.enabled || !generatedType.isInterface) {
+    if (!options.enabled) {
       return;
     }
 
-    try {
       const brandedCode = generateBrandedTypeEnhancements(
         typeName,
         generatedType,
-        options
+        options,
+        context
       );
 
       if (brandedCode) {
         generatedType.content += brandedCode;
 
-        // Update exports
-        generatedType.exports.push(
-          `Branded${typeName}`,
-          `create${typeName}`,
-          `is${typeName}`,
-          `assert${typeName}`
-        );
-
-        if (options.enablePhantomTypes) {
-          generatedType.exports.push(
-            `${typeName}WithAuth`,
-            `authorize${typeName}`,
-            `unauthorize${typeName}`
-          );
+        generatedType.dependencies.push("zod");
+        generatedType.exports.push(`Branded${typeName}`, `create${typeName}`);
+        if (options.enableRuntimeGuards) generatedType.exports.push(`is${typeName}`);
+        if (options.enableAssertionFunctions) generatedType.exports.push(`assert${typeName}`);
+        if (options.enableOpaqueTypes) generatedType.exports.push(`Opaque${typeName}`, `createOpaque${typeName}`, `unwrapOpaque${typeName}`);
+        if (options.enablePhantomTypes && generatedType.isInterface) {
+          generatedType.exports.push(`${typeName}WithAuth`, `authorize${typeName}`, `unauthorize${typeName}`, `isAuthenticated${typeName}`);
+          if (!Array.from(context.generatedTypes.values()).some(type => type !== generatedType && type.exports.includes("AuthState"))) {
+            generatedType.content += "\nexport type AuthState = 'authenticated' | 'unauthenticated';\n";
+            generatedType.exports.push("AuthState");
+          }
         }
-
-        if (options.enableDiscriminatedUnions) {
-          generatedType.exports.push(
-            `${typeName}Union`,
-            `match${typeName}`,
-            `is${typeName}Variant`
-          );
-        }
+        if (options.enableDiscriminatedUnions) generatedType.exports.push(`${typeName}Union`, `match${typeName}`, `is${typeName}Variant`);
       }
-    } catch (error) {
-      console.warn(
-        `Branded types plugin afterTypeGeneration failed for ${typeName}:`,
-        error
-      );
-    }
+
   },
 
   /**
@@ -177,7 +163,6 @@ export const brandedTypesPlugin: SchemanticPlugin = {
       return;
     }
 
-    try {
       const clientEnhancements = generateClientBrandedTypeIntegration(
         generatedClient,
         options
@@ -189,20 +174,18 @@ export const brandedTypesPlugin: SchemanticPlugin = {
         // Update exports
         generatedClient.exports.push(
           "BrandedApiClient",
-          "TypeSafeApiClient",
           "withBrandValidation"
         );
 
         if (options.enablePhantomTypes) {
           generatedClient.exports.push(
+            "TypeSafeApiClient",
             "AuthenticatedApiClient",
             "UnauthenticatedApiClient"
           );
         }
       }
-    } catch (error) {
-      console.warn("Branded types plugin afterClientGeneration failed:", error);
-    }
+
   },
 };
 
@@ -300,204 +283,29 @@ function extractValidationConstraints(schema: ExtendedSchemaObject): string[] {
 function generateBrandedTypeEnhancements(
   typeName: string,
   generatedType: GeneratedType,
-  options: BrandedTypesOptions
-): string {
-  if (!isOpenAPISchemaObject(generatedType.sourceSchema)) {
-    return "";
-  }
-
-  const schema = generatedType.sourceSchema as ExtendedSchemaObject;
-  const brandMetadata =
-    (schema._brandMetadata as Record<string, unknown>) || {};
-
-  if (!brandMetadata.shouldBrand) {
-    return generateBasicBrandedType(typeName, options);
-  }
-
-  return generateAdvancedBrandedType(typeName, schema, options, brandMetadata);
-}
-
-/**
- * Generate basic branded type without specific validation
- */
-function generateBasicBrandedType(
-  typeName: string,
-  options: BrandedTypesOptions
-): string {
-  const brandName = `${typeName}${options.brandIdentifier || "Brand"}`;
-
-  return `
-
-/**
- * Branded type for ${typeName} with compile-time safety guarantees
- */
-export type Branded${typeName} = ${typeName} & { readonly __brand: '${brandName}' };
-
-/**
- * Create a branded ${typeName} instance
- */
-export function create${typeName}(data: ${typeName}): Branded${typeName} {
-  // Runtime validation would go here
-  return data as Branded${typeName};
-}
-
-/**
- * Type guard for Branded${typeName}
- */
-export function is${typeName}(value: unknown): value is Branded${typeName} {
-  // Basic type checking
-  return typeof value === 'object' && value !== null;
-}
-
-/**
- * Assertion function for ${typeName}
- */
-export function assert${typeName}(value: unknown): asserts value is Branded${typeName} {
-  if (!is${typeName}(value)) {
-    throw new Error(\`Expected ${typeName}, got \${typeof value}\`);
-  }
-}${options.enablePhantomTypes ? generatePhantomTypes(typeName) : ""}${
-    options.enableDiscriminatedUnions
-      ? generateDiscriminatedUnions(typeName)
-      : ""
-  }`;
-}
-
-/**
- * Generate advanced branded type with validation constraints
- */
-function generateAdvancedBrandedType(
-  typeName: string,
-  schema: ExtendedSchemaObject,
   options: BrandedTypesOptions,
-  brandMetadata: Record<string, unknown>
+  context: GenerationContext
 ): string {
-  const brandName = `${typeName}${options.brandIdentifier || "Brand"}`;
-  const validationCode = generateValidationCode(schema, brandMetadata);
-
+  const marker = options.brandIdentifier ?? "Brand";
+  const brandName = options.brandNamingConvention === "suffix" ? `${typeName}${marker}`
+    : options.brandNamingConvention === "namespace" ? `${marker}.${typeName}` : `${marker}${typeName}`;
+  const validator = buildZodSchema(generatedType.sourceSchema, { strictMode: false }, 0, context).replace(/z\.lazy\(\(\) => (\w+)Schema\)/g, "z.lazy(() => __$1BrandSchema)");
+  const constraints = options.enableTypeLevelValidations && isOpenAPISchemaObject(generatedType.sourceSchema)
+    ? `; readonly __constraints: ${JSON.stringify(extractValidationConstraints(generatedType.sourceSchema))}` : "";
   return `
-
-/**
- * Advanced branded type for ${typeName} with validation constraints
- * Constraints: ${
-   Array.isArray(brandMetadata.validationConstraints)
-     ? brandMetadata.validationConstraints.join(", ")
-     : "none"
- }
- */
-export type Branded${typeName} = ${typeName} & { 
-  readonly __brand: '${brandName}';
-  readonly __constraints: {${generateConstraintTypes(schema)}};
-};
-
-/**
- * Create a validated branded ${typeName} instance
- */
+import { z } from 'zod';
+const __${typeName}BrandSchema: z.ZodType = ${validator};
+export type Branded${typeName} = ${typeName} & { readonly __brand: ${JSON.stringify(brandName)}${constraints} };
+/** Validates the source schema before applying a compile-time brand. */
 export function create${typeName}(data: ${typeName}): Branded${typeName} {
-  ${validationCode}
-  return data as Branded${typeName};
+  __${typeName}BrandSchema.parse(data); return data as Branded${typeName};
 }
-
-/**
- * Advanced type guard with constraint validation
- */
-export function is${typeName}(value: unknown): value is Branded${typeName} {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-  
-  try {
-    create${typeName}(value as ${typeName});
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Assertion function with detailed error messages
- */
-export function assert${typeName}(value: unknown): asserts value is Branded${typeName} {
-  if (!is${typeName}(value)) {
-    throw new TypeError(\`Value does not satisfy ${typeName} constraints\`);
-  }
-}
-
-${options.enableOpaqueTypes ? generateOpaqueTypeHelpers(typeName) : ""}${
-    options.enablePhantomTypes ? generatePhantomTypes(typeName) : ""
-  }${
-    options.enableDiscriminatedUnions
-      ? generateDiscriminatedUnions(typeName)
-      : ""
-  }`;
-}
-
-/**
- * Generate validation code based on schema constraints
- */
-function generateValidationCode(
-  schema: ExtendedSchemaObject,
-  _brandMetadata: Record<string, unknown>
-): string {
-  const validations: string[] = [];
-
-  if (schema.type === "string") {
-    if (schema.minLength !== undefined) {
-      validations.push(
-        `if (typeof data !== 'string' || data.length < ${schema.minLength}) throw new Error('String too short');`
-      );
-    }
-    if (schema.maxLength !== undefined) {
-      validations.push(
-        `if (typeof data !== 'string' || data.length > ${schema.maxLength}) throw new Error('String too long');`
-      );
-    }
-    if (schema.pattern) {
-      validations.push(
-        `if (typeof data !== 'string' || !/${schema.pattern}/.test(data)) throw new Error('Pattern mismatch');`
-      );
-    }
-  }
-
-  if (schema.type === "number" || schema.type === "integer") {
-    if (schema.minimum !== undefined) {
-      validations.push(
-        `if (typeof data !== 'number' || data < ${schema.minimum}) throw new Error('Number too small');`
-      );
-    }
-    if (schema.maximum !== undefined) {
-      validations.push(
-        `if (typeof data !== 'number' || data > ${schema.maximum}) throw new Error('Number too large');`
-      );
-    }
-  }
-
-  return validations.join("\n  ");
-}
-
-/**
- * Generate constraint types for the brand
- */
-function generateConstraintTypes(schema: ExtendedSchemaObject): string {
-  const constraints: string[] = [];
-
-  if (schema.minLength !== undefined) {
-    constraints.push(`minLength: ${schema.minLength}`);
-  }
-  if (schema.maxLength !== undefined) {
-    constraints.push(`maxLength: ${schema.maxLength}`);
-  }
-  if (schema.minimum !== undefined) {
-    constraints.push(`minimum: ${schema.minimum}`);
-  }
-  if (schema.maximum !== undefined) {
-    constraints.push(`maximum: ${schema.maximum}`);
-  }
-  if (schema.pattern) {
-    constraints.push(`pattern: '${schema.pattern}'`);
-  }
-
-  return constraints.join("; ");
+${options.enableRuntimeGuards ? `export function is${typeName}(value: unknown): ${options.enableTypePredicates ? `value is Branded${typeName}` : 'boolean'} { return __${typeName}BrandSchema.safeParse(value).success; }` : ''}
+${options.enableAssertionFunctions ? `export function assert${typeName}(value: unknown): asserts value is Branded${typeName} { __${typeName}BrandSchema.parse(value); }` : ''}
+${options.enableOpaqueTypes ? generateOpaqueTypeHelpers(typeName) : ''}
+${options.enablePhantomTypes && generatedType.isInterface ? generatePhantomTypes(typeName) : ''}
+${options.enableDiscriminatedUnions ? generateDiscriminatedUnions(typeName) : ''}
+`;
 }
 
 /**
@@ -516,7 +324,7 @@ export type Opaque${typeName} = ${typeName} & { readonly [__${typeName}Opaque]: 
  * Create opaque ${typeName}
  */
 export function createOpaque${typeName}(data: ${typeName}): Opaque${typeName} {
-  return data as Opaque${typeName};
+  __${typeName}BrandSchema.parse(data); return data as Opaque${typeName};
 }
 
 /**
@@ -536,7 +344,6 @@ function generatePhantomTypes(typeName: string): string {
 /**
  * Phantom types for authentication state management
  */
-export type AuthState = 'authenticated' | 'unauthenticated';
 
 export type ${typeName}WithAuth<TAuth extends AuthState = 'unauthenticated'> = 
   Branded${typeName} & { readonly __auth: TAuth };
@@ -547,7 +354,7 @@ export type ${typeName}WithAuth<TAuth extends AuthState = 'unauthenticated'> =
 export function authorize${typeName}(
   data: ${typeName}WithAuth<'unauthenticated'>
 ): ${typeName}WithAuth<'authenticated'> {
-  return data as ${typeName}WithAuth<'authenticated'>;
+  return { ...data, __auth: 'authenticated' };
 }
 
 /**
@@ -556,7 +363,7 @@ export function authorize${typeName}(
 export function unauthorize${typeName}(
   data: ${typeName}WithAuth<'authenticated'>
 ): ${typeName}WithAuth<'unauthenticated'> {
-  return data as ${typeName}WithAuth<'unauthenticated'>;
+  return { ...data, __auth: 'unauthenticated' };
 }
 
 /**
@@ -565,8 +372,7 @@ export function unauthorize${typeName}(
 export function isAuthenticated${typeName}(
   value: ${typeName}WithAuth<AuthState>
 ): value is ${typeName}WithAuth<'authenticated'> {
-  // In practice, this would check actual auth state
-  return true; // Placeholder implementation
+  return value.__auth === 'authenticated';
 }`;
 }
 
@@ -660,7 +466,7 @@ export class BrandedApiClient {
   ) {
     return async (data: TRequest): Promise<TBrandedResponse> => {
       const response = await requestFn(data);
-      return this.validateResponse(response, responseValidator);
+      return this.validateResponse<TResponse, TBrandedResponse>(response, responseValidator);
     };
   }
 }
@@ -690,6 +496,8 @@ function generatePhantomApiClient(): string {
 /**
  * API client with phantom authentication state
  */
+export { BrandedApiClient as TypeSafeApiClient };
+
 export class AuthenticatedApiClient {
   private readonly isAuthenticated = true;
 
@@ -707,7 +515,6 @@ export class AuthenticatedApiClient {
 }
 
 export class UnauthenticatedApiClient {
-  private readonly isAuthenticated = false;
 
   /**
    * Execute public request
@@ -722,8 +529,7 @@ export class UnauthenticatedApiClient {
    * Authenticate and return authenticated client
    */
   async authenticate(credentials: { token: string }): Promise<AuthenticatedApiClient> {
-    // Authentication logic would go here
-    console.log('Authenticating with token:', credentials.token);
+    if (!credentials.token) throw new Error('A token is required for client authentication state metadata');
     return new AuthenticatedApiClient();
   }
 }`;
