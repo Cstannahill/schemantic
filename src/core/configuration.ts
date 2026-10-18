@@ -4,7 +4,7 @@ const strings = ['schemaUrl', 'schemaFile', 'outputDir', 'outputFileName', 'type
 const booleans = ['generateTypes', 'generateApiClient', 'generateHooks', 'generateQueries', 'useStrictTypes',
   'useOptionalChaining', 'useNullishCoalescing', 'preserveComments', 'generateIndexFile'];
 const arrays = ['excludePaths', 'includePaths', 'excludeSchemas', 'includeSchemas'];
-const keys = new Set([...strings, ...booleans, ...arrays, 'schemaData', 'namingConvention', 'propertyNaming', 'customTypeMappings', 'plugins']);
+const keys = new Set([...strings, ...booleans, ...arrays, 'schemaData', 'namingConvention', 'propertyNaming', 'enumStyle', 'customTypeMappings', 'plugins']);
 const isObject = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
 
 /** One runtime contract shared by the CLI and programmatic entry point. */
@@ -19,6 +19,7 @@ export function resolveConfiguration(input: SchemanticOptions): ResolvedSchemant
   }
   if (input.namingConvention !== undefined && !['camelCase', 'snake_case', 'PascalCase'].includes(input.namingConvention)) throw new Error('Invalid namingConvention');
   if (input.propertyNaming !== undefined && !['camelCase', 'preserve'].includes(input.propertyNaming)) throw new Error('Invalid propertyNaming; use camelCase or preserve');
+  if (input.enumStyle !== undefined && !['const', 'enum'].includes(input.enumStyle)) throw new Error('Invalid enumStyle; use const or enum');
   if (input.schemaData !== undefined && !isObject(input.schemaData)) throw new Error('schemaData must be an OpenAPI document object');
   if (input.customTypeMappings !== undefined && (!isObject(input.customTypeMappings) || Object.values(input.customTypeMappings).some(value => typeof value !== 'string'))) throw new Error('customTypeMappings must map strings to TypeScript type strings');
   if (input.plugins !== undefined) {

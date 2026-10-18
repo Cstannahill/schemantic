@@ -20,14 +20,19 @@ async function main() {
       report.cases.push(entry);
       try {
         const schemaData = JSON.parse(fs.readFileSync(path.join(root, 'test-schemas', file), 'utf8'));
-        const result = await new Schemantic({ ...DEFAULT_CONFIG, outputDir, schemaData, propertyNaming,
-          ...(mode === 'zod' ? { plugins: [{ name: 'zod-validation', enabled: true }] } : mode === 'hooks' ? { generateHooks: true } : {}) }).generate();
+        const generator = new Schemantic({ ...DEFAULT_CONFIG, outputDir, schemaData, propertyNaming,
+          ...(mode === 'zod' ? { plugins: [{ name: 'zod-validation', enabled: true }] } : mode === 'hooks' ? { generateHooks: true } : {}) });
+        const result = await generator.generate();
         entry.errors = result.errors;
         entry.warnings = result.warnings;
         assert.equal(result.success, true, JSON.stringify(result.errors));
         for (const name of ['types.ts', 'api-client.ts', 'index.ts', ...(propertyNaming === 'camelCase' ? ['conversion.ts'] : []), ...(mode === 'hooks' ? ['hooks.ts'] : [])]) {
           assert(fs.statSync(path.join(outputDir, name)).size > 0, `Missing or empty ${name}`);
         }
+        const firstGeneration = new Map(result.generatedFiles.map(file => [path.basename(file.path), fs.readFileSync(file.path)]));
+        const repeated = await generator.generate();
+        assert.equal(repeated.success, true, `Repeated generation failed: ${JSON.stringify(repeated.errors)}`);
+        for (const [name, bytes] of firstGeneration) assert.deepEqual(fs.readFileSync(path.join(outputDir, name)), bytes, `Generation is not deterministic for ${id}: ${name}`);
         // Resolve the public barrel as a real consumer, including hooks and plugin exports.
         if (mode === 'zod') {
           const types = fs.readFileSync(path.join(outputDir, 'types.ts'), 'utf8');

@@ -207,6 +207,9 @@ describe('CLI re-audit contracts', () => {
       export function useMemo<T>(factory: () => T, dependencies: readonly unknown[]): T;
     }
     declare module 'react/jsx-runtime' { export const jsx: unknown; export const jsxs: unknown; export namespace JSX { interface IntrinsicElements { p: { children?: unknown }; button: { children?: unknown; onClick?: () => void }; } } }
+    declare module '@tanstack/react-query' {
+      export function useQuery<T>(options: { queryKey: readonly unknown[]; queryFn: (context: { signal: AbortSignal }) => Promise<T> }): { data: T | undefined };
+    }
     `);
     const options: ts.CompilerOptions = {
       noEmit: true, strict: true, noUnusedLocals: true, noUnusedParameters: true,

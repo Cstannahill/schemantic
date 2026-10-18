@@ -37,17 +37,19 @@ import { UsersApiClient as ApiClient, ApiClientError } from './generated/index.j
 const client = new ApiClient({
   baseUrl: 'http://localhost:8000',
   headers: { 'X-Api-Key': 'example' },
-  timeout: 30000,
-  retries: 3,
-  retryDelay: 1000,
+  timeout: 15000,
+  retries: 1,
+  retryDelay: 250,
 });
 client.setAuthToken('token');
 client.clearAuthToken();
-// Catch ApiClientError for HTTP failures; status and response describe the failure.
+// Catch ApiClientError for HTTP failures; FastAPI's parsed `detail` is available on the error.
 void ApiClientError;
 ```
 
-`baseUrl` is required. `headers` accepts the fetch header forms: a string record, pairs, or `Headers`. Timeout and retry delay are milliseconds; retries apply only to supported idempotent methods/transient failures. Each generated operation takes its schema-derived positional parameters and an optional final `RequestInit`. Supply per-call headers there, or use `setDefaultHeader(name, value)` / `removeDefaultHeader(name)` to change case-insensitive defaults. `setAuthToken` and `clearAuthToken` manage bearer authorization. OAuth login orchestration and automatic plugin middleware are not implemented.
+In browsers, `baseUrl` defaults to `window.location.origin`, so same-origin clients can be created with `new ApiClient()`. Pass an explicit absolute or browser-relative base URL for another API; Node and other non-browser runtimes require `baseUrl`. Defaults are a 15-second timeout, one retry, and a 250-millisecond retry delay. Timeout and retry delay use milliseconds; retries apply only to supported idempotent methods and transient failures. Set `retries: 0` to disable retries. `headers` accepts fetch header forms: a string record, pairs, or `Headers`. Each generated operation takes its schema-derived positional parameters and an optional final `RequestInit`. Supply per-call headers there, or use `setDefaultHeader(name, value)` / `removeDefaultHeader(name)` to change case-insensitive defaults. `setAuthToken` and `clearAuthToken` manage bearer authorization. OAuth login orchestration and automatic plugin middleware are not implemented.
+
+`ApiClientError` keeps the HTTP `status` and original readable `response`, and exposes a parsed `body` plus `detail` when the body has a `detail` field. JSON and `+json` bodies are parsed; other media are exposed as text. If parsing fails, `body` contains the raw text. Empty or unreadable bodies leave `body` and `detail` undefined.
 
 Response bodies are decoded according to media/status metadata. JSON returns data, text-based media returns text, binary media returns Blob, and empty responses return undefined. XML is returned as text, not parsed into objects. Multiple declared response media may produce union types.
 
@@ -57,7 +59,22 @@ Generate with `--hooks` or `generateHooks: true`, install React in the consumer,
 
 Query results contain `{ data, error, loading, refetch }`. Query argument groups use schema wire parameter names under `path`, `query`, `header`, or `cookie`. Mutation results contain `{ mutate, data, error, loading, reset }`. Call `mutate({ path?, query?, header?, cookie?, body? }, requestInit?)` with the fields required by that operation. Payload groups are schema-derived; inspect the emitted signature.
 
-Mutation state tracks the latest call: an older completion cannot replace its result/error or clear its pending loading state. Each caller still receives its own promise result. Reset, unmount, and client changes invalidate pending shared-state publication; changing the client clears mutation state. These hooks use React state/effects. They do not implement TanStack Query options such as `enabled`, `onSuccess`, `onError`, invalidation/query keys, or `isLoading`. Each `mutate` returns its own promise result; errors reject that promise. Handle errors with try/catch in your caller.
+Mutation state tracks the latest call: an older completion cannot replace its result/error or clear its pending loading state. Each caller still receives its own promise result. Reset, unmount, and client changes invalidate pending shared-state publication; changing the client clears mutation state. These hooks use React state/effects and do not cache or deduplicate across components. They do not implement TanStack Query options such as `enabled`, `onSuccess`, `onError`, invalidation/query keys, or `isLoading`. Each `mutate` returns its own promise result; errors reject that promise. Handle errors with try/catch in your caller. For caching, use the generated client directly with TanStack Query:
+
+```tsx
+import { useQuery } from '@tanstack/react-query';
+import { UsersApiClient as ApiClient } from './generated/index.js';
+declare const client: ApiClient;
+declare const userId: number;
+
+const query = useQuery({
+  queryKey: ['user', userId],
+  queryFn: ({ signal }) => client.getUser(userId, { signal }),
+});
+void query;
+```
+
+The query key and invalidation policy belong to the consuming app; install TanStack Query there separately.
 
 ## Plugin loader
 

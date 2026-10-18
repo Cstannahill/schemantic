@@ -51,6 +51,7 @@ export interface TypeGenerationOptions {
   useOptionalChaining: boolean;
   useNullishCoalescing: boolean;
   namingConvention: "camelCase" | "snake_case" | "PascalCase";
+  enumStyle?: "const" | "enum";
   typePrefix?: string;
   typeSuffix?: string;
   customTypeMappings?: Record<string, string>;

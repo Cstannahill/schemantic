@@ -35,6 +35,7 @@ function compile(directory, overrides = {}) {
   const options = { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, moduleResolution: ts.ModuleResolutionKind.Node10,
     strict: true, exactOptionalPropertyTypes: true, noUncheckedIndexedAccess: true,
     noUnusedLocals: true, noUnusedParameters: true, skipLibCheck: true, types: [],
+    erasableSyntaxOnly: true,
     lib: ['lib.es2020.d.ts', 'lib.dom.d.ts'], noEmit: true,
     baseUrl: root, paths: { zod: ['node_modules/zod'], react: ['node_modules/@types/react'] }, ...overrides };
   const program = ts.createProgram(files, options);
@@ -47,9 +48,12 @@ function compile(directory, overrides = {}) {
 function consumerSchema() {
   const content = { 'application/json': { schema: { $ref: '#/components/schemas/User' } } };
   return { openapi: '3.1.0', info: { title: 'Consumer API', version: '1' },
-    components: { schemas: { User: { type: 'object', required: ['user_id', 'display_name'], properties: {
-      user_id: { type: 'string' }, display_name: { type: 'string' },
-    } } } },
+    components: { schemas: {
+      Role: { type: 'string', enum: ['admin', 'member'] },
+      User: { type: 'object', required: ['user_id', 'display_name'], properties: {
+        user_id: { type: 'string' }, display_name: { type: 'string' }, role: { $ref: '#/components/schemas/Role' },
+      } },
+    } },
     paths: {
       '/users/{user_id}': { get: { operationId: 'getUser', parameters: [{ name: 'user_id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'User', content } } } },
       '/users': { post: { operationId: 'saveUser', requestBody: { required: true, content }, responses: { '200': { description: 'User', content } } } },

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-10-18
+
+### Added
+
+- Browser API clients now default `baseUrl` to the current origin; non-browser clients still require an explicit base URL.
+- Generated numeric const-object enums preserve reverse value lookup. Set `enumStyle: "enum"` to retain legacy TypeScript enum declarations.
+
+### Changed
+
+- Schema enums now default to erasable `as const` objects and union types for compatibility with strict Vite TypeScript projects.
+- Generated clients default to a 15-second timeout, one retry, and a 250-millisecond retry delay.
+
+### Fixed
+
+- `ApiClientError` now exposes parsed response bodies and FastAPI's `detail`, while preserving the original readable `Response`.
+- CI compiles the packed consumer with Vite-style `tsc -b` settings and checks generated fixture output for deterministic regeneration.
+
 ## [0.4.1] — 2026-10-18
 
 ### Fixed

@@ -26,7 +26,7 @@ describe('fresh generated output contract', () => {
     return result;
   }
 
-  async function compile(consumer: string) {
+  async function compile(consumer: string, extra: ts.CompilerOptions = {}) {
     const consumerFile = path.join(outputDir, 'consumer.ts');
     await fs.writeFile(consumerFile, consumer);
     const files = (await fs.readdir(outputDir)).filter(f => f.endsWith('.ts')).map(f => path.join(outputDir, f));
@@ -35,6 +35,7 @@ describe('fresh generated output contract', () => {
       target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS,
       skipLibCheck: true, types: [], lib: ['lib.es2020.d.ts', 'lib.dom.d.ts'],
       baseUrl: process.cwd(), paths: { zod: ['node_modules/zod'] },
+      ...extra,
     });
     const diagnostics = ts.getPreEmitDiagnostics(program);
     expect(diagnostics.map(d => ts.flattenDiagnosticMessageText(d.messageText, '\n'))).toEqual([]);
@@ -82,6 +83,29 @@ const invalid: Fields = { status: 'other' };`);
     await compile(`import { Status, ApiClientError, ApiClientConfig, ContractApiClient } from './index';
 const status = Status.ACTIVE; const config: ApiClientConfig = { baseUrl: 'http://localhost' };
 const client = new ContractApiClient(config); const error = new ApiClientError('failed');`);
+  });
+
+  it('uses erasable const-object enums by default and preserves legacy enum output on request', async () => {
+    const data = schema();
+    data.components!.schemas!.Status = { type: 'string', enum: ['active', 'inactive'] };
+    data.components!.schemas!.Priority = { type: 'integer', enum: [1, 2] };
+    await generate(data);
+    await compile(`import { Status, Priority } from './index.js';
+import type { Status as StatusType, Priority as PriorityType } from './index.js';
+const status: StatusType = Status.ACTIVE; const priority: PriorityType = Priority.VALUE_1;
+const reverse: string = Priority[1]; void status; void priority; void reverse;`, {
+      module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
+      verbatimModuleSyntax: true, isolatedModules: true, noUnusedLocals: true,
+      noUnusedParameters: true, erasableSyntaxOnly: true,
+    });
+    const source = await fs.readFile(path.join(outputDir, 'types.ts'), 'utf8');
+    expect(source).toContain('export const Status =');
+    expect(source).not.toContain('export enum Status');
+
+    const legacyDir = path.join(outputDir, 'legacy');
+    const legacyResult = await new Schemantic(createTestConfig({ schemaData: data, outputDir: legacyDir, enumStyle: 'enum' })).generate();
+    expect(legacyResult.success).toBe(true);
+    expect(await fs.readFile(path.join(legacyDir, 'types.ts'), 'utf8')).toContain('export enum Status');
   });
 
   it('compiles inherited referenced parameters and required bodies following optional queries', async () => {

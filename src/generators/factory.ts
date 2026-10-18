@@ -60,6 +60,8 @@ export class TypeGeneratorFactory {
       preserveComments: config.preserveComments,
     };
 
+    if (config.enumStyle !== undefined) options.enumStyle = config.enumStyle;
+
     if (config.typePrefix !== undefined) {
       options.typePrefix = config.typePrefix;
     }
