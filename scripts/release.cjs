@@ -7,6 +7,7 @@ const { execFileSync } = require('node:child_process');
 const semver = require('semver');
 const registry = 'https://registry.npmjs.org';
 const repository = 'git+https://github.com/Cstannahill/schemantic.git';
+const publishedVisibilityDelays = [2000, 5000, 10000, 20000, ...Array(8).fill(30000)];
 
 function assertProject(project) {
   const { manifest, lock } = project;
@@ -73,6 +74,16 @@ async function registryState(name, version, integrity, npmTag, fetchImpl = fetch
   if (!latest || !semver.valid(latest.version)) throw new Error('Cannot verify the existing package latest version');
   if (npmTag === 'latest' && !semver.gt(version, latest.version)) throw new Error(`Refusing to move latest backward from ${latest.version} to ${version}`);
   return { alreadyPublished: false };
+}
+async function waitForPublished({ name, version, integrity, npmTag, fetchImpl = fetch,
+  delays = publishedVisibilityDelays, sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)) }) {
+  for (let attempt = 0; ; attempt++) {
+    const state = await registryState(name, version, integrity, npmTag, fetchImpl);
+    if (state.alreadyPublished) return { ...state, attempts: attempt + 1 };
+    const delay = delays[attempt];
+    if (delay === undefined) throw new Error('Published package was not visible with matching integrity before timeout');
+    await sleep(delay);
+  }
 }
 function verifyArchive(directory, info, manifest) {
   const expected = `${manifest.name}-${manifest.version}.tgz`;
@@ -146,14 +157,10 @@ async function main(args) {
   const directory = path.resolve(flags['--package-dir'] || '.release/package');
   const info = JSON.parse(fs.readFileSync(path.join(directory, 'package-info.json'), 'utf8'));
   verifyArchive(directory, info, project.manifest);
-  let state;
-  for (let attempt = 0; ; attempt++) {
-    state = await registryState(project.manifest.name, validation.version, info.integrity, validation.npmTag);
-    if (command !== 'verify-published' || state.alreadyPublished) break;
-    if (attempt >= 7) throw new Error('Published package was not visible with matching integrity before timeout');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
+  const state = command === 'verify-published'
+    ? await waitForPublished({ name: project.manifest.name, version: validation.version, integrity: info.integrity, npmTag: validation.npmTag })
+    : await registryState(project.manifest.name, validation.version, info.integrity, validation.npmTag);
   outputs({ version: validation.version, tag, 'npm-tag': validation.npmTag, 'already-published': String(state.alreadyPublished), 'archive-filename': info.filename });
 }
-module.exports = { planRelease, validateRelease, registryState, verifyArchive, checkTag, readProject, writePreparation };
+module.exports = { planRelease, validateRelease, registryState, waitForPublished, verifyArchive, checkTag, readProject, writePreparation };
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });
